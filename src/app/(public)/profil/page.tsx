@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Phone, Mail, Target, Eye, History } from "lucide-react";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Profil Masjid",
   description: "Profil lengkap Masjid Nurul Jannah - Sejarah, visi, misi, dan informasi kontak.",

@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, Users } from "lucide-react";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Struktur DKM",
   description: "Struktur organisasi Dewan Kemakmuran Masjid Nurul Jannah.",

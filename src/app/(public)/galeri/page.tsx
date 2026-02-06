@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Images, Camera } from "lucide-react";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Galeri",
   description: "Galeri foto kegiatan dan dokumentasi Masjid Nurul Jannah",

@@ -15,6 +15,9 @@ import { TrendingUp, TrendingDown, Wallet, BarChart3, Shield, Eye } from "lucide
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Transparansi Keuangan",
   description: "Laporan keuangan masjid yang transparan untuk jamaah",

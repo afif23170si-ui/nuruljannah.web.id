@@ -16,6 +16,9 @@ import {
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "TPA / TPQ",
   description: "Informasi Taman Pendidikan Al-Quran (TPA/TPQ) Masjid Nurul Jannah.",

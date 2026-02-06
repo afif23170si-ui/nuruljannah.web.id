@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, User, BookOpen } from "lucide-react";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Jadwal Kajian",
   description: "Jadwal kajian rutin, majelis ilmu, dan kegiatan keagamaan di Masjid Nurul Jannah.",

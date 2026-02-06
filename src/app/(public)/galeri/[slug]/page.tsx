@@ -9,6 +9,8 @@ import { ArrowLeft, Calendar, Camera } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
 interface AlbumPageProps {
   params: Promise<{ slug: string }>;
 }

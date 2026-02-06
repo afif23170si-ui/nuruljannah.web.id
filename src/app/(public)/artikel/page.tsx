@@ -10,6 +10,9 @@ import { Calendar, User, ArrowRight, BookOpen, Newspaper, Bell, Mic } from "luci
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Artikel & Berita",
   description: "Artikel dakwah, berita terbaru, dan pengumuman dari Masjid Nurul Jannah.",
