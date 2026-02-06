@@ -1,8 +1,24 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Youtube, MapPin, Mail, Phone } from "lucide-react";
+import { getMosqueProfile, getSiteSettingsPublic } from "@/actions/public";
 
-export function Footer() {
+export async function Footer() {
+  // Fetch mosque profile data
+  const profile = await getMosqueProfile();
+  const settings = await getSiteSettingsPublic();
+
+  // Use profile data with fallbacks
+  const address = profile?.address || "Jl. Masjid Nurul Jannah, Dumai Timur, Riau";
+  const email = profile?.email || settings?.email || "info@nuruljannah.id";
+  const phone = profile?.phone || settings?.phone || settings?.whatsapp || "+62 812 3456 7890";
+  const mosqueName = settings?.mosqueName || profile?.name || "Masjid Nurul Jannah";
+
+  // Social media links from settings
+  const instagram = settings?.instagram || "#";
+  const youtube = settings?.youtube || "#";
+  const facebook = settings?.facebook || "#";
+
   return (
     <footer className="relative bg-background pt-20 pb-10 overflow-hidden border-t border-border/40">
       
@@ -31,7 +47,7 @@ export function Footer() {
                 />
               </div>
               <div>
-                <h2 className="text-xl font-bold font-serif">Masjid Nurul Jannah</h2>
+                <h2 className="text-xl font-bold font-serif">{mosqueName}</h2>
                 <p className="text-sm text-muted-foreground">Pusat Ibadah & Dakwah</p>
               </div>
             </Link>
@@ -39,13 +55,13 @@ export function Footer() {
               Membangun masyarakat madani yang berlandaskan Al-Quran dan As-Sunnah melalui pelayanan umat yang profesional dan amanah.
             </p>
             <div className="flex items-center gap-4">
-              <Link href="#" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-emerald-500 hover:text-white transition-all duration-300">
+              <Link href={instagram} target="_blank" rel="noopener noreferrer" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-emerald-500 hover:text-white transition-all duration-300">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="#" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-red-500 hover:text-white transition-all duration-300">
+              <Link href={youtube} target="_blank" rel="noopener noreferrer" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-red-500 hover:text-white transition-all duration-300">
                 <Youtube className="h-5 w-5" />
               </Link>
-              <Link href="#" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-blue-600 hover:text-white transition-all duration-300">
+              <Link href={facebook} target="_blank" rel="noopener noreferrer" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-blue-600 hover:text-white transition-all duration-300">
                 <Facebook className="h-5 w-5" />
               </Link>
             </div>
@@ -88,21 +104,21 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Column */}
+          {/* Contact Column - Now using dynamic data */}
           <div className="lg:col-span-3 space-y-6">
             <h3 className="font-bold text-lg">Hubungi Kami</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-muted-foreground">
                 <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-sm">Jl. Masjid Nurul Jannah, Kota Dumai, Riau</span>
+                <span className="text-sm">{address}</span>
               </li>
               <li className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="h-5 w-5 text-emerald-600 shrink-0" />
-                <span className="text-sm">info@nuruljannah.id</span>
+                <span className="text-sm">{email}</span>
               </li>
               <li className="flex items-center gap-3 text-muted-foreground">
                 <Phone className="h-5 w-5 text-emerald-600 shrink-0" />
-                <span className="text-sm">+62 812 3456 7890</span>
+                <span className="text-sm">{phone}</span>
               </li>
             </ul>
           </div>
@@ -112,7 +128,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="pt-8 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Masjid Nurul Jannah. All rights reserved.
+            &copy; {new Date().getFullYear()} {mosqueName}. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
              <Link href="#" className="hover:text-foreground">Privacy Policy</Link>
