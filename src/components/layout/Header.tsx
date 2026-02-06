@@ -54,7 +54,7 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+    <header className="fixed top-[34px] left-0 right-0 z-50 flex justify-center pointer-events-none">
       <div className="w-full flex justify-between items-center container px-4 sm:px-6">
         
         {/* Logo */}
@@ -74,8 +74,13 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Desktop Navigation - Glass Pill */}
-        <nav className="hidden md:flex pointer-events-auto items-center gap-1 bg-black/20 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 shadow-lg shadow-black/5">
+        {/* Desktop Navigation - Glass Pill (Centered) */}
+        <nav className={cn(
+          "hidden md:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-auto items-center gap-1 rounded-full px-2 py-1.5 transition-all duration-300",
+          scrolled 
+            ? "bg-white/80 backdrop-blur-xl border border-white/20 shadow-md"
+            : "bg-white/20 backdrop-blur-xl border border-white/20"
+        )}>
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -83,10 +88,10 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "relative flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all rounded-full hover:text-white",
+                  "relative flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all rounded-full hover:text-emerald-950",
                   isActive 
-                    ? "text-white bg-white/10 shadow-sm"
-                    : "text-white/80 hover:bg-white/5"
+                    ? "text-emerald-950"
+                    : "text-emerald-900/60"
                 )}
               >
                 <span className="relative z-10">{item.name}</span>

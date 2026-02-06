@@ -11,26 +11,36 @@ export function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   return (
-    <section className="relative w-full h-screen flex flex-col items-center justify-end overflow-hidden">
+    <section className="relative w-[calc(100%-40px)] h-[calc(100vh-40px)] m-[20px] flex flex-col items-center justify-end overflow-hidden rounded-[35px]">
       
       {/* Background Image */}
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 bg-emerald-950">
         <Image
           src="/bg-nj.webp"
           alt="Masjid Nurul Jannah"
           fill
-          className="object-cover object-center will-change-transform"
+          className="object-cover"
           priority
-          sizes="100vw"
-          quality={70}
         />
-        {/* Pattern Overlay - Geometric Islamic Pattern with Gold tint */ }
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width=%2260%22%20height=%2260%22%20viewBox=%220%200%2060%2060%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill=%22none%22%20fill-rule=%22evenodd%22%3E%3Cg%20fill=%22%23d97706%22%20fill-opacity=%220.03%22%3E%3Cpath%20d=%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] z-[1] pointer-events-none" />
+        {/* Dark Overlay 50% */}
+        <div className="absolute inset-0 bg-black/50 z-[1]" />
+
+
+
+
+        {/* Revalo Style - White Liquid Curve (Buzzer Curve) */}
+        <div className="hidden md:block absolute top-0 left-0 right-0 h-[80px] z-[3] pointer-events-none">
+          <svg className="w-full h-full" viewBox="0 0 1440 80" preserveAspectRatio="none">
+             {/* iPhone Notch Style (Dynamic Island) - Deepened for 10px Margin */}
+             <path 
+              d="M 400,0 C 420,0 440,0 450,20 C 460,40 460,66 490,66 L 950,66 C 980,66 980,40 990,20 C 1000,0 1020,0 1040,0 Z" 
+              fill="#ffffff" 
+            />
+          </svg>
+        </div>
         
-        {/* Cinematic Vignette - Darkens edges to frame the mosque naturally, removed white haze */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/60 z-[2] opacity-90" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)] z-[2]" />
+
       </div>
 
       {/* Centered Content */}
