@@ -34,7 +34,7 @@ import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from "@/lib/finance-constants";
 
 const financeSchema = z.object({
   type: z.enum(["INCOME", "EXPENSE"]),
-  amount: z.coerce.number().min(1000, "Minimal Rp 1.000"),
+  amount: z.number().min(1000, "Minimal Rp 1.000"),
   description: z.string().min(3, "Deskripsi minimal 3 karakter"),
   category: z.string().min(1, "Pilih kategori"),
   date: z.string().min(1, "Pilih tanggal"),
