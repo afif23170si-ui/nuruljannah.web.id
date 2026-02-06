@@ -43,7 +43,7 @@ const albumSchema = z.object({
   title: z.string().min(2, "Judul minimal 2 karakter"),
   slug: z.string().min(2, "Slug minimal 2 karakter"),
   description: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type AlbumFormData = z.infer<typeof albumSchema>;
