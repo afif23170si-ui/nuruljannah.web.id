@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { getClasses, getStudents, getAttendance } from "@/actions/tpa";
 import { AttendanceSheet } from "@/components/admin/tpa/AttendanceSheet";
+import { Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Absensi Santri",
@@ -8,28 +10,37 @@ export const metadata: Metadata = {
 };
 
 interface AttendancePageProps {
-  searchParams: {
+  searchParams: Promise<{
     classId?: string;
     date?: string;
-  };
+  }>;
+}
+
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center p-12">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+    </div>
+  );
 }
 
 export default async function AttendancePage({ searchParams }: AttendancePageProps) {
+  const params = await searchParams;
   const classes = await getClasses();
   
   let students: any[] = [];
   let attendanceData: any[] = [];
 
-  if (searchParams.classId) {
+  if (params.classId) {
     [students, attendanceData] = await Promise.all([
       getStudents({ 
-        classId: searchParams.classId, 
+        classId: params.classId, 
         status: "ACTIVE",
         limit: 100 
       }),
       getAttendance(
-        searchParams.classId,
-        searchParams.date ? new Date(searchParams.date) : new Date()
+        params.classId,
+        params.date ? new Date(params.date) : new Date()
       ),
     ]);
   }
@@ -43,13 +54,15 @@ export default async function AttendancePage({ searchParams }: AttendancePagePro
         </p>
       </div>
       
-      <AttendanceSheet 
-        classes={classes}
-        students={students}
-        attendanceData={attendanceData}
-        initialClassId={searchParams.classId}
-        initialDate={searchParams.date}
-      />
+      <Suspense fallback={<LoadingFallback />}>
+        <AttendanceSheet 
+          classes={classes}
+          students={students}
+          attendanceData={attendanceData}
+          initialClassId={params.classId}
+          initialDate={params.date}
+        />
+      </Suspense>
     </div>
   );
 }

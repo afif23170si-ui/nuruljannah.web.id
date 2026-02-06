@@ -35,7 +35,7 @@ const studentSchema = z.object({
   parentPhone: z.string().min(10, "Nomor HP minimal 10 digit"),
   address: z.string().optional(),
   classId: z.string().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "GRADUATED"]).default("ACTIVE"),
+  status: z.enum(["ACTIVE", "INACTIVE", "GRADUATED"]),
 });
 
 type StudentFormData = z.infer<typeof studentSchema>;

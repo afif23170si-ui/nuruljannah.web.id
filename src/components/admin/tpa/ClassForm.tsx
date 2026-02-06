@@ -33,7 +33,7 @@ const classSchema = z.object({
   description: z.string().optional(),
   schedule: z.string().optional(),
   teacherId: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type ClassFormData = z.infer<typeof classSchema>;
