@@ -120,7 +120,7 @@ export async function createFinance(data: {
     },
   });
 
-  revalidateTag("finance");
+  revalidateTag("finance", "max");
   return result;
 }
 
@@ -139,14 +139,14 @@ export async function updateFinance(
     data,
   });
 
-  revalidateTag("finance");
+  revalidateTag("finance", "max");
   return result;
 }
 
 // Delete Finance Transaction
 export async function deleteFinance(id: string) {
   await prisma.finance.delete({ where: { id } });
-  revalidateTag("finance");
+  revalidateTag("finance", "max");
 }
 
 // Get Monthly Report

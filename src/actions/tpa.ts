@@ -62,7 +62,7 @@ export async function createTeacher(data: {
   const result = await prisma.tpaTeacher.create({
     data,
   });
-  revalidateTag("teachers");
+  revalidateTag("teachers", "max");
   return result;
 }
 
@@ -81,7 +81,7 @@ export async function updateTeacher(
     where: { id },
     data,
   });
-  revalidateTag("teachers");
+  revalidateTag("teachers", "max");
   return result;
 }
 
@@ -89,7 +89,7 @@ export async function deleteTeacher(id: string) {
   // Check for classes first? Prisma might restrict delete if relation exists, 
   // but we didn't set Cascade on Teacher->Class (optional relation).
   await prisma.tpaTeacher.delete({ where: { id } });
-  revalidateTag("teachers");
+  revalidateTag("teachers", "max");
 }
 
 // ==========================================
@@ -138,7 +138,7 @@ export async function createClass(data: {
   const result = await prisma.tpaClass.create({
     data,
   });
-  revalidateTag("classes");
+  revalidateTag("classes", "max");
   return result;
 }
 
@@ -156,13 +156,13 @@ export async function updateClass(
     where: { id },
     data,
   });
-  revalidateTag("classes");
+  revalidateTag("classes", "max");
   return result;
 }
 
 export async function deleteClass(id: string) {
   await prisma.tpaClass.delete({ where: { id } });
-  revalidateTag("classes");
+  revalidateTag("classes", "max");
 }
 
 // ==========================================
@@ -216,8 +216,8 @@ export async function createStudent(data: {
   const result = await prisma.tpaStudent.create({
     data,
   });
-  revalidateTag("students");
-  revalidateTag("classes"); 
+  revalidateTag("students", "max");
+  revalidateTag("classes", "max"); 
   return result;
 }
 
@@ -237,15 +237,15 @@ export async function updateStudent(
     where: { id },
     data,
   });
-  revalidateTag("students");
-  revalidateTag("classes");
+  revalidateTag("students", "max");
+  revalidateTag("classes", "max");
   return result;
 }
 
 export async function deleteStudent(id: string) {
   await prisma.tpaStudent.delete({ where: { id } });
-  revalidateTag("students");
-  revalidateTag("classes");
+  revalidateTag("students", "max");
+  revalidateTag("classes", "max");
 }
 
 // ==========================================
