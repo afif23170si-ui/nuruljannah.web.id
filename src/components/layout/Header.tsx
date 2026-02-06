@@ -30,6 +30,8 @@ export function Header() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  // We can keep the scroll listener if we want subtle effects, but user asked for static.
+  // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -52,19 +54,12 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-4 left-0 right-0 z-50 flex justify-center pointer-events-none transition-all duration-300">
-      <div className="w-full flex justify-center container px-2 sm:px-4">
-        <div 
-          className={cn(
-            "pointer-events-auto flex items-center justify-between p-2 pl-4 sm:pl-6 pr-2 sm:pr-3 rounded-full w-full transition-all duration-500 ease-in-out border",
-            scrolled 
-              ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-black/5" 
-              : "bg-transparent border-transparent"
-          )}
-        >
+    <header className="fixed top-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+      <div className="w-full flex justify-between items-center container px-4 sm:px-6">
+        
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-white/10">
+        <Link href="/" className="pointer-events-auto flex items-center gap-2 group">
+          <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-white/20 shadow-lg">
             <Image 
               src="/logo-mnj.png" 
               alt="Logo Nurul Jannah" 
@@ -74,16 +69,13 @@ export function Header() {
               unoptimized
             />
           </div>
-          <span className={cn(
-            "font-serif font-bold text-lg sm:text-xl tracking-tight hidden sm:block transition-colors duration-300",
-            scrolled ? "text-emerald-950" : "text-white drop-shadow-sm"
-          )}>
+          <span className="font-serif font-bold text-lg sm:text-xl tracking-tight hidden sm:block text-white drop-shadow-md shadow-black/50">
             Nurul Jannah
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        {/* Desktop Navigation - Glass Pill */}
+        <nav className="hidden md:flex pointer-events-auto items-center gap-1 bg-black/20 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 shadow-lg shadow-black/5">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -91,41 +83,32 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "relative flex items-center gap-1.5 px-4 py-2 text-sm transition-all rounded-full group overflow-hidden",
+                  "relative flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all rounded-full hover:text-white",
                   isActive 
-                    ? (scrolled ? "font-medium text-emerald-700" : "font-medium text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-sm") 
-                    : (scrolled ? "text-emerald-900/70 hover:text-emerald-700" : "text-white/80 hover:text-white hover:bg-white/10 hover:backdrop-blur-md hover:border hover:border-white/10 relative border border-transparent")
+                    ? "text-white bg-white/10 shadow-sm"
+                    : "text-white/80 hover:bg-white/5"
                 )}
               >
                 <span className="relative z-10">{item.name}</span>
-                {isActive && scrolled && (
-                  <span className="absolute inset-x-0 -bottom-px h-0.5 bg-emerald-600 rounded-full" />
-                )}
               </Link>
             );
           })}
         </nav>
 
         {/* Right Section */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pointer-events-auto">
           
           {/* Login Button - Desktop */}
           <Link href="/login" className="hidden lg:block">
-             <Button className={cn(
-               "transition-all",
-               scrolled ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-white text-emerald-950 hover:bg-white/90 shadow-md"
-            )}>
-              Masuk
+             <Button className="bg-white/90 text-emerald-950 hover:bg-white shadow-lg backdrop-blur-sm transition-all rounded-full px-6">
+               Masuk
             </Button>
           </Link>
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className={cn(
-                "h-9 w-9 rounded-full",
-                scrolled ? "text-emerald-950" : "text-white hover:bg-white/20"
-              )}>
+              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white bg-black/20 backdrop-blur-md border border-white/10 hover:bg-black/30">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -180,7 +163,6 @@ export function Header() {
               </div>
             </SheetContent>
           </Sheet>
-        </div>
         </div>
       </div>
     </header>

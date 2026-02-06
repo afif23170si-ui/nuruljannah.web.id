@@ -14,13 +14,16 @@ export function HeroSection() {
     <section className="relative w-full h-screen flex flex-col items-center justify-end overflow-hidden">
       
       {/* Background Image */}
-      <motion.div style={{ y }} className="absolute inset-0 z-0">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
         <Image
-          src="/background-nj.jpg"
+          src="/bg-nj.webp"
           alt="Masjid Nurul Jannah"
           fill
-          className="object-cover object-center animate-ken-burns will-change-transform"
+          className="object-cover object-center will-change-transform"
           priority
+          sizes="100vw"
+          quality={70}
         />
         {/* Pattern Overlay - Geometric Islamic Pattern with Gold tint */ }
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width=%2260%22%20height=%2260%22%20viewBox=%220%200%2060%2060%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill=%22none%22%20fill-rule=%22evenodd%22%3E%3Cg%20fill=%22%23d97706%22%20fill-opacity=%220.03%22%3E%3Cpath%20d=%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] z-[1] pointer-events-none" />
@@ -28,7 +31,7 @@ export function HeroSection() {
         {/* Cinematic Vignette - Darkens edges to frame the mosque naturally, removed white haze */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/60 z-[2] opacity-90" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)] z-[2]" />
-      </motion.div>
+      </div>
 
       {/* Centered Content */}
       <div className="relative z-10 container px-4 sm:px-6 flex flex-col items-start text-left pb-2 md:pb-4">
