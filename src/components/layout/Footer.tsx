@@ -1,138 +1,171 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, Youtube, MapPin, Mail, Phone } from "lucide-react";
-import { getMosqueProfile, getSiteSettingsPublic } from "@/actions/public";
+import { 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Clock, 
+  Facebook, 
+  Instagram, 
+  Youtube,
+  ArrowUpRight
+} from "lucide-react";
 
-export async function Footer() {
-  // Fetch mosque profile data
-  const profile = await getMosqueProfile();
-  const settings = await getSiteSettingsPublic();
-
-  // Use profile data with fallbacks
-  const address = profile?.address || "Jl. Masjid Nurul Jannah, Dumai Timur, Riau";
-  const email = profile?.email || settings?.email || "info@nuruljannah.id";
-  const phone = profile?.phone || settings?.phone || settings?.whatsapp || "+62 812 3456 7890";
-  const mosqueName = settings?.mosqueName || profile?.name || "Masjid Nurul Jannah";
-
-  // Social media links from settings
-  const instagram = settings?.instagram || "#";
-  const youtube = settings?.youtube || "#";
-  const facebook = settings?.facebook || "#";
+export function Footer() {
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-background pt-20 pb-10 overflow-hidden border-t border-border/40">
+    <footer className="relative bg-zinc-50 text-zinc-900 overflow-hidden pt-20 pb-10 border-t border-zinc-200">
+      {/* Background Pattern - Subtle Noise/Grain */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
       
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-[0.03] pattern-overlay" />
-      
-      {/* Big Watermark */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 text-[10vw] md:text-[12vw] font-bold text-foreground/[0.03] whitespace-nowrap pointer-events-none select-none font-serif">
-        Nurul Jannah
-      </div>
 
-      <div className="container relative mx-auto px-4">
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           
-          {/* Brand Column */}
+          {/* Brand Column (Span 4) */}
           <div className="lg:col-span-4 space-y-6">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="relative h-12 w-12 overflow-hidden rounded-full">
+             <div className="flex items-center gap-4 group">
+              <div className="relative h-16 w-16 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
                 <Image 
                   src="/logo-mnj.png" 
                   alt="Logo Nurul Jannah" 
                   fill 
                   className="object-cover"
-                  priority
-                  unoptimized
                 />
               </div>
               <div>
-                <h2 className="text-xl font-bold font-serif">{mosqueName}</h2>
-                <p className="text-sm text-muted-foreground">Pusat Ibadah & Dakwah</p>
+                <h3 className="font-serif font-bold text-2xl tracking-tight text-emerald-950">Nurul Jannah</h3>
+                <p className="text-emerald-700 text-sm font-medium tracking-wide uppercase">Masjid Ikatan Umat</p>
               </div>
-            </Link>
-            <p className="text-muted-foreground leading-relaxed max-w-sm">
-              Membangun masyarakat madani yang berlandaskan Al-Quran dan As-Sunnah melalui pelayanan umat yang profesional dan amanah.
+            </div>
+            <p className="text-zinc-600 text-base leading-relaxed max-w-sm font-light">
+              Membangun peradaban umat melalui masjid yang inklusif, transparan, dan modern. Menjadi pusat dakwah yang mencerahkan dan menyejukkan hati.
             </p>
-            <div className="flex items-center gap-4">
-              <Link href={instagram} target="_blank" rel="noopener noreferrer" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-emerald-500 hover:text-white transition-all duration-300">
-                <Instagram className="h-5 w-5" />
-              </Link>
-              <Link href={youtube} target="_blank" rel="noopener noreferrer" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-red-500 hover:text-white transition-all duration-300">
-                <Youtube className="h-5 w-5" />
-              </Link>
-              <Link href={facebook} target="_blank" rel="noopener noreferrer" className="h-10 w-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-blue-600 hover:text-white transition-all duration-300">
-                <Facebook className="h-5 w-5" />
-              </Link>
+            
+            {/* Social Media Buttons */}
+            <div className="flex items-center gap-2 pt-2">
+              {[
+                { icon: Facebook, href: "#", label: "Facebook" },
+                { icon: Instagram, href: "#", label: "Instagram" },
+                { icon: Youtube, href: "#", label: "Youtube" },
+              ].map((social, idx) => (
+                <a 
+                  key={idx}
+                  href={social.href}
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 shadow-sm hover:border-emerald-500 hover:text-white hover:bg-emerald-600 text-zinc-500 transition-all duration-300 group"
+                  aria-label={social.label}
+                >
+                  <social.icon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Links Column */}
-          <div className="lg:col-span-2 lg:col-start-6 space-y-6">
-            <h3 className="font-bold text-lg">Layanan</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/jadwal-shalat" className="text-muted-foreground hover:text-emerald-600 transition-colors">Jadwal Shalat</Link>
-              </li>
-              <li>
-                <Link href="/jadwal-kajian" className="text-muted-foreground hover:text-emerald-600 transition-colors">Jadwal Kajian</Link>
-              </li>
-              <li>
-                <Link href="/tpa" className="text-muted-foreground hover:text-emerald-600 transition-colors">Pendidikan TPA</Link>
-              </li>
-              <li>
-                <Link href="/zakat" className="text-muted-foreground hover:text-emerald-600 transition-colors">Layanan Zakat</Link>
-              </li>
-            </ul>
-          </div>
+          {/* Spacer (Span 1) */}
+          <div className="hidden lg:block lg:col-span-1"></div>
 
-          <div className="lg:col-span-2 space-y-6">
-            <h3 className="font-bold text-lg">Informasi</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/profil" className="text-muted-foreground hover:text-emerald-600 transition-colors">Profil Masjid</Link>
-              </li>
-              <li>
-                <Link href="/struktur-dkm" className="text-muted-foreground hover:text-emerald-600 transition-colors">Struktur DKM</Link>
-              </li>
-              <li>
-                <Link href="/keuangan" className="text-muted-foreground hover:text-emerald-600 transition-colors">Laporan Keuangan</Link>
-              </li>
-              <li>
-                <Link href="/galeri" className="text-muted-foreground hover:text-emerald-600 transition-colors">Galeri Foto</Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Column - Now using dynamic data */}
-          <div className="lg:col-span-3 space-y-6">
-            <h3 className="font-bold text-lg">Hubungi Kami</h3>
+          {/* Navigation (Span 2) */}
+          <div className="lg:col-span-2">
+            <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Navigasi</h4>
             <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-muted-foreground">
-                <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-sm">{address}</span>
+              {[
+                { name: "Beranda", href: "/" },
+                { name: "Profil Masjid", href: "/profil" },
+                { name: "Jadwal Shalat", href: "/jadwal-shalat" },
+                { name: "Kajian Rutin", href: "/jadwal-kajian" },
+                { name: "Galeri Kegiatan", href: "/galeri" },
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
+                    <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 group-hover:bg-emerald-500 transition-colors"></span>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Layanan (Span 2) */}
+          <div className="lg:col-span-2">
+            <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Layanan</h4>
+            <ul className="space-y-4">
+              {[
+                { name: "TPA / TPQ", href: "/tpa" },
+                { name: "Laporan Keuangan", href: "/keuangan" },
+                { name: "Struktur DKM", href: "/struktur-dkm" },
+                { name: "Artikel Islami", href: "/artikel" },
+                { name: "Download", href: "/download" },
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
+                    <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 group-hover:bg-emerald-500 transition-colors"></span>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact (Span 3) */}
+          <div className="lg:col-span-3">
+             <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Hubungi Kami</h4>
+             <ul className="space-y-5">
+              <li className="flex items-start gap-4 group">
+                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Alamat</span>
+                  <span className="block text-zinc-600 text-sm leading-relaxed">
+                    Jl. Raya Masjid No. 123, Kel. Jaya Mukti, Kec. Dumai Timur, Kota Dumai, Riau 28826
+                  </span>
+                </div>
               </li>
-              <li className="flex items-center gap-3 text-muted-foreground">
-                <Mail className="h-5 w-5 text-emerald-600 shrink-0" />
-                <span className="text-sm">{email}</span>
+              
+              <li className="flex items-start gap-4 group">
+                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Telepon / WhatsApp</span>
+                   <span className="block text-zinc-600 text-sm">+62 812-3456-7890</span>
+                </div>
               </li>
-              <li className="flex items-center gap-3 text-muted-foreground">
-                <Phone className="h-5 w-5 text-emerald-600 shrink-0" />
-                <span className="text-sm">{phone}</span>
+
+              <li className="flex items-start gap-4 group">
+                 <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Email</span>
+                  <span className="block text-zinc-600 text-sm">info@nuruljannah.or.id</span>
+                </div>
               </li>
             </ul>
           </div>
 
         </div>
 
-        {/* Copyright */}
-        <div className="pt-8 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} {mosqueName}. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-             <Link href="#" className="hover:text-foreground">Privacy Policy</Link>
-             <Link href="#" className="hover:text-foreground">Terms of Service</Link>
+        {/* Bottom Bar Separator */}
+        <div className="border-t border-zinc-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
+            <p className="text-zinc-500 text-xs tracking-wide">
+              © {currentYear} Masjid Nurul Jannah
+            </p>
+            <div className="hidden md:block h-1 w-1 rounded-full bg-zinc-300"></div>
+            <p className="text-zinc-500 text-xs tracking-wide hover:text-emerald-700 transition-colors cursor-default">
+              Hak Cipta Dilindungi Undang-Undang
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            <span className="text-zinc-500 text-xs tracking-wide">
+              Dibuat dengan <span className="text-red-500 animate-pulse">❤️</span> untuk Umat
+            </span>
           </div>
         </div>
       </div>
