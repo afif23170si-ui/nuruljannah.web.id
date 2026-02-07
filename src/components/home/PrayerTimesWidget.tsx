@@ -202,92 +202,76 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
   if (!mounted) return null;
 
   return (
-    <div className="w-full">
-      {/* Crystal Clear Container: High opacity white to banish grey, soft glow */}
-      <div className="relative bg-white/90 backdrop-blur-md rounded-[20px] px-4 md:px-8 py-6 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)] ring-1 ring-white/50">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-          {/* Countdown Section */}
-          <div className="flex items-center gap-5 w-full lg:w-auto justify-between lg:justify-start">
-            <div className="flex flex-col items-start min-w-[140px]">
-              <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-800/70 mb-1">
-                Menuju {nextPrayer?.name}
-              </span>
-              <span className="text-3xl font-mono font-medium tracking-tighter text-emerald-950 tabular-nums drop-shadow-sm">
-                {countdown}
-              </span>
-            </div>
-
-            {/* Divider (Desktop) - Adjusted height */}
-            <div className="h-14 w-[1px] bg-emerald-950/10 hidden lg:block" />
-
-            {/* Location (Desktop - Next to Countdown) */}
-            <div className="hidden lg:flex flex-col items-start gap-0.5">
-              <div className="flex items-center gap-1.5 text-emerald-800/80">
+    <div className="w-full md:w-auto">
+      {/* Crystal Clear Box Container - Solid White to Match Notch */}
+      <div className="relative bg-white rounded-[15px] p-4 md:p-6 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)] ring-1 ring-white/50 w-full md:w-[320px] flex flex-col gap-4 md:gap-6">
+        
+        {/* Header: Location & Date */}
+        <div className="flex items-start justify-between border-b border-emerald-900/10 pb-3 md:pb-4">
+          <div className="flex flex-col gap-1">
+             <div className="flex items-center gap-1.5 text-emerald-800/80">
                 <MapPin className="h-3.5 w-3.5" />
                 <span className="text-xs font-bold tracking-wider uppercase">Lokasi</span>
-              </div>
-              <span className="text-lg font-medium text-emerald-950 tracking-tight">{location}</span>
-            </div>
-
-            {/* Mobile Time Display (Replaces Location pill) */}
-            <div className="flex flex-col items-end lg:hidden">
-              <span className="text-xs font-medium text-emerald-900/80 bg-emerald-50/80 px-2 py-1 rounded-md border border-emerald-100/50">
-                {currentTime.split("|")[0]?.trim()}
-              </span>
-              <span className="text-[10px] text-emerald-800/60 mt-1">{currentTime.split("|")[1]?.trim()}</span>
-            </div>
+             </div>
+             <span className="text-sm font-medium text-emerald-950 tracking-tight">{location}</span>
           </div>
-
-          {/* Prayer List */}
-          <div className="flex-1 w-full lg:w-auto overflow-x-auto no-scrollbar">
-            <div className="flex items-center justify-between lg:justify-end gap-2 min-w-max px-1">
-              {isLoading ? (
-                <div className="flex items-center gap-2 text-emerald-800/60">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-sm">Memuat jadwal...</span>
-                </div>
-              ) : (
-                prayerTimes.map((prayer) => {
-                  const isNext = prayer.name === nextPrayer?.name;
-
-                  return (
-                    <div
-                      key={prayer.name}
-                      className={cn(
-                        "group flex flex-col items-center justify-center py-2 px-5 rounded-full transition-all duration-500",
-                        isNext
-                          ? "bg-gradient-to-r from-emerald-600 to-emerald-500 shadow-lg shadow-emerald-600/20 scale-105 ring-1 ring-emerald-500/20"
-                          : "hover:bg-emerald-50/80 border border-transparent hover:border-emerald-100/50"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "text-xs font-serif tracking-wide mb-0.5 transition-colors",
-                          isNext ? "text-white/90 font-medium" : "text-emerald-900/50 group-hover:text-emerald-800"
-                        )}
-                      >
-                        {prayer.name}
-                      </span>
-                      <span className={cn("text-sm font-medium transition-colors", isNext ? "text-white" : "text-emerald-950")}>
-                        {prayer.time}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {/* Real-time Clock & Date (Desktop) - Replaces Location */}
-          <div className="hidden lg:flex flex-col items-end pl-6 border-l border-emerald-950/10 h-full min-h-[50px] justify-center min-w-[200px]">
-            <span className="text-2xl font-mono font-medium tracking-tight text-emerald-950 tabular-nums leading-none mb-1">
-              {currentTime.split("|")[0]}
-            </span>
-            <span className="text-xs font-medium text-emerald-800/60 uppercase tracking-wide">
+          <div className="text-right">
+             <span className="block text-xs font-bold text-emerald-800/60 uppercase tracking-wide">
               {currentTime.split("|")[1]}
+            </span>
+             <span className="block text-lg font-mono font-medium tracking-tight text-emerald-950 tabular-nums leading-none mt-1">
+              {currentTime.split("|")[0]}
             </span>
           </div>
         </div>
+
+        {/* Main: Countdown */}
+        <div className="flex flex-col items-center justify-center py-1 md:py-2">
+            <span className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase text-emerald-800/60 mb-1 md:mb-2">
+              Menuju {nextPrayer?.name}
+            </span>
+            <span className="text-4xl md:text-5xl font-mono font-medium tracking-tighter text-emerald-950 tabular-nums drop-shadow-sm">
+              {countdown}
+            </span>
+        </div>
+
+        {/* Footer: Prayer Grid */}
+        <div className="grid grid-cols-3 gap-1.5 md:gap-2">
+          {isLoading ? (
+            <div className="col-span-3 flex items-center justify-center py-4 text-emerald-800/60 gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Memuat...</span>
+            </div>
+          ) : (
+            prayerTimes.map((prayer) => {
+              const isNext = prayer.name === nextPrayer?.name;
+              return (
+                <div
+                  key={prayer.name}
+                  className={cn(
+                    "flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-300",
+                    isNext
+                      ? "bg-emerald-600 shadow-md shadow-emerald-900/10"
+                      : "bg-emerald-50/50 hover:bg-emerald-100/50"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "text-[10px] font-bold uppercase tracking-wider mb-0.5",
+                      isNext ? "text-white/90" : "text-emerald-900/40"
+                    )}
+                  >
+                    {prayer.name}
+                  </span>
+                  <span className={cn("text-sm font-semibold", isNext ? "text-white" : "text-emerald-950")}>
+                    {prayer.time}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+
       </div>
     </div>
   );
