@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { getMosqueProfile } from "@/actions/public";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,15 +26,27 @@ export default async function ProfilPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 to-secondary/10 py-16 md:py-24">
-        <div className="absolute inset-0 pattern-overlay opacity-30" />
-        <div className="container relative mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4">
+      {/* Hero Section with Background Image */}
+      <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <Image
+          src="/bg-nj.webp"
+          alt="Masjid Nurul Jannah"
+          fill
+          className="object-cover object-center"
+          priority
+          sizes="100vw"
+        />
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/50 z-[1]" />
+        
+        {/* Content */}
+        <div className="container relative z-10 mx-auto px-4 text-center">
+          <Badge variant="outline" className="mb-4 border-white/30 text-white bg-white/10 backdrop-blur-sm">
             Tentang Kami
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{profile.name}</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 text-white drop-shadow-lg">{profile.name}</h1>
+          <p className="text-white/80 max-w-2xl mx-auto text-lg font-light">
             Pusat Ibadah, Dakwah, dan Pendidikan Islam
           </p>
         </div>
