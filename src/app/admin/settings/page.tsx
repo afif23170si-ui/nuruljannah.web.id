@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import { getSiteSettings } from "@/actions/settings";
 import SettingsForm from "@/components/admin/SettingsForm";
 import { Settings } from "lucide-react";

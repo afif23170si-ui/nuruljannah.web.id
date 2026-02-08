@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { TeacherForm } from "@/components/admin/tpa/TeacherForm";

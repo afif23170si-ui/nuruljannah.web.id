@@ -1,4 +1,6 @@
 "use client";
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from "next";
 import { ClassForm } from "@/components/admin/tpa/ClassForm";
 import { getTeachers } from "@/actions/tpa";

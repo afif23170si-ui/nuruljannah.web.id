@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   description: "Laporan keuangan bulanan masjid",
 };
 
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",

@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import AlbumForm from "@/components/admin/AlbumForm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

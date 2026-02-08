@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { getClasses, getStudents, getAttendance } from "@/actions/tpa";

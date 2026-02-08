@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import UserForm from "@/components/admin/UserForm";
 
 export default function NewUserPage() {
