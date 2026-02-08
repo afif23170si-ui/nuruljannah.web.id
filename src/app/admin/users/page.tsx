@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link";
 import { getUsers, deleteUser } from "@/actions/users";
 import { Button } from "@/components/ui/button";

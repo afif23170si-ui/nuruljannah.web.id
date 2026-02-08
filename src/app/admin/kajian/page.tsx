@@ -1,3 +1,6 @@
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from "next";
 import { getKajianList } from "@/actions/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

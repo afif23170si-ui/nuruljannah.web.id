@@ -13,8 +13,10 @@ function createPrismaClient() {
   });
 }
 
+// Use cached client in ALL environments (including production builds)
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Cache the client globally to prevent multiple instances
+globalForPrisma.prisma = prisma;
 
 export default prisma;

@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   description: "Kelola artikel dan berita masjid",
 };
 
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 const CATEGORY_LABELS: Record<string, string> = {
   ARTIKEL: "Artikel",
   BERITA: "Berita",

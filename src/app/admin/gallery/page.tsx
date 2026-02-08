@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Images, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 
+// Prevent static generation - render on demand only
+export const dynamic = 'force-dynamic';
+
 export default async function GalleryPage() {
   const albums = await getAlbums();
 
