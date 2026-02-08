@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Clock } from "lucide-react";
 
 // Masjid Nurul Jannah coordinates (Dumai Timur, Riau)
 const MASJID_COORDINATES = {
@@ -162,13 +162,12 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
-      })
+        })
       .replace(/\./g, ":");
 
     const dateStr = now.toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
+      day: "numeric",
+      month: "short",
       year: "numeric",
     });
 
@@ -202,45 +201,45 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
   if (!mounted) return null;
 
   return (
-    <div className="w-full md:w-auto">
-      {/* Crystal Clear Box Container - Solid White to Match Notch */}
-      <div className="relative bg-white rounded-[15px] p-4 md:p-6 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)] ring-1 ring-white/50 w-full md:w-[320px] flex flex-col gap-4 md:gap-6">
+    <div className="w-full md:w-[280px]">
+      {/* Modern Compact Card */}
+      <div className="relative bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-xl border border-white/20 w-full flex flex-col gap-5">
         
-        {/* Header: Location & Date */}
-        <div className="flex items-start justify-between border-b border-emerald-900/10 pb-3 md:pb-4">
-          <div className="flex flex-col gap-1">
-             <div className="flex items-center gap-1.5 text-emerald-800/80">
-                <MapPin className="h-3.5 w-3.5" />
-                <span className="text-xs font-bold tracking-wider uppercase">Lokasi</span>
-             </div>
-             <span className="text-sm font-medium text-emerald-950 tracking-tight">{location}</span>
-          </div>
-          <div className="text-right">
-             <span className="block text-xs font-bold text-emerald-800/60 uppercase tracking-wide">
-              {currentTime.split("|")[1]}
-            </span>
-             <span className="block text-lg font-mono font-medium tracking-tight text-emerald-950 tabular-nums leading-none mt-1">
-              {currentTime.split("|")[0]}
-            </span>
-          </div>
+        {/* Header: Next Prayer Highlight */}
+        <div className="flex flex-col items-center justify-center pt-2">
+            <div className="flex items-center gap-1.5 text-emerald-600/80 mb-2">
+               <Clock className="w-3 h-3" />
+               <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
+                 Menuju {nextPrayer?.name}
+               </span>
+            </div>
+            
+            <div className="relative">
+              <span className="text-5xl font-mono font-medium tracking-tighter text-zinc-900 tabular-nums leading-none">
+                {countdown}
+              </span>
+            </div>
+            
+            {/* Location & Real-time (Subtle) */}
+            <div className="flex items-center gap-2 mt-3 text-[10px] text-zinc-400 font-medium">
+               <span className="flex items-center gap-1">
+                 <MapPin className="w-2.5 h-2.5" />
+                 {location}
+               </span>
+               <span className="w-0.5 h-0.5 rounded-full bg-zinc-300" />
+               <span className="font-mono">{currentTime.split("|")[0]}</span>
+            </div>
         </div>
 
-        {/* Main: Countdown */}
-        <div className="flex flex-col items-center justify-center py-1 md:py-2">
-            <span className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase text-emerald-800/60 mb-1 md:mb-2">
-              Menuju {nextPrayer?.name}
-            </span>
-            <span className="text-4xl md:text-5xl font-mono font-medium tracking-tighter text-emerald-950 tabular-nums drop-shadow-sm">
-              {countdown}
-            </span>
-        </div>
+        {/* Separator */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-50" />
 
-        {/* Footer: Prayer Grid */}
-        <div className="grid grid-cols-3 gap-1.5 md:gap-2">
+        {/* Footer: Compact Prayer List */}
+        <div className="flex flex-col gap-0.5">
           {isLoading ? (
-            <div className="col-span-3 flex items-center justify-center py-4 text-emerald-800/60 gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Memuat...</span>
+            <div className="flex items-center justify-center py-4 text-zinc-400 gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span className="text-xs">Memuat...</span>
             </div>
           ) : (
             prayerTimes.map((prayer) => {
@@ -249,21 +248,21 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
                 <div
                   key={prayer.name}
                   className={cn(
-                    "flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-300",
+                    "flex items-center justify-between py-1.5 px-3 rounded-lg transition-all duration-300",
                     isNext
-                      ? "bg-emerald-600 shadow-md shadow-emerald-900/10"
-                      : "bg-emerald-50/50 hover:bg-emerald-100/50"
+                      ? "bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-100"
+                      : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50/50"
                   )}
                 >
                   <span
                     className={cn(
-                      "text-[10px] font-bold uppercase tracking-wider mb-0.5",
-                      isNext ? "text-white/90" : "text-emerald-900/40"
+                      "text-[10px] font-bold uppercase tracking-wider",
+                      isNext ? "text-emerald-700" : "text-zinc-400"
                     )}
                   >
                     {prayer.name}
                   </span>
-                  <span className={cn("text-sm font-semibold", isNext ? "text-white" : "text-emerald-950")}>
+                  <span className={cn("text-xs font-mono font-medium", isNext ? "text-emerald-900" : "text-zinc-600")}>
                     {prayer.time}
                   </span>
                 </div>
@@ -276,3 +275,4 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
     </div>
   );
 }
+
