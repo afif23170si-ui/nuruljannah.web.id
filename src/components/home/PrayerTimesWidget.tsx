@@ -2,13 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { MapPin, Loader2, Clock } from "lucide-react";
+import { MapPin, Loader2, Clock, ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
 
 // Masjid Nurul Jannah coordinates (Dumai Timur, Riau)
 const MASJID_COORDINATES = {
   latitude: 1.6637656782492023,
   longitude: 101.46989980345897,
 };
+
+// ... (rest of constants and interfaces remain same)
 
 // Calculation method: 20 = Kementerian Agama Indonesia
 const CALCULATION_METHOD = 20;
@@ -73,6 +75,7 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
   const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>(fallbackPrayerTimes);
   const [isLoading, setIsLoading] = useState(true);
   const [lastFetchDate, setLastFetchDate] = useState<string>("");
+  const [isExpanded, setIsExpanded] = useState(false); // New state for mobile expansion
 
   // Fetch prayer times from Aladhan API
   const fetchPrayerTimes = useCallback(async () => {
@@ -202,12 +205,17 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
 
   return (
     <div className="w-full md:w-[280px]">
-      {/* Modern Compact Card */}
-      <div className="relative bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-xl border border-white/20 w-full flex flex-col gap-5">
+      {/* Modern Compact Card - Transparent Glass Style */}
+      <div 
+        className={cn(
+            "relative bg-white/20 backdrop-blur-md rounded-2xl md:p-5 p-4 shadow-2xl border border-white/10 w-full flex flex-col transition-all duration-500 ease-in-out overflow-hidden",
+            isExpanded ? "gap-5" : "gap-2 md:gap-5"
+        )}
+      >
         
         {/* Header: Next Prayer Highlight */}
-        <div className="flex flex-col items-center justify-center pt-2">
-            <div className="flex items-center gap-1.5 text-emerald-600/80 mb-2">
+        <div className="flex flex-col items-center justify-center pt-2 relative z-10">
+            <div className="flex items-center gap-1.5 text-emerald-300/90 mb-2">
                <Clock className="w-3 h-3" />
                <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
                  Menuju {nextPrayer?.name}
@@ -215,29 +223,37 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
             </div>
             
             <div className="relative">
-              <span className="text-5xl font-mono font-medium tracking-tighter text-zinc-900 tabular-nums leading-none">
+              <span className="text-5xl font-mono font-medium tracking-tighter text-white tabular-nums leading-none drop-shadow-lg">
                 {countdown}
               </span>
             </div>
             
             {/* Location & Real-time (Subtle) */}
-            <div className="flex items-center gap-2 mt-3 text-[10px] text-zinc-400 font-medium">
+            <div className="flex items-center gap-2 mt-3 text-[10px] text-emerald-100/60 font-medium">
                <span className="flex items-center gap-1">
                  <MapPin className="w-2.5 h-2.5" />
                  {location}
                </span>
-               <span className="w-0.5 h-0.5 rounded-full bg-zinc-300" />
+               <span className="w-0.5 h-0.5 rounded-full bg-emerald-100/40" />
                <span className="font-mono">{currentTime.split("|")[0]}</span>
             </div>
         </div>
 
-        {/* Separator */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-50" />
+        {/* Separator - Visible only when expanded on mobile, or always on desktop */}
+        <div className={cn(
+            "h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-opacity duration-300",
+            isExpanded ? "opacity-100" : "opacity-0 md:opacity-100 hidden md:block" // Hidden on mobile if collapsed
+        )} />
 
-        {/* Footer: Compact Prayer List */}
-        <div className="flex flex-col gap-0.5">
+        {/* Footer: Compact Prayer List - Collapsible on mobile */}
+        <div 
+            className={cn(
+                "flex flex-col gap-0.5 transition-all duration-500 ease-in-out overflow-hidden",
+                isExpanded ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0 md:max-h-[300px] md:opacity-100"
+            )}
+        >
           {isLoading ? (
-            <div className="flex items-center justify-center py-4 text-zinc-400 gap-2">
+            <div className="flex items-center justify-center py-4 text-emerald-100/50 gap-2">
               <Loader2 className="h-3 w-3 animate-spin" />
               <span className="text-xs">Memuat...</span>
             </div>
@@ -250,19 +266,19 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
                   className={cn(
                     "flex items-center justify-between py-1.5 px-3 rounded-lg transition-all duration-300",
                     isNext
-                      ? "bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-100"
-                      : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50/50"
+                      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/50"
+                      : "text-emerald-100/60 hover:text-white hover:bg-white/5"
                   )}
                 >
                   <span
                     className={cn(
                       "text-[10px] font-bold uppercase tracking-wider",
-                      isNext ? "text-emerald-700" : "text-zinc-400"
+                      isNext ? "text-white" : "text-emerald-100/40"
                     )}
                   >
                     {prayer.name}
                   </span>
-                  <span className={cn("text-xs font-mono font-medium", isNext ? "text-emerald-900" : "text-zinc-600")}>
+                  <span className={cn("text-xs font-mono font-medium", isNext ? "text-white" : "opacity-80")}>
                     {prayer.time}
                   </span>
                 </div>
@@ -270,6 +286,19 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
             })
           )}
         </div>
+
+        {/* Mobile Expand/Collapse Button */}
+        <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="md:hidden w-full flex items-center justify-center py-1 mt-1 text-white/50 hover:text-white transition-colors focus:outline-none active:scale-95"
+            aria-label={isExpanded ? "Collapse prayer times" : "Expand prayer times"}
+        >
+            {isExpanded ? (
+                <ChevronUp className="w-5 h-5 animate-bounce" />
+            ) : (
+                <ChevronDown className="w-5 h-5 animate-bounce" />
+            )}
+        </button>
 
       </div>
     </div>

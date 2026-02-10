@@ -3,9 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
+
 import {
   Menu,
   Home,
@@ -19,8 +27,17 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Beranda", href: "/", icon: Home },
-  { name: "Profil", href: "/profil", icon: Info },
-  { name: "DKM", href: "/struktur-dkm", icon: Users },
+  { 
+    name: "Profil", 
+    href: "/profil", 
+    icon: Info,
+    children: [
+      { name: "Profil Masjid", href: "/profil", icon: Info },
+      { name: "Visi & Misi", href: "/profil", icon: BookOpen },
+      { name: "Struktur DKM", href: "/profil#struktur-dkm", icon: Users },
+      { name: "Sejarah", href: "/profil", icon: Calendar }, // Using Calendar as placeholder or maybe I should import History icon if available, but for now reuse existing or generic
+    ]
+  },
   { name: "Shalat", href: "/jadwal-shalat", icon: Calendar },
   { name: "Kajian", href: "/jadwal-kajian", icon: BookOpen },
   { name: "Galeri", href: "/galeri", icon: Images },
@@ -33,6 +50,22 @@ export function Header() {
   // We can keep the scroll listener if we want subtle effects, but user asked for static.
   // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
   const [scrolled, setScrolled] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (name: string) => {
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
+    setHoveredItem(name);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimeoutRef.current = setTimeout(() => {
+      setHoveredItem(null);
+    }, 150);
+  };
 
   useEffect(() => {
     // Check initial theme
@@ -82,7 +115,52 @@ export function Header() {
             : "bg-white/20 backdrop-blur-xl border border-white/20"
         )}>
           {navigation.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || (item.children && item.children.some(child => pathname === child.href));
+            
+            if (item.children) {
+              const isHovered = hoveredItem === item.name;
+              return (
+                <DropdownMenu 
+                  key={item.name} 
+                  open={isHovered} 
+                  onOpenChange={(open) => {
+                    if (!open) handleMouseLeave();
+                  }} 
+                  modal={false}
+                >
+                  <DropdownMenuTrigger 
+                    className={cn(
+                      "relative flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all rounded-full hover:text-emerald-950 outline-none",
+                      isActive || isHovered
+                        ? "text-emerald-950 bg-white/40"
+                        : "text-emerald-900/60"
+                    )}
+                    onMouseEnter={() => handleMouseEnter(item.name)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <span className="relative z-10">{item.name}</span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="center" 
+                    className="w-48 p-1 border-white/20 bg-white/60 backdrop-blur-md shadow-xl rounded-2xl"
+                    onMouseEnter={() => handleMouseEnter(item.name)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    {item.children.map((child) => (
+                      <Link key={child.name} href={child.href}>
+                        <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-white/50 focus:bg-white/50">
+                          <child.icon className="mr-2 h-4 w-4" />
+                          <span>{child.name}</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            }
+// ...
+
             return (
               <Link
                 key={item.name}
@@ -118,7 +196,7 @@ export function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="w-full rounded-b-3xl glass-nav border-b-0">
+            <SheetContent side="top" className="w-full rounded-b-3xl glass-nav border-b-0 max-h-[85vh] overflow-y-auto">
                <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
               <div className="flex flex-col gap-6 pt-4 pb-6">
                 <div className="flex items-center gap-3 px-2">
@@ -140,6 +218,29 @@ export function Header() {
 
                 <nav className="grid grid-cols-2 gap-3">
                   {navigation.map((item) => {
+                    // Flatten children for mobile menu or handle them nicely
+                    if (item.children) {
+                      return item.children.map(child => {
+                        const isChildActive = pathname === child.href;
+                        return (
+                          <Link
+                            key={child.name}
+                            href={child.href}
+                            onClick={() => setIsOpen(false)}
+                            className={cn(
+                              "flex flex-col items-center justify-center gap-2 rounded-2xl p-4 transition-colors border border-transparent",
+                              isChildActive
+                                ? "bg-primary/10 text-primary border-primary/20 font-medium"
+                                : "bg-muted/50 text-muted-foreground font-normal hover:bg-primary/5 hover:text-primary hover:border-primary/10"
+                            )}
+                          >
+                            <child.icon className="h-6 w-6" />
+                            <span className="text-sm">{child.name}</span>
+                          </Link>
+                        );
+                      });
+                    }
+                    
                     const isActive = pathname === item.href;
                     return (
                       <Link

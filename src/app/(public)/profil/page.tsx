@@ -3,7 +3,76 @@ import Image from "next/image";
 import { getMosqueProfile } from "@/actions/public";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Target, Eye, History } from "lucide-react";
+import { MapPin, Phone, Mail, Target, Eye, History, Users } from "lucide-react";
+import { getDkmMembers } from "@/actions/public";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+async function DkmSection() {
+  const members = await getDkmMembers();
+
+  if (members.length === 0) {
+    return <p className="text-muted-foreground">Data pengurus belum tersedia.</p>;
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Period Badge */}
+      {members[0]?.period && (
+        <div className="text-center">
+          <Badge variant="secondary" className="text-sm px-4 py-1">
+            Periode {members[0].period}
+          </Badge>
+        </div>
+      )}
+
+      {/* Leadership - First 2 members */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {members.slice(0, 2).map((member) => (
+          <Card key={member.id} className="card-hover border-2 border-primary/10">
+            <CardContent className="p-6 text-center">
+              <Avatar className="h-24 w-24 mx-auto mb-4 ring-4 ring-primary/20">
+                <AvatarImage src={member.photo || ""} alt={member.name} />
+                <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
+                  {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="text-xl font-bold mb-1">{member.name}</h3>
+              <Badge variant="default" className="mb-3">
+                {member.position}
+              </Badge>
+              {member.phone && (
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  <Phone className="h-3 w-3" />
+                  {member.phone}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Other members */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {members.slice(2).map((member) => (
+          <Card key={member.id} className="card-hover">
+            <CardContent className="p-5 text-center">
+              <Avatar className="h-16 w-16 mx-auto mb-3">
+                <AvatarImage src={member.photo || ""} alt={member.name} />
+                <AvatarFallback className="bg-accent text-accent-foreground">
+                  {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="font-semibold mb-1">{member.name}</h3>
+              <Badge variant="outline" className="text-xs">
+                {member.position}
+              </Badge>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = "force-dynamic";
@@ -124,11 +193,25 @@ export default async function ProfilPage() {
                 </CardContent>
               </Card>
             )}
+            {/* Struktur DKM Section */}
+            <div id="struktur-dkm">
+                <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    Struktur DKM
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <DkmSection />
+                </CardContent>
+                </Card>
+            </div>
           </div>
 
           {/* Sidebar - Contact Info */}
           <div className="space-y-6">
-            <Card className="sticky top-24">
+            <Card className="sticky top-20">
               <CardHeader>
                 <CardTitle>Informasi Kontak</CardTitle>
               </CardHeader>
