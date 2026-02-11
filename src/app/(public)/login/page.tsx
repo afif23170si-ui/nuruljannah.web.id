@@ -53,102 +53,98 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center py-12 px-4">
-      {/* Background decorations */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
-      </div>
-
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
-              <span className="text-3xl">🕌</span>
-            </div>
+    <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 bg-zinc-50 relative overflow-hidden">
+      {/* Background Pattern - Subtle Noise/Grain */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
+      
+      <div className="w-full max-w-sm relative z-10 flex flex-col items-center">
+        {/* Form Container (No Card Style) */}
+        <div className="w-full space-y-8">
+          <div className="text-center space-y-1">
+            <h1 className="text-xl font-serif font-medium text-zinc-800">Area Pengurus</h1>
+            <p className="text-zinc-500 text-sm">Silakan login untuk mengelola data masjid</p>
           </div>
-          <CardTitle className="text-2xl font-bold">Masuk ke Dashboard</CardTitle>
-          <CardDescription>
-            Masukkan email dan password untuk mengakses dashboard admin
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="nama@email.com"
+                placeholder="Email"
                 value={formData.email}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
                 disabled={isLoading}
+                className="h-12 bg-zinc-50 border-zinc-200 focus:border-emerald-500 transition-all rounded-xl outline-none focus:ring-0"
               />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Lupa password?
-                </Link>
-              </div>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder="Password"
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
                   required
                   disabled={isLoading}
+                  className="h-12 bg-zinc-50 border-zinc-200 focus:border-emerald-500 transition-all rounded-xl outline-none focus:ring-0 pr-10"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  className="absolute right-1 top-1 h-10 w-10 hover:bg-transparent text-zinc-400 hover:text-zinc-600"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    <EyeOff className="h-4 w-4" />
                   ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <Eye className="h-4 w-4" />
                   )}
                 </Button>
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Memproses...
-                </>
-              ) : (
-                "Masuk"
-              )}
-            </Button>
+
+            <div className="pt-4">
+              <Button 
+                type="submit" 
+                className="w-full h-12 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xl shadow-emerald-600/20 transition-all hover:scale-[1.02] hover:shadow-emerald-600/30"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Masuk ke Dashboard"
+                )}
+              </Button>
+            </div>
           </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <div className="text-center text-sm text-muted-foreground">
-            Hanya untuk pengurus masjid yang terdaftar.
+
+          <div className="flex justify-center pt-4">
+            <Link 
+              href="/" 
+              className="group flex items-center gap-2 text-sm text-zinc-400 hover:text-emerald-700 transition-colors py-2 px-4 rounded-full hover:bg-white/50"
+            >
+              <ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-1" />
+              <span>Kembali ke Beranda</span>
+            </Link>
           </div>
-          <Link href="/" className="w-full">
-            <Button variant="outline" className="w-full gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Kembali ke Beranda
-            </Button>
-          </Link>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-6 text-center w-full pointer-events-none select-none">
+        <p className="text-zinc-400/50 text-[10px] uppercase tracking-widest">
+          Masjid Nurul Jannah &copy; {new Date().getFullYear()}
+        </p>
+      </div>
     </div>
   );
 }

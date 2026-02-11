@@ -92,8 +92,8 @@ export function Header() {
       <div className="w-full flex justify-between items-center container px-4 sm:px-6">
         
         {/* Logo */}
-        <Link href="/" className="pointer-events-auto flex items-center gap-2 group">
-          <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-white/20 shadow-lg">
+        <Link href="/" className="pointer-events-auto flex items-center gap-3 group bg-white/70 backdrop-blur-md border border-white/20 shadow-sm rounded-full pl-1 pr-5 py-1 transition-all hover:bg-white/80 hover:shadow-md hover:scale-[1.02]">
+          <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-white/50 shadow-sm">
             <Image 
               src="/logo-mnj.png" 
               alt="Logo Nurul Jannah" 
@@ -103,8 +103,16 @@ export function Header() {
               unoptimized
             />
           </div>
-          <span className="font-serif font-bold text-lg sm:text-xl tracking-tight text-white drop-shadow-md shadow-black/50">
+          <span className="font-serif font-bold text-lg tracking-tight text-emerald-950 flex items-center gap-1">
             Nurul Jannah
+            <Image 
+              src="/checklist.png" 
+              alt="Verified" 
+              width={18} 
+              height={18} 
+              className="object-contain"
+              unoptimized
+            />
           </span>
         </Link>
 
@@ -192,7 +200,7 @@ export function Header() {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white bg-black/20 backdrop-blur-md border border-white/10 hover:bg-black/30">
+              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-emerald-950 bg-white/70 backdrop-blur-md border border-white/20 shadow-sm hover:bg-white/80">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>

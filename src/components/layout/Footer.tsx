@@ -21,6 +21,13 @@ export function Footer() {
       {/* Background Pattern - Subtle Noise/Grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
       
+      {/* Big Watermark Typography */}
+      <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full text-center overflow-hidden pointer-events-none select-none z-0">
+        <h1 className="font-serif font-black text-[18vw] md:text-[16rem] leading-none tracking-tighter text-emerald-950 opacity-[0.03] whitespace-nowrap">
+          Nurul Jannah
+        </h1>
+      </div>
+      
 
 
       <div className="container mx-auto px-4 relative z-10">
@@ -29,7 +36,7 @@ export function Footer() {
           {/* Brand Column (Span 4) */}
           <div className="lg:col-span-4 space-y-6">
              <div className="flex items-center gap-4 group">
-              <div className="relative h-16 w-16 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
+              <div className="relative h-12 w-12 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
                 <Image 
                   src="/logo-mnj.png" 
                   alt="Logo Nurul Jannah" 
