@@ -216,29 +216,37 @@ export function Header() {
                   </div>
                 </div>
 
-                <nav className="grid grid-cols-2 gap-3">
+                <nav className="flex flex-col gap-2">
                   {navigation.map((item) => {
-                    // Flatten children for mobile menu or handle them nicely
+                    // Handle "Profil" sub-items as a grouped section
                     if (item.children) {
-                      return item.children.map(child => {
-                        const isChildActive = pathname === child.href;
-                        return (
-                          <Link
-                            key={child.name}
-                            href={child.href}
-                            onClick={() => setIsOpen(false)}
-                            className={cn(
-                              "flex flex-col items-center justify-center gap-2 rounded-2xl p-4 transition-colors border border-transparent",
-                              isChildActive
-                                ? "bg-primary/10 text-primary border-primary/20 font-medium"
-                                : "bg-muted/50 text-muted-foreground font-normal hover:bg-primary/5 hover:text-primary hover:border-primary/10"
-                            )}
-                          >
-                            <child.icon className="h-6 w-6" />
-                            <span className="text-sm">{child.name}</span>
-                          </Link>
-                        );
-                      });
+                      return (
+                        <div key={item.name} className="flex flex-col gap-1 mt-2 mb-2">
+                          <div className="px-4 py-2 text-xs font-semibold text-emerald-900/40 uppercase tracking-wider">
+                            Menu {item.name}
+                          </div>
+                          {item.children.map(child => {
+                            const isChildActive = pathname === child.href;
+                            return (
+                              <Link
+                                key={child.name}
+                                href={child.href}
+                                onClick={() => setIsOpen(false)}
+                                className={cn(
+                                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                                  isChildActive
+                                    ? "bg-emerald-50 text-emerald-700 font-medium"
+                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                )}
+                              >
+                                <child.icon className={cn("h-5 w-5", isChildActive ? "text-emerald-600" : "text-slate-400")} />
+                                <span className="text-sm">{child.name}</span>
+                              </Link>
+                            );
+                          })}
+                          <div className="h-px bg-slate-100 my-2 mx-4" />
+                        </div>
+                      );
                     }
                     
                     const isActive = pathname === item.href;
@@ -248,13 +256,13 @@ export function Header() {
                         href={item.href}
                         onClick={() => setIsOpen(false)}
                         className={cn(
-                          "flex flex-col items-center justify-center gap-2 rounded-2xl p-4 transition-colors border border-transparent",
+                          "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
                           isActive
-                            ? "bg-primary/10 text-primary border-primary/20 font-medium"
-                            : "bg-muted/50 text-muted-foreground font-normal hover:bg-primary/5 hover:text-primary hover:border-primary/10"
+                            ? "bg-emerald-50 text-emerald-700 font-medium"
+                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         )}
                       >
-                        <item.icon className="h-6 w-6" />
+                        <item.icon className={cn("h-5 w-5", isActive ? "text-emerald-600" : "text-slate-400")} />
                         <span className="text-sm">{item.name}</span>
                       </Link>
                     );
