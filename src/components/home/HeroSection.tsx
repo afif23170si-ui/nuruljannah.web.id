@@ -11,7 +11,7 @@ export function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   return (
-    <section className="relative w-[calc(100%-20px)] md:w-[calc(100%-40px)] h-[calc(100vh-20px)] md:h-[calc(100vh-40px)] m-[10px] md:m-[20px] flex flex-col items-center justify-end overflow-hidden rounded-[20px] md:rounded-[35px]">
+    <section className="relative w-[calc(100%-20px)] md:w-[calc(100%-40px)] min-h-[calc(100vh-20px)] md:min-h-[calc(100vh-40px)] h-auto m-[10px] md:m-[20px] flex flex-col items-center justify-end overflow-hidden rounded-[20px] md:rounded-[35px]">
       
       {/* Background Image */}
       {/* Background Image */}
