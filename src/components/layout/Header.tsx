@@ -46,6 +46,7 @@ const navigation = [
 export function Header() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const [isDark, setIsDark] = useState(false);
   // We can keep the scroll listener if we want subtle effects, but user asked for static.
   // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
@@ -102,7 +103,7 @@ export function Header() {
               unoptimized
             />
           </div>
-          <span className="font-serif font-bold text-lg sm:text-xl tracking-tight hidden sm:block text-white drop-shadow-md shadow-black/50">
+          <span className="font-serif font-bold text-lg sm:text-xl tracking-tight text-white drop-shadow-md shadow-black/50">
             Nurul Jannah
           </span>
         </Link>
@@ -221,30 +222,44 @@ export function Header() {
                     // Handle "Profil" sub-items as a grouped section
                     if (item.children) {
                       return (
-                        <div key={item.name} className="flex flex-col gap-1 mt-2 mb-2">
-                          <div className="px-4 py-2 text-xs font-semibold text-emerald-900/40 uppercase tracking-wider">
-                            Menu {item.name}
+                        <div key={item.name} className="flex flex-col mt-2 mb-2 bg-slate-50/50 rounded-2xl border border-slate-100/50 overflow-hidden">
+                          <button 
+                            onClick={() => setIsProfileExpanded(!isProfileExpanded)}
+                            className="flex items-center justify-between w-full px-4 py-3 text-left transition-colors hover:bg-slate-100/50"
+                          >
+                            <span className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                              <item.icon className="h-5 w-5 text-slate-400" />
+                              {item.name}
+                            </span>
+                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", isProfileExpanded && "rotate-180")} />
+                          </button>
+                          
+                          <div className={cn(
+                            "grid transition-all duration-300 ease-in-out",
+                            isProfileExpanded ? "grid-rows-[1fr] opacity-100 pb-2" : "grid-rows-[0fr] opacity-0"
+                          )}>
+                            <div className="overflow-hidden flex flex-col gap-1 px-2">
+                              {item.children.map(child => {
+                                const isChildActive = pathname === child.href;
+                                return (
+                                  <Link
+                                    key={child.name}
+                                    href={child.href}
+                                    onClick={() => setIsOpen(false)}
+                                    className={cn(
+                                      "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all ml-2",
+                                      isChildActive
+                                        ? "bg-white shadow-sm text-emerald-700 font-medium border border-emerald-100"
+                                        : "text-slate-500 hover:bg-white/60 hover:text-slate-900"
+                                    )}
+                                  >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                                    <span className="text-sm">{child.name}</span>
+                                  </Link>
+                                );
+                              })}
+                            </div>
                           </div>
-                          {item.children.map(child => {
-                            const isChildActive = pathname === child.href;
-                            return (
-                              <Link
-                                key={child.name}
-                                href={child.href}
-                                onClick={() => setIsOpen(false)}
-                                className={cn(
-                                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-                                  isChildActive
-                                    ? "bg-emerald-50 text-emerald-700 font-medium"
-                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                                )}
-                              >
-                                <child.icon className={cn("h-5 w-5", isChildActive ? "text-emerald-600" : "text-slate-400")} />
-                                <span className="text-sm">{child.name}</span>
-                              </Link>
-                            );
-                          })}
-                          <div className="h-px bg-slate-100 my-2 mx-4" />
                         </div>
                       );
                     }
@@ -269,9 +284,11 @@ export function Header() {
                   })}
                 </nav>
 
-                <div className="mt-2">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full rounded-xl py-6 text-base">Masuk Sebagai Pengurus</Button>
+                <div className="mt-4 px-2">
+                  <Link href="/login" onClick={() => setIsOpen(false)} className="w-full block">
+                    <Button className="w-full rounded-full h-12 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02]">
+                      Masuk Sebagai Pengurus
+                    </Button>
                   </Link>
                 </div>
               </div>
