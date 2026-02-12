@@ -366,3 +366,31 @@
   .animate-ken-burns {
     animation: ken-burns 20s ease-out infinite alternate;
   }
+
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+
+  /* Two-stage marquee: Center -> Left, then Right -> Left loop */
+  @keyframes marquee-intro {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50vw - 55%)); }
+  }
+
+  @keyframes marquee-loop {
+    0% { transform: translateX(calc(50vw + 55%)); }
+    100% { transform: translateX(calc(-50vw - 55%)); }
+  }
+
+  .animate-marquee-continuous {
+    /* Intro runs once for 20s, then Loop runs infinite for 40s with 21s delay */
+    /* Added 1s delay to starting for readability */
+    animation: 
+      marquee-intro 20s linear 1s forwards,
+      marquee-loop 40s linear 21s infinite;
+  }

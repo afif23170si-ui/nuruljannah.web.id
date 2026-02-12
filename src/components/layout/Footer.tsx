@@ -101,6 +101,7 @@ export function Footer() {
             <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Layanan</h4>
             <ul className="space-y-4">
               {[
+                { name: "Infaq Online", href: "/infaq" },
                 { name: "TPA / TPQ", href: "/tpa" },
                 { name: "Laporan Keuangan", href: "/keuangan" },
                 { name: "Struktur DKM", href: "/struktur-dkm" },

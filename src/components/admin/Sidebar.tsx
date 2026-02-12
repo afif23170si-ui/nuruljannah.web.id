@@ -28,6 +28,7 @@ import {
   Menu,
   Bell,
   Images,
+  Megaphone,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -42,6 +43,12 @@ const navigation = [
     name: "Artikel & Berita",
     href: "/admin/artikel",
     icon: FileText,
+    roles: ["ADMIN", "TAKMIR"],
+  },
+  {
+    name: "Pengumuman",
+    href: "/admin/pengumuman",
+    icon: Megaphone,
     roles: ["ADMIN", "TAKMIR"],
   },
   {

@@ -5,13 +5,15 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { PrayerTimesWidget } from "./PrayerTimesWidget";
+import { DateDisplay } from "./DateDisplay";
+import { IslamicCountdown } from "./IslamicCountdown";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 export function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   return (
-    <section className="relative w-[calc(100%-20px)] md:w-[calc(100%-40px)] min-h-[calc(100vh-20px)] md:min-h-[calc(100vh-40px)] h-auto m-[10px] md:m-[20px] flex flex-col items-center justify-end overflow-hidden rounded-[20px] md:rounded-[35px]">
+    <section className="relative w-full min-h-screen [.has-announcement_&]:min-h-[calc(100vh-36px)] h-auto m-0 flex flex-col items-center justify-end overflow-hidden transition-[min-height] duration-500 ease-in-out">
       
       {/* Background Image */}
       {/* Background Image */}
@@ -21,12 +23,20 @@ export function HeroSection() {
           loop
           muted
           playsInline
-          preload="none"
-          poster="/hero-masjid.jpg"
           className="absolute inset-0 w-full h-full object-cover"
+          poster="/hero-masjid.jpg"
         >
           <source src="/hero-masjid.webm" type="video/webm" />
           <source src="/hero-masjid.mp4" type="video/mp4" />
+          {/* Fallback image if video fails or not supported */}
+          <Image
+            src="/hero-masjid.jpg"
+            alt="Masjid Nurul Jannah"
+            fill
+            className="object-cover"
+            priority
+            unoptimized
+          />
         </video>
         {/* Dark Overlay 40% */}
         <div className="absolute inset-0 bg-black/40 md:bg-black/50 z-[1]" />
@@ -34,15 +44,13 @@ export function HeroSection() {
 
 
 
-        {/* Revalo Style - White Liquid Curve (Buzzer Curve) */}
-        <div className="hidden md:block absolute top-0 left-0 right-0 h-[80px] z-[3] pointer-events-none">
-          <svg className="w-full h-full" viewBox="0 0 1440 80" preserveAspectRatio="none">
-             {/* iPhone Notch Style (Dynamic Island) - Deepened for 10px Margin */}
-             <path 
-              d="M 400,0 C 420,0 440,0 450,20 C 460,40 460,66 490,66 L 950,66 C 980,66 980,40 990,20 C 1000,0 1020,0 1040,0 Z" 
-              fill="#ffffff" 
-            />
-          </svg>
+
+
+        {/* Date Display - Desktop (below notch, centered) */}
+        <div className="hidden md:flex absolute top-[90px] left-0 right-0 z-[4] justify-center pointer-events-none">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 pointer-events-auto">
+            <DateDisplay variant="hero" />
+          </div>
         </div>
         
 
@@ -54,16 +62,16 @@ export function HeroSection() {
         {/* Left Content */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
 
-          {/* Welcome Badge for Mobile (hidden on desktop to align with new layout if needed, or kept) */}
-          {/* Moving Badge inside Left Content */}
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-4 md:mb-6">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-xs md:text-sm font-medium text-white/90 tracking-wide">
-              Selamat datang di website Nurul Jannah
-            </span>
+          {/* Date Display - Mobile Only */}
+          <div className="md:hidden mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+              <DateDisplay variant="hero" />
+            </div>
+          </div>
+
+          {/* Islamic Event Countdown */}
+          <div className="mb-4 md:mb-6">
+            <IslamicCountdown />
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white mb-3 md:mb-4 leading-[1.1] relative z-10 max-w-4xl">

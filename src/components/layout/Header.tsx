@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -22,6 +23,7 @@ import {
   Calendar,
   BookOpen,
   Images,
+  Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +42,7 @@ const navigation = [
   },
   { name: "Shalat", href: "/jadwal-shalat", icon: Calendar },
   { name: "Kajian", href: "/jadwal-kajian", icon: BookOpen },
+  { name: "Infaq", href: "/infaq", icon: Heart },
   { name: "Galeri", href: "/galeri", icon: Images },
 ];
 
@@ -51,6 +54,7 @@ export function Header() {
   // We can keep the scroll listener if we want subtle effects, but user asked for static.
   // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
   const [scrolled, setScrolled] = useState(false);
+  const [headerTop, setHeaderTop] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -75,9 +79,19 @@ export function Header() {
     }
 
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 10);
+
+      // Smoothly follow banner as it scrolls away
+      const hasBanner = document.body.classList.contains("has-announcement");
+      if (hasBanner) {
+        const bannerHeight = 36;
+        setHeaderTop(Math.max(0, bannerHeight - window.scrollY));
+      } else {
+        setHeaderTop(0);
+      }
     };
 
+    handleScroll(); // Initial check
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -88,118 +102,129 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-[34px] left-0 right-0 z-50 flex justify-center pointer-events-none">
-      <div className="w-full flex justify-between items-center container px-4 sm:px-6">
-        
-        {/* Logo */}
-        <Link href="/" className="pointer-events-auto flex items-center gap-3 group bg-white/70 backdrop-blur-md border border-white/20 shadow-sm rounded-full pl-1 pr-5 py-1 transition-all hover:bg-white/80 hover:shadow-md hover:scale-[1.02]">
-          <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-white/50 shadow-sm">
-            <Image 
-              src="/logo-mnj.png" 
-              alt="Logo Nurul Jannah" 
-              fill 
-              className="object-cover"
-              priority
-              unoptimized
-            />
-          </div>
-          <span className="font-serif font-bold text-lg tracking-tight text-emerald-950 flex items-center gap-1">
-            Nurul Jannah
-            <Image 
-              src="/checklist.png" 
-              alt="Verified" 
-              width={18} 
-              height={18} 
-              className="object-contain"
-              unoptimized
-            />
-          </span>
-        </Link>
-
-        {/* Desktop Navigation - Glass Pill (Centered) */}
-        <nav className={cn(
-          "hidden md:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-auto items-center gap-1 rounded-full px-2 py-1.5 transition-all duration-300",
-          scrolled 
-            ? "bg-white/80 backdrop-blur-xl border border-white/20 shadow-md"
-            : "bg-white/20 backdrop-blur-xl border border-white/20"
+    <header
+      className="fixed left-0 right-0 z-50"
+      style={{ top: `${headerTop}px` }}
+    >
+      <div className="mx-auto w-[96%] max-w-7xl">
+        <div className={cn(
+          "relative flex items-center justify-between px-6 py-3 rounded-b-[2rem] transition-all duration-500",
+          "bg-white/90 backdrop-blur-xl border-x border-b border-white/20 shadow-sm",
+          scrolled && "shadow-md bg-white/95"
         )}>
-          {navigation.map((item) => {
-            const isActive = pathname === item.href || (item.children && item.children.some(child => pathname === child.href));
-            
-            if (item.children) {
-              const isHovered = hoveredItem === item.name;
-              return (
-                <DropdownMenu 
-                  key={item.name} 
-                  open={isHovered} 
-                  onOpenChange={(open) => {
-                    if (!open) handleMouseLeave();
-                  }} 
-                  modal={false}
-                >
-                  <DropdownMenuTrigger 
-                    className={cn(
-                      "relative flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all rounded-full hover:text-emerald-950 outline-none",
-                      isActive || isHovered
-                        ? "text-emerald-950 bg-white/40"
-                        : "text-emerald-900/60"
-                    )}
-                    onMouseEnter={() => handleMouseEnter(item.name)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <span className="relative z-10">{item.name}</span>
-                    <ChevronDown className="h-4 w-4 opacity-50" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="center" 
-                    className="w-48 p-1 border-white/20 bg-white/60 backdrop-blur-md shadow-xl rounded-2xl"
-                    onMouseEnter={() => handleMouseEnter(item.name)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    {item.children.map((child) => (
-                      <Link key={child.name} href={child.href}>
-                        <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-white/50 focus:bg-white/50">
-                          <child.icon className="mr-2 h-4 w-4" />
-                          <span>{child.name}</span>
-                        </DropdownMenuItem>
-                      </Link>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              );
-            }
-// ...
-
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "relative flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all rounded-full hover:text-emerald-950",
-                  isActive 
-                    ? "text-emerald-950"
-                    : "text-emerald-900/60"
-                )}
-              >
-                <span className="relative z-10">{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Right Section */}
-        <div className="flex items-center gap-2 pointer-events-auto">
           
-          {/* Login Button - Desktop */}
-          <Link href="/login" className="hidden lg:block">
-             <Button className="bg-white/90 text-emerald-950 hover:bg-white shadow-lg backdrop-blur-sm transition-all rounded-full px-6">
-               Masuk
-            </Button>
-          </Link>
+          {/* Left: Logo */}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-emerald-900/10 shadow-sm transition-transform group-hover:scale-105">
+                <Image 
+                  src="/logo-mnj.png" 
+                  alt="Logo Nurul Jannah" 
+                  fill 
+                  className="object-cover"
+                  priority
+                  unoptimized
+                />
+              </div>
+              <span className="font-serif font-bold text-lg tracking-tight text-emerald-950 hidden sm:block">
+                Nurul Jannah
+              </span>
+            </Link>
+          </div>
+
+          {/* Center: Navigation Links (Desktop) */}
+          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href || (item.children && item.children.some(child => pathname === child.href));
+              const isHovered = hoveredItem === item.name;
+              
+              return (
+                <div 
+                  key={item.name} 
+                  className="relative"
+                  onMouseEnter={() => handleMouseEnter(item.name)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {item.children ? (
+                    <DropdownMenu 
+                      open={isHovered} 
+                      onOpenChange={(open) => {
+                        if (!open) handleMouseLeave();
+                      }} 
+                      modal={false}
+                    >
+                      <DropdownMenuTrigger 
+                        className={cn(
+                          "flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-full outline-none",
+                          isActive
+                            ? "text-emerald-950 bg-emerald-50"
+                            : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50"
+                        )}
+                      >
+                        <span>{item.name}</span>
+                        <ChevronDown className={cn(
+                          "h-3.5 w-3.5 transition-transform duration-300",
+                          isHovered ? "rotate-180 text-emerald-900" : "text-slate-400"
+                        )} />
+                      </DropdownMenuTrigger>
+                      <AnimatePresence>
+                        {isHovered && (
+                          <DropdownMenuContent 
+                            align="start" 
+                            sideOffset={8}
+                            className="w-48 p-1 border-white/20 bg-white/95 backdrop-blur-xl shadow-xl shadow-emerald-900/5 rounded-2xl"
+                            onMouseEnter={() => handleMouseEnter(item.name)}
+                            onMouseLeave={handleMouseLeave}
+                            asChild
+                          >
+                            <motion.div
+                              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              {item.children.map((child) => (
+                                <Link key={child.name} href={child.href}>
+                                  <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-emerald-50 hover:text-emerald-900 focus:bg-emerald-50 focus:text-emerald-900 transition-colors py-2.5 px-3">
+                                    <child.icon className="mr-2 h-4 w-4 opacity-70" />
+                                    <span className="font-medium">{child.name}</span>
+                                  </DropdownMenuItem>
+                                </Link>
+                              ))}
+                            </motion.div>
+                          </DropdownMenuContent>
+                        )}
+                      </AnimatePresence>
+                    </DropdownMenu>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "px-4 py-2 text-sm font-medium transition-colors rounded-full",
+                        isActive
+                          ? "text-emerald-950 bg-emerald-50"
+                          : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50"
+                      )}
+                    >
+                      <span>{item.name}</span>
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2 ml-auto">
+            <Link href="/login" className="hidden sm:block">
+               <Button size="sm" className="bg-emerald-900 text-white hover:bg-emerald-800 shadow-md transition-all rounded-full px-5 h-9">
+                 Masuk
+              </Button>
+            </Link>
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
+            <SheetTrigger asChild className="lg:hidden">
               <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-emerald-950 bg-white/70 backdrop-blur-md border border-white/20 shadow-sm hover:bg-white/80">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
@@ -304,6 +329,7 @@ export function Header() {
           </Sheet>
         </div>
       </div>
+    </div>
     </header>
   );
 }

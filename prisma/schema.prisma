@@ -129,6 +129,30 @@ model KajianSchedule {
 }
 
 // ==========================================
+// ANNOUNCEMENTS
+// ==========================================
+
+model Announcement {
+  id        String           @id @default(cuid())
+  message   String
+  type      AnnouncementType @default(INFO)
+  isActive  Boolean          @default(true)
+  priority  Int              @default(0)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([isActive, priority])
+}
+
+enum AnnouncementType {
+  INFO
+  WARNING
+  URGENT
+}
+
+// ==========================================
 // FINANCIAL MANAGEMENT
 // ==========================================
 
