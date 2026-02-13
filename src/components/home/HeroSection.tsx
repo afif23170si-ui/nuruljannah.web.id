@@ -24,18 +24,19 @@ export function HeroSection() {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          poster="/hero-masjid.jpg"
+          poster="/hero-masjid.webp"
+          // @ts-ignore
+          fetchPriority="high"
         >
           <source src="/hero-masjid.webm" type="video/webm" />
           <source src="/hero-masjid.mp4" type="video/mp4" />
           {/* Fallback image if video fails or not supported */}
           <Image
-            src="/hero-masjid.jpg"
+            src="/hero-masjid.webp"
             alt="Masjid Nurul Jannah"
             fill
             className="object-cover"
             priority
-            unoptimized
           />
         </video>
         {/* Dark Overlay 40% */}
