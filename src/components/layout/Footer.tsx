@@ -38,7 +38,7 @@ export function Footer() {
              <div className="flex items-center gap-4 group">
               <div className="relative h-12 w-12 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
                 <Image 
-                  src="/logo-mnj.png" 
+                  src="/logo.webp" 
                   alt="Logo Nurul Jannah" 
                   fill 
                   className="object-cover"
