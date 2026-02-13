@@ -95,8 +95,8 @@ export function Header() {
     <header className="sticky top-0 left-0 right-0 z-50 transition-all duration-300">
       <div className={cn(
         "w-full transition-all duration-500",
-        "bg-white/90 backdrop-blur-xl border-b border-white/20 shadow-sm",
-        scrolled && "shadow-md bg-white/95"
+        "bg-white/90 backdrop-blur-xl",
+        scrolled && "bg-white/95 shadow-sm border-b border-white/20"
       )}>
         <div className="mx-auto w-[96%] max-w-7xl px-6 py-4 flex items-center justify-between">
           
@@ -113,7 +113,7 @@ export function Header() {
                   unoptimized
                 />
               </div>
-              <span className="font-serif font-bold text-lg tracking-tight text-emerald-950 hidden sm:block">
+              <span className="font-serif font-bold text-lg tracking-tight text-emerald-950">
                 Nurul Jannah
               </span>
             </Link>
@@ -142,10 +142,10 @@ export function Header() {
                     >
                       <DropdownMenuTrigger 
                         className={cn(
-                          "flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-full outline-none",
+                          "flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-full outline-none border",
                           isActive
-                            ? "text-emerald-950 bg-emerald-50"
-                            : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50"
+                            ? "text-emerald-950 bg-emerald-50 border-emerald-200"
+                            : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50 border-transparent"
                         )}
                       >
                         <span>{item.name}</span>
@@ -187,10 +187,10 @@ export function Header() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "px-4 py-2 text-sm font-medium transition-colors rounded-full",
+                        "px-4 py-2 text-sm font-medium transition-colors rounded-full border",
                         isActive
-                          ? "text-emerald-950 bg-emerald-50"
-                          : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50"
+                          ? "text-emerald-950 bg-emerald-50 border-emerald-200"
+                          : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50 border-transparent"
                       )}
                     >
                       <span>{item.name}</span>
@@ -212,7 +212,7 @@ export function Header() {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-emerald-950 bg-white/70 backdrop-blur-md border border-white/20 shadow-sm hover:bg-white/80">
+              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white bg-emerald-600 shadow-md hover:bg-emerald-700 border-none transition-transform hover:scale-105">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>

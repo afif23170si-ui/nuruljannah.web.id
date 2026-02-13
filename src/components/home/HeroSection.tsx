@@ -13,7 +13,7 @@ export function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   return (
-    <section className="relative w-full min-h-[calc(100vh-69px)] [.has-announcement_&]:min-h-[calc(100vh-105px)] h-auto m-0 flex flex-col items-center justify-end overflow-hidden transition-[min-height] duration-500 ease-in-out">
+    <section className="relative w-auto min-h-[calc(100vh-79px)] md:min-h-[calc(100vh-89px)] [.has-announcement_&]:min-h-[calc(100vh-115px)] [.has-announcement_&]:md:min-h-[calc(100vh-125px)] h-auto mt-0 mx-[10px] mb-[10px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-end overflow-hidden transition-[min-height] duration-500 ease-in-out rounded-[15px] md:rounded-[30px]">
       
       {/* Background Image */}
       {/* Background Image */}

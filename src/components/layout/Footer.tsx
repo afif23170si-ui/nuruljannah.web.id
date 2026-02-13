@@ -17,7 +17,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-zinc-50 text-zinc-900 overflow-hidden pt-20 pb-10 border-t border-zinc-200">
+    <footer className="relative bg-white text-zinc-900 overflow-hidden pt-20 pb-10 border-t border-zinc-200">
       {/* Background Pattern - Subtle Noise/Grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
       
@@ -129,7 +129,7 @@ export function Footer() {
                 <div className="space-y-1">
                   <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Alamat</span>
                   <span className="block text-zinc-600 text-sm leading-relaxed">
-                    Jl. Raya Masjid No. 123, Kel. Jaya Mukti, Kec. Dumai Timur, Kota Dumai, Riau 28826
+                    Jl. Sriwedari Ujung Gg. Tanjung II, Kel. Tanjung Palas, Kec. Dumai Timur, Kota Dumai, Riau, 28826
                   </span>
                 </div>
               </li>
