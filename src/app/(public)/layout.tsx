@@ -13,8 +13,8 @@ export default async function PublicLayout({
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Header />
       <AnnouncementBanner announcements={announcements} />
+      <Header />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

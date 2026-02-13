@@ -54,7 +54,6 @@ export function Header() {
   // We can keep the scroll listener if we want subtle effects, but user asked for static.
   // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
   const [scrolled, setScrolled] = useState(false);
-  const [headerTop, setHeaderTop] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -80,15 +79,6 @@ export function Header() {
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
-
-      // Smoothly follow banner as it scrolls away
-      const hasBanner = document.body.classList.contains("has-announcement");
-      if (hasBanner) {
-        const bannerHeight = 36;
-        setHeaderTop(Math.max(0, bannerHeight - window.scrollY));
-      } else {
-        setHeaderTop(0);
-      }
     };
 
     handleScroll(); // Initial check
@@ -102,16 +92,13 @@ export function Header() {
   };
 
   return (
-    <header
-      className="fixed left-0 right-0 z-50"
-      style={{ top: `${headerTop}px` }}
-    >
-      <div className="mx-auto w-[96%] max-w-7xl">
-        <div className={cn(
-          "relative flex items-center justify-between px-6 py-3 rounded-b-[2rem] transition-all duration-500",
-          "bg-white/90 backdrop-blur-xl border-x border-b border-white/20 shadow-sm",
-          scrolled && "shadow-md bg-white/95"
-        )}>
+    <header className="sticky top-0 left-0 right-0 z-50 transition-all duration-300">
+      <div className={cn(
+        "w-full transition-all duration-500",
+        "bg-white/90 backdrop-blur-xl border-b border-white/20 shadow-sm",
+        scrolled && "shadow-md bg-white/95"
+      )}>
+        <div className="mx-auto w-[96%] max-w-7xl px-6 py-4 flex items-center justify-between">
           
           {/* Left: Logo */}
           <div className="flex items-center">
@@ -327,9 +314,9 @@ export function Header() {
               </div>
             </SheetContent>
           </Sheet>
+          </div>
         </div>
       </div>
-    </div>
     </header>
   );
 }

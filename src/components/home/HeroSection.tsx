@@ -13,7 +13,7 @@ export function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   return (
-    <section className="relative w-full min-h-screen [.has-announcement_&]:min-h-[calc(100vh-36px)] h-auto m-0 flex flex-col items-center justify-end overflow-hidden transition-[min-height] duration-500 ease-in-out">
+    <section className="relative w-full min-h-[calc(100vh-69px)] [.has-announcement_&]:min-h-[calc(100vh-105px)] h-auto m-0 flex flex-col items-center justify-end overflow-hidden transition-[min-height] duration-500 ease-in-out">
       
       {/* Background Image */}
       {/* Background Image */}
@@ -47,7 +47,7 @@ export function HeroSection() {
 
 
         {/* Date Display - Desktop (below notch, centered) */}
-        <div className="hidden md:flex absolute top-[90px] left-0 right-0 z-[4] justify-center pointer-events-none">
+        <div className="hidden md:flex absolute top-[30px] left-0 right-0 z-[4] justify-center pointer-events-none">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 pointer-events-auto">
             <DateDisplay variant="hero" />
           </div>
