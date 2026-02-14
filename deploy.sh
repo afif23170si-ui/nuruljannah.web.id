@@ -45,15 +45,14 @@ echo "📁 Copying static files & env to standalone..."
 cp -r .next/static .next/standalone/.next/static
 cp -r public .next/standalone/public
 cp .env.local .next/standalone/.env.local
+cp server-wrapper.js .next/standalone/server-wrapper.js
 echo ""
 
-# 6. Restart PM2
+# 6. Restart PM2 (using server-wrapper.js to fix proxy headers)
 echo "🔄 Restarting app..."
-pm2 restart "$APP_NAME" 2>/dev/null || {
-  echo "⚠️  App belum ada di PM2, starting fresh..."
-  PORT=4000 HOSTNAME=0.0.0.0 NODE_OPTIONS="--max-http-header-size=65536" \
-    pm2 start .next/standalone/server.js --name "$APP_NAME"
-}
+pm2 delete "$APP_NAME" 2>/dev/null || true
+PORT=4000 HOSTNAME=0.0.0.0 NODE_OPTIONS="--max-http-header-size=65536" \
+  pm2 start .next/standalone/server-wrapper.js --name "$APP_NAME"
 pm2 save
 echo ""
 
