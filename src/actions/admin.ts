@@ -167,3 +167,68 @@ export async function updateKajian(
 export async function deleteKajian(id: string) {
   return prisma.kajianSchedule.delete({ where: { id } });
 }
+
+// ==========================================
+// Mosque Event CRUD (Agenda Masjid)
+// ==========================================
+
+export async function getEventList(category?: string) {
+  return prisma.mosqueEvent.findMany({
+    where: category ? { category: category as never } : {},
+    orderBy: [{ isRecurring: "desc" }, { dayOfWeek: "asc" }, { date: "asc" }, { time: "asc" }],
+  });
+}
+
+export async function getEventById(id: string) {
+  return prisma.mosqueEvent.findUnique({ where: { id } });
+}
+
+export async function createEvent(data: {
+  title: string;
+  description?: string;
+  category: string;
+  date?: Date | null;
+  dayOfWeek?: number | null;
+  time: string;
+  endTime?: string;
+  location?: string;
+  speaker?: string;
+  isRecurring: boolean;
+}) {
+  return prisma.mosqueEvent.create({
+    data: {
+      ...data,
+      category: data.category as never,
+    },
+  });
+}
+
+export async function updateEvent(
+  id: string,
+  data: Partial<{
+    title: string;
+    description: string;
+    category: string;
+    date: Date | null;
+    dayOfWeek: number | null;
+    time: string;
+    endTime: string;
+    location: string;
+    speaker: string;
+    isRecurring: boolean;
+    isActive: boolean;
+  }>
+) {
+  const updateData: Record<string, unknown> = { ...data };
+  if (data.category) {
+    updateData.category = data.category as never;
+  }
+  return prisma.mosqueEvent.update({
+    where: { id },
+    data: updateData as Parameters<typeof prisma.mosqueEvent.update>[0]["data"],
+  });
+}
+
+export async function deleteEvent(id: string) {
+  return prisma.mosqueEvent.delete({ where: { id } });
+}

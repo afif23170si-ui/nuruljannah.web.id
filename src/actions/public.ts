@@ -73,6 +73,26 @@ export const getKajianSchedules = unstable_cache(
   { revalidate: 3600, tags: ["kajian-schedules"] }
 );
 
+// Get Active Mosque Events (Agenda Masjid)
+export const getActiveEvents = async (category?: string) => {
+  const cacheKey = category ? `mosque-events-${category}` : "mosque-events-all";
+  const fetchEvents = unstable_cache(
+    async () => {
+      const events = await prisma.mosqueEvent.findMany({
+        where: {
+          isActive: true,
+          ...(category ? { category: category as "KAJIAN_RUTIN" | "PROGRAM_RUTIN" | "EVENT_BESAR" | "SOSIAL" | "INTERNAL_DKM" } : {}),
+        },
+        orderBy: [{ isRecurring: "desc" }, { dayOfWeek: "asc" }, { date: "asc" }, { time: "asc" }],
+      });
+      return events;
+    },
+    [cacheKey],
+    { revalidate: 3600, tags: ["mosque-events"] }
+  );
+  return fetchEvents();
+};
+
 // Get Published Posts
 export const getPublishedPosts = unstable_cache(
   async (category?: string, limit?: number) => {

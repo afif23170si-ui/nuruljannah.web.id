@@ -52,7 +52,7 @@ const navigation = [
     roles: ["ADMIN", "TAKMIR"],
   },
   {
-    name: "Jadwal Kajian",
+    name: "Agenda Masjid",
     href: "/admin/kajian",
     icon: Calendar,
     roles: ["ADMIN", "TAKMIR"],

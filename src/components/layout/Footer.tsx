@@ -82,8 +82,8 @@ export function Footer() {
               {[
                 { name: "Beranda", href: "/" },
                 { name: "Profil Masjid", href: "/profil" },
-                { name: "Jadwal Shalat", href: "/jadwal-shalat" },
-                { name: "Kajian Rutin", href: "/jadwal-kajian" },
+                { name: "Ibadah", href: "/ibadah" },
+                { name: "Agenda Masjid", href: "/agenda" },
                 { name: "Galeri Kegiatan", href: "/galeri" },
               ].map((link) => (
                 <li key={link.name}>

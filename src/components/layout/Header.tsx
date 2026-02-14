@@ -21,11 +21,17 @@ import {
   Info,
   Users,
   Calendar,
+  Clock,
   BookOpen,
   Images,
   Heart,
+  User,
+  LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const navigation = [
   { name: "Beranda", href: "/", icon: Home },
@@ -40,8 +46,8 @@ const navigation = [
       { name: "Sejarah", href: "/profil", icon: Calendar }, // Using Calendar as placeholder or maybe I should import History icon if available, but for now reuse existing or generic
     ]
   },
-  { name: "Shalat", href: "/jadwal-shalat", icon: Calendar },
-  { name: "Kajian", href: "/jadwal-kajian", icon: BookOpen },
+  { name: "Ibadah", href: "/ibadah", icon: Clock },
+  { name: "Agenda", href: "/agenda", icon: Calendar },
   { name: "Infaq", href: "/infaq", icon: Heart },
   { name: "Galeri", href: "/galeri", icon: Images },
 ];
@@ -56,6 +62,12 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { data: session, status } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleMouseEnter = (name: string) => {
     if (leaveTimeoutRef.current) {
@@ -202,11 +214,53 @@ export function Header() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2 ml-auto">
-            <Link href="/login" className="hidden sm:block">
-               <Button size="sm" className="bg-emerald-900 text-white hover:bg-emerald-800 shadow-md transition-all rounded-full px-5 h-9">
-                 Masuk
-              </Button>
-            </Link>
+            {mounted && session?.user ? (
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger className="hidden sm:block outline-none">
+                  <Avatar className="h-9 w-9 border-2 border-white shadow-sm transition-transform hover:scale-105">
+                    <AvatarImage src={session.user.image || ""} alt={session.user.name} />
+                    <AvatarFallback className="bg-emerald-100 text-emerald-900 font-medium">
+                      {session.user.name?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl bg-white/95 backdrop-blur-xl border-white/20 shadow-xl shadow-emerald-900/5">
+                  <div className="flex items-center gap-3 p-2 mb-2 rounded-lg bg-emerald-50/50">
+                    <Avatar className="h-10 w-10 border border-emerald-100">
+                      <AvatarImage src={session.user.image || ""} alt={session.user.name} />
+                      <AvatarFallback className="bg-emerald-100 text-emerald-900">
+                        {session.user.name?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-sm font-semibold text-emerald-950 truncate">{session.user.name}</span>
+                      <span className="text-xs text-emerald-600 truncate">{session.user.email}</span>
+                    </div>
+                  </div>
+                  
+                  <Link href="/admin">
+                    <DropdownMenuItem className="cursor-pointer rounded-lg text-slate-600 focus:text-emerald-900 focus:bg-emerald-50 py-2.5">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <DropdownMenuItem 
+                    className="cursor-pointer rounded-lg text-red-600 focus:text-red-700 focus:bg-red-50 py-2.5 mt-1"
+                    onClick={() => signOut()}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Keluar</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login" className="hidden sm:block">
+                 <Button size="sm" className="bg-emerald-900 text-white hover:bg-emerald-800 shadow-md transition-all rounded-full px-5 h-9">
+                   Masuk
+                </Button>
+              </Link>
+            )}
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -303,11 +357,47 @@ export function Header() {
                 </nav>
 
                 <div className="mt-4 px-2">
-                  <Link href="/login" onClick={() => setIsOpen(false)} className="w-full block">
-                    <Button className="w-full rounded-full h-12 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02]">
-                      Masuk Sebagai Pengurus
-                    </Button>
-                  </Link>
+                  {mounted && session?.user ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3 p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
+                        <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                          <AvatarImage src={session.user.image || ""} alt={session.user.name} />
+                          <AvatarFallback className="bg-emerald-200 text-emerald-800 font-bold">
+                            {session.user.name?.charAt(0).toUpperCase() || "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="text-sm font-semibold text-emerald-950 truncate">{session.user.name}</span>
+                          <span className="text-xs text-emerald-600 truncate">{session.user.role}</span>
+                        </div>
+                      </div>
+
+                      <Link href="/admin" onClick={() => setIsOpen(false)}>
+                        <Button variant="outline" className="w-full justify-start rounded-xl h-12 text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-emerald-900">
+                          <LayoutDashboard className="mr-2 h-5 w-5" />
+                          Dashboard
+                        </Button>
+                      </Link>
+
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start rounded-xl h-12 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => {
+                          setIsOpen(false);
+                          signOut();
+                        }}
+                      >
+                        <LogOut className="mr-2 h-5 w-5" />
+                        Keluar
+                      </Button>
+                    </div>
+                  ) : (
+                    <Link href="/login" onClick={() => setIsOpen(false)} className="w-full block">
+                      <Button className="w-full rounded-full h-12 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02]">
+                        Masuk Sebagai Pengurus
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
             </SheetContent>

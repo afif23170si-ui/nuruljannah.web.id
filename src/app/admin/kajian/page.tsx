@@ -1,8 +1,8 @@
 // Prevent static generation - render on demand only
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { Metadata } from "next";
-import { getKajianList } from "@/actions/admin";
+import { getEventList, deleteEvent } from "@/actions/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,122 +15,187 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Plus, MoreHorizontal, Edit, Trash2, Clock } from "lucide-react";
+  Plus,
+  Clock,
+  BookOpen,
+  RefreshCw,
+  Star,
+  Heart,
+  Shield,
+  CalendarDays,
+  Repeat,
+} from "lucide-react";
+import Link from "next/link";
+import { DeleteEventButton } from "./DeleteEventButton";
 
 export const metadata: Metadata = {
-  title: "Kelola Jadwal Kajian",
-  description: "Kelola jadwal kajian rutin masjid",
+  title: "Kelola Agenda Masjid",
+  description: "Kelola agenda dan kegiatan masjid",
 };
 
 const DAYS = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
-const DAY_COLORS: Record<number, string> = {
-  0: "bg-red-500/10 text-red-600",
-  1: "bg-yellow-500/10 text-yellow-600",
-  2: "bg-pink-500/10 text-pink-600",
-  3: "bg-green-500/10 text-green-600",
-  4: "bg-blue-500/10 text-blue-600",
-  5: "bg-emerald-500/10 text-emerald-600",
-  6: "bg-purple-500/10 text-purple-600",
+const CATEGORY_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: typeof BookOpen }
+> = {
+  KAJIAN_RUTIN: {
+    label: "Kajian Rutin",
+    color: "bg-emerald-500/10 text-emerald-700",
+    icon: BookOpen,
+  },
+  PROGRAM_RUTIN: {
+    label: "Program Rutin",
+    color: "bg-blue-500/10 text-blue-700",
+    icon: RefreshCw,
+  },
+  EVENT_BESAR: {
+    label: "Event Besar",
+    color: "bg-amber-500/10 text-amber-700",
+    icon: Star,
+  },
+  SOSIAL: {
+    label: "Sosial",
+    color: "bg-rose-500/10 text-rose-700",
+    icon: Heart,
+  },
+  INTERNAL_DKM: {
+    label: "Internal DKM",
+    color: "bg-indigo-500/10 text-indigo-700",
+    icon: Shield,
+  },
 };
 
-export default async function KajianAdminPage() {
-  const kajianList = await getKajianList();
+export default async function AgendaAdminPage() {
+  const eventList = await getEventList();
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Jadwal Kajian</h1>
-          <p className="text-muted-foreground">Kelola jadwal kajian rutin masjid</p>
+          <h1 className="text-2xl font-bold">Agenda Masjid</h1>
+          <p className="text-muted-foreground">
+            Kelola semua agenda dan kegiatan masjid
+          </p>
         </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Tambah Kajian
-        </Button>
+        <Link href="/admin/kajian/new">
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Tambah Agenda
+          </Button>
+        </Link>
       </div>
 
-      {/* Kajian Table */}
+      {/* Event Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Jadwal</CardTitle>
+          <CardTitle>Daftar Agenda ({eventList.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          {kajianList.length === 0 ? (
+          {eventList.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <p>Belum ada jadwal kajian.</p>
-              <Button variant="outline" className="gap-2 mt-4">
-                <Plus className="h-4 w-4" />
-                Buat Jadwal Pertama
-              </Button>
+              <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-40" />
+              <p className="mb-2">Belum ada agenda.</p>
+              <Link href="/admin/kajian/new">
+                <Button variant="outline" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Buat Agenda Pertama
+                </Button>
+              </Link>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Hari</TableHead>
+                  <TableHead>Kategori</TableHead>
                   <TableHead>Judul</TableHead>
-                  <TableHead>Pemateri</TableHead>
+                  <TableHead>Jadwal</TableHead>
                   <TableHead>Waktu</TableHead>
                   <TableHead>Lokasi</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="w-[70px]"></TableHead>
+                  <TableHead className="w-[120px] text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {kajianList.map((kajian) => (
-                  <TableRow key={kajian.id}>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={DAY_COLORS[kajian.dayOfWeek]}
-                      >
-                        {DAYS[kajian.dayOfWeek]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{kajian.title}</TableCell>
-                    <TableCell>{kajian.speaker}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="gap-1">
-                        <Clock className="h-3 w-3" />
-                        {kajian.time} WIB
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {kajian.location || "-"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={kajian.isActive ? "default" : "outline"}>
-                        {kajian.isActive ? "Aktif" : "Nonaktif"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Hapus
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {eventList.map((event) => {
+                  const catConfig = CATEGORY_CONFIG[event.category];
+                  const CatIcon = catConfig?.icon || CalendarDays;
+                  return (
+                    <TableRow key={event.id}>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={catConfig?.color || ""}
+                        >
+                          <CatIcon className="h-3 w-3 mr-1" />
+                          {catConfig?.label || event.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <div>
+                          {event.title}
+                          {event.speaker && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {event.speaker}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {event.isRecurring ? (
+                          <Badge variant="outline" className="gap-1">
+                            <Repeat className="h-3 w-3" />
+                            {event.dayOfWeek !== null &&
+                            event.dayOfWeek !== undefined
+                              ? DAYS[event.dayOfWeek]
+                              : "-"}
+                          </Badge>
+                        ) : event.date ? (
+                          <span className="text-sm">
+                            {new Date(event.date).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="gap-1">
+                          <Clock className="h-3 w-3" />
+                          {event.time}
+                          {event.endTime ? ` - ${event.endTime}` : ""}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {event.location || "-"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={event.isActive ? "default" : "outline"}
+                        >
+                          {event.isActive ? "Aktif" : "Nonaktif"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Link href={`/admin/kajian/${event.id}`}>
+                            <Button variant="ghost" size="sm">
+                              Edit
+                            </Button>
+                          </Link>
+                          <DeleteEventButton
+                            eventId={event.id}
+                            eventTitle={event.title}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

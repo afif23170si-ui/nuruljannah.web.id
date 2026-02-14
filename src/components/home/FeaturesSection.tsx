@@ -25,20 +25,20 @@ interface Service {
 
 const services: Service[] = [
   {
-    title: "Jadwal Shalat",
+    title: "Ibadah",
     description:
-      "Waktu shalat akurat sesuai lokasi masjid dengan notifikasi hitung mundur adzan.",
-    href: "/jadwal-shalat",
+      "Jadwal shalat, adzan & iqomah, shalat Jumat, dan informasi ibadah harian.",
+    href: "/ibadah",
     icon: Clock,
     color: "bg-emerald-50",
     iconColor: "text-emerald-600",
     borderHover: "hover:border-emerald-300",
   },
   {
-    title: "Kajian Rutin",
+    title: "Agenda Masjid",
     description:
-      "Jadwal kajian, khutbah Jumat, dan informasi pemateri terkini.",
-    href: "/jadwal-kajian",
+      "Jadwal kajian, kegiatan sosial, agenda Ramadhan, dan seluruh kegiatan masjid.",
+    href: "/agenda",
     icon: Mic,
     color: "bg-emerald-50",
     iconColor: "text-emerald-600",
