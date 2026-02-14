@@ -1,25 +1,7 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 
-// Fix duplicated X-Forwarded-Host header from Cloudflare + OpenLiteSpeed proxy chain
-function fixProxyHeaders(request: NextRequest): NextResponse | null {
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  if (forwardedHost && forwardedHost.includes(",")) {
-    const cleanHost = forwardedHost.split(",")[0].trim();
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-forwarded-host", cleanHost);
-    return NextResponse.next({
-      request: { headers: requestHeaders },
-    });
-  }
-  return null;
-}
-
 export const proxy = auth((req) => {
-  // Fix duplicate proxy headers first
-  const headerFix = fixProxyHeaders(req);
-
   const { nextUrl, auth: session } = req;
   const isLoggedIn = !!session;
   const pathname = nextUrl.pathname;
@@ -58,15 +40,9 @@ export const proxy = auth((req) => {
     }
   }
 
-  // Return header fix response if headers were modified, otherwise proceed
-  return headerFix || NextResponse.next();
+  return NextResponse.next();
 });
 
 export const config = {
-  matcher: [
-    /*
-     * Match all routes except static files
-     */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/admin/:path*", "/login"],
 };
