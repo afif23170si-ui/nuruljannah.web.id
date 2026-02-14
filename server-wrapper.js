@@ -16,10 +16,8 @@ class PatchedURL extends OriginalURL {
     if (typeof input === "string" && input.includes(", http")) {
       const parts = input.split(", ");
       if (parts.length > 1) {
-        // Verify all parts look like URLs
         const allUrls = parts.every((p) => p.startsWith("http://") || p.startsWith("https://"));
         if (allUrls) {
-          console.log("[wrapper] Fixed duplicate URL:", input, "→", parts[0]);
           input = parts[0];
         }
       }
@@ -33,13 +31,7 @@ class PatchedURL extends OriginalURL {
   }
 }
 
-// Preserve static methods and properties
 Object.setPrototypeOf(PatchedURL, OriginalURL);
-
-// Replace globally
 globalThis.URL = PatchedURL;
 
-console.log("[wrapper] URL constructor patched, starting Next.js server...");
-
-// Load the actual Next.js server
 require("./server.js");
