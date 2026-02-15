@@ -104,9 +104,8 @@ export function Footer() {
                 { name: "Infaq Online", href: "/infaq" },
                 { name: "TPA / TPQ", href: "/tpa" },
                 { name: "Laporan Keuangan", href: "/keuangan" },
-                { name: "Struktur DKM", href: "/struktur-dkm" },
+                { name: "Struktur DKM", href: "/profil#struktur-dkm" },
                 { name: "Artikel Islami", href: "/artikel" },
-                { name: "Download", href: "/download" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
