@@ -1,0 +1,57 @@
+name: 🚀 Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: 🚀 Deploy to Server
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ secrets.SSH_PORT || 22 }} \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+            
+            echo "🕌 Deploying Masjid Nurul Jannah..."
+            cd /home/nuruljannah.web.id/app
+            
+            # Run deployment
+            bash deploy.sh
+            
+            echo "✅ Deployment completed!"
+          ENDSSH
+
+      - name: 🏥 Health Check
+        run: |
+          echo "⏳ Waiting 15 seconds for app to start..."
+          sleep 15
+          
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://nuruljannah.web.id || echo "000")
+          
+          if [ "$response" = "200" ]; then
+            echo "✅ Health check passed! (HTTP $response)"
+          else
+            echo "⚠️ Health check returned HTTP $response (may still be starting)"
+          fi
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          rm -f ~/.ssh/deploy_key

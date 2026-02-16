@@ -1,8 +1,11 @@
+// ecosystem.config.js — PM2 Configuration
+// Ensures PM2 always starts with the correct entry point and settings.
 module.exports = {
   apps: [
     {
       name: "nuruljannah",
-      script: ".next/standalone/server.js",
+      script: ".next/standalone/server-wrapper.js", // MUST use wrapper, NOT server.js!
+      cwd: "/home/nuruljannah.web.id/app",
       env: {
         NODE_ENV: "production",
         PORT: 4000,
@@ -13,6 +16,9 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: "512M",
+      error_file: "/home/nuruljannah.web.id/app/logs/error.log",
+      out_file: "/home/nuruljannah.web.id/app/logs/out.log",
+      time: true,
     },
   ],
 };

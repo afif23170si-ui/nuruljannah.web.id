@@ -3,8 +3,8 @@
 # ==========================================
 # 🚀 Deploy Script - Masjid Nurul Jannah
 # ==========================================
-# Jalankan di server: bash deploy.sh
-# Atau: ./deploy.sh (jika sudah chmod +x)
+# Dijalankan otomatis oleh GitHub Actions,
+# atau manual di server: bash deploy.sh
 
 set -e  # Stop jika ada error
 
@@ -27,7 +27,7 @@ echo ""
 
 # 2. Install dependencies
 echo "📦 Installing dependencies..."
-npm install --production=false
+npm ci --production=false 2>/dev/null || npm install --production=false
 echo ""
 
 # 3. Generate Prisma client
@@ -41,22 +41,42 @@ npm run build
 echo ""
 
 # 5. Copy files ke standalone (WAJIB setelah setiap build!)
-echo "📁 Copying static files & env to standalone..."
-cp -r .next/static .next/standalone/.next/static
-cp -r public .next/standalone/public
-cp .env.local .next/standalone/.env.local
-cp server-wrapper.js .next/standalone/server-wrapper.js
+echo "📁 Copying files to standalone..."
+STANDALONE_DIR="$APP_DIR/.next/standalone"
+
+cp -r .next/static "$STANDALONE_DIR/.next/static"
+echo "  ✅ .next/static"
+
+cp -r public "$STANDALONE_DIR/public"
+echo "  ✅ public"
+
+cp .env.local "$STANDALONE_DIR/.env.local"
+echo "  ✅ .env.local"
+
+if [ -f "server-wrapper.js" ]; then
+  cp server-wrapper.js "$STANDALONE_DIR/server-wrapper.js"
+  echo "  ✅ server-wrapper.js"
+else
+  echo "  ❌ server-wrapper.js NOT FOUND! Deployment may fail."
+  exit 1
+fi
 echo ""
 
-# 6. Restart PM2 (using server-wrapper.js to fix proxy headers)
+# 6. Create logs directory if not exists
+mkdir -p "$APP_DIR/logs"
+
+# 7. Restart PM2 using ecosystem config
 echo "🔄 Restarting app..."
-pm2 delete "$APP_NAME" 2>/dev/null || true
-PORT=4000 HOSTNAME=0.0.0.0 NODE_OPTIONS="--max-http-header-size=65536" \
-  pm2 start .next/standalone/server-wrapper.js --name "$APP_NAME"
+if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
+  pm2 delete "$APP_NAME" 2>/dev/null || true
+fi
+
+# Start with ecosystem config (always uses server-wrapper.js)
+pm2 start "$APP_DIR/ecosystem.config.js"
 pm2 save
 echo ""
 
-# 7. Verify
+# 8. Verify
 sleep 3
 echo "✅ Checking app status..."
 pm2 status "$APP_NAME"
