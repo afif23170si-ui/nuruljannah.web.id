@@ -19,13 +19,7 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { createAlbum, updateAlbum } from "@/actions/gallery";
 import { Loader2, Save, ImageIcon } from "lucide-react";
 
@@ -101,19 +95,8 @@ export default function AlbumForm({ album }: AlbumFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ImageIcon className="h-5 w-5" />
-              {isEditing ? "Edit Album" : "Album Baru"}
-            </CardTitle>
-            <CardDescription>
-              {isEditing
-                ? "Perbarui informasi album galeri"
-                : "Buat album baru untuk mengelompokkan foto-foto"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <AdminCard title={isEditing ? "Edit Album" : "Album Baru"} description={isEditing ? "Perbarui informasi album galeri" : "Buat album baru untuk mengelompokkan foto-foto"}>
+          <div className="space-y-4">
             <FormField
               control={form.control}
               name="title"
@@ -189,8 +172,8 @@ export default function AlbumForm({ album }: AlbumFormProps) {
                 )}
               />
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </AdminCard>
 
         <div className="flex gap-4">
           <Button

@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getArticles } from "@/actions/admin";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +24,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
 export const metadata: Metadata = {
-  title: "Kelola Artikel",
+  title: "Kelola Artikel - Metronic Admin",
   description: "Kelola artikel dan berita masjid",
 };
 
@@ -38,7 +39,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   KHUTBAH: "Ringkasan Khutbah",
 };
 
-const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
   PUBLISHED: { label: "Dipublikasikan", variant: "default" },
   DRAFT: { label: "Draft", variant: "secondary" },
   ARCHIVED: { label: "Diarsipkan", variant: "outline" },
@@ -48,35 +49,30 @@ export default async function ArticlesAdminPage() {
   const articles = await getArticles();
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Artikel & Berita</h1>
-          <p className="text-muted-foreground">
-            Kelola konten artikel, berita, dan pengumuman
-          </p>
-        </div>
-        <Link href="/admin/artikel/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Tambah Artikel
-          </Button>
-        </Link>
-      </div>
+    <div className="animate-fade-in">
+      <AdminPageHeader 
+        title="Artikel & Berita" 
+        description="Kelola konten artikel, berita, dan publikasi masjid"
+        action={
+          <Link href="/admin/artikel/new">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Tambah Artikel
+            </Button>
+          </Link>
+        }
+      />
 
-      {/* Articles Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Daftar Artikel</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AdminCard title={`Daftar Artikel (${articles.length})`}>
           {articles.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p>Belum ada artikel.</p>
-              <Link href="/admin/artikel/new" className="mt-4 inline-block">
-                <Button variant="outline" className="gap-2">
-                  <Plus className="h-4 w-4" />
+            <div className="text-center py-16">
+              <div className="bg-gray-50 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
+                 <Plus className="h-10 w-10 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Belum ada artikel</h3>
+              <p className="text-gray-500 mb-6 max-w-sm mx-auto">Mulai menulis artikel atau berita untuk dibagikan kepada jamaah.</p>
+              <Link href="/admin/artikel/new">
+                <Button variant="outline" className="border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600">
                   Buat Artikel Pertama
                 </Button>
               </Link>
@@ -84,63 +80,76 @@ export default async function ArticlesAdminPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Judul</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Penulis</TableHead>
-                  <TableHead>Tanggal</TableHead>
-                  <TableHead className="w-[70px]"></TableHead>
+                <TableRow className="hover:bg-transparent border-b border-gray-100">
+                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Judul</TableHead>
+                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Kategori</TableHead>
+                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Status</TableHead>
+                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Penulis</TableHead>
+                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Tanggal</TableHead>
+                  <TableHead className="w-[70px] py-4"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {articles.map((article) => (
-                  <TableRow key={article.id}>
-                    <TableCell>
-                      <Link
-                        href={`/admin/artikel/${article.id}`}
-                        className="font-medium hover:text-primary line-clamp-1"
-                      >
-                        {article.title}
-                      </Link>
+                  <TableRow key={article.id} className="hover:bg-gray-50 border-b border-gray-50 transition-colors">
+                    <TableCell className="py-4 font-bold text-gray-800">
+                      <div className="flex flex-col">
+                        <Link
+                          href={`/admin/artikel/${article.id}`}
+                          className="hover:text-blue-600 line-clamp-1 transition-colors"
+                        >
+                          {article.title}
+                        </Link>
+                      </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
+                    <TableCell className="py-4">
+                      <Badge variant="outline" className="font-semibold text-gray-600 border-gray-200">
                         {CATEGORY_LABELS[article.category] || article.category}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant={STATUS_LABELS[article.status]?.variant || "secondary"}>
+                    <TableCell className="py-4">
+                      <Badge 
+                        className={
+                          article.status === 'PUBLISHED' ? 'bg-green-50 text-green-700 hover:bg-green-100 border-none' : 
+                          article.status === 'DRAFT' ? 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-none' :
+                          'bg-amber-50 text-amber-700 hover:bg-amber-100 border-none'
+                        }
+                      >
                         {STATUS_LABELS[article.status]?.label || article.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {article.author.name}
+                    <TableCell className="py-4 text-sm font-semibold text-gray-600">
+                      <div className="flex items-center gap-2">
+                         <div className="h-6 w-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-bold">
+                            {article.author.name.charAt(0)}
+                         </div>
+                         {article.author.name}
+                      </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="py-4 text-sm text-gray-500">
                       {format(new Date(article.createdAt), "d MMM yyyy", { locale: id })}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-4">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
+                        <DropdownMenuContent align="end" className="w-40 border-gray-100 shadow-lg rounded-xl">
+                          <DropdownMenuItem asChild className="focus:bg-gray-50 cursor-pointer">
                             <Link href={`/artikel/${article.slug}`} target="_blank">
-                              <Eye className="mr-2 h-4 w-4" />
+                              <Eye className="mr-2 h-4 w-4 text-gray-500" />
                               Lihat
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
+                          <DropdownMenuItem asChild className="focus:bg-gray-50 cursor-pointer">
                             <Link href={`/admin/artikel/${article.id}`}>
-                              <Edit className="mr-2 h-4 w-4" />
+                              <Edit className="mr-2 h-4 w-4 text-blue-500" />
                               Edit
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Hapus
                           </DropdownMenuItem>
@@ -152,8 +161,7 @@ export default async function ArticlesAdminPage() {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+      </AdminCard>
     </div>
   );
 }

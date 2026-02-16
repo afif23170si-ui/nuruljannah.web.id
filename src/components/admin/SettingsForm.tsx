@@ -18,13 +18,7 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateSiteSettings } from "@/actions/settings";
 import { 
@@ -36,7 +30,12 @@ import {
   Plus,
   Trash2,
   Save,
+  Image as ImageIcon,
+  Upload,
+  X,
 } from "lucide-react";
+import Image from "next/image";
+import { uploadLogo } from "@/actions/upload";
 
 const bankAccountSchema = z.object({
   bankName: z.string().min(1, "Nama bank wajib diisi"),
@@ -51,6 +50,7 @@ const settingsSchema = z.object({
   mosqueProvince: z.string().optional(),
   mosquePostcode: z.string().optional(),
   mosqueDescription: z.string().optional(),
+  mosqueLogo: z.string().optional(),
   phone: z.string().optional(),
   whatsapp: z.string().optional(),
   email: z.string().email("Format email tidak valid").optional().or(z.literal("")),
@@ -79,6 +79,7 @@ interface SettingsFormProps {
     instagram: string | null;
     youtube: string | null;
     tiktok: string | null;
+    mosqueLogo: string | null;
     bankAccounts: unknown;
   };
 }
@@ -86,6 +87,7 @@ interface SettingsFormProps {
 export default function SettingsForm({ settings }: SettingsFormProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const bankAccounts = (settings.bankAccounts as Array<{
     bankName: string;
@@ -102,6 +104,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
       mosqueProvince: settings.mosqueProvince || "",
       mosquePostcode: settings.mosquePostcode || "",
       mosqueDescription: settings.mosqueDescription || "",
+      mosqueLogo: settings.mosqueLogo || "",
       phone: settings.phone || "",
       whatsapp: settings.whatsapp || "",
       email: settings.email || "",
@@ -126,6 +129,38 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     } catch (error) {
       console.error(error);
       toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    try {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Ukuran file maksimal 2MB");
+        setUploadingLogo(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await uploadLogo(formData);
+
+      if (!result.success) {
+        toast.error(result.error || "Gagal upload logo");
+        return;
+      }
+
+      form.setValue("mosqueLogo", result.url!);
+      toast.success("Logo berhasil diupload");
+    } catch (error: any) {
+      console.error("Logo upload error:", error);
+      toast.error("Terjadi kesalahan saat upload logo");
+    } finally {
+      setUploadingLogo(false);
     }
   };
 
@@ -154,14 +189,8 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
           {/* Profile Tab */}
           <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profil Masjid</CardTitle>
-                <CardDescription>
-                  Informasi dasar tentang masjid
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Profil Masjid" description="Informasi dasar tentang masjid">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="mosqueName"
@@ -257,20 +286,82 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+
+                <FormField
+                  control={form.control}
+                  name="mosqueLogo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Logo Masjid</FormLabel>
+                      <FormControl>
+                        <div className="flex items-start gap-6">
+                            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center">
+                              {field.value ? (
+                                <Image
+                                  src={field.value}
+                                  alt="Logo Preview"
+                                  fill
+                                  sizes="96px"
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <ImageIcon className="h-8 w-8 text-gray-400" />
+                              )}
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={uploadingLogo}
+                                  onClick={() => document.getElementById("logo-upload")?.click()}
+                                >
+                                  {uploadingLogo ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Upload className="mr-2 h-4 w-4" />
+                                  )}
+                                  Upload Logo Baru
+                                </Button>
+                                {field.value && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() => field.onChange("")}
+                                  >
+                                    <X className="mr-2 h-4 w-4" />
+                                    Hapus
+                                  </Button>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                Format: JPG, PNG, WEBP. Maksimal 2MB. Disarankan rasio 1:1.
+                              </p>
+                              <Input
+                                id="logo-upload"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleLogoUpload}
+                              />
+                            </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </AdminCard>
           </TabsContent>
 
           {/* Contact Tab */}
           <TabsContent value="contact">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informasi Kontak</CardTitle>
-                <CardDescription>
-                  Nomor telepon dan email untuk dihubungi
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Informasi Kontak" description="Nomor telepon dan email untuk dihubungi">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="phone"
@@ -319,20 +410,14 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </TabsContent>
 
           {/* Social Media Tab */}
           <TabsContent value="social">
-            <Card>
-              <CardHeader>
-                <CardTitle>Media Sosial</CardTitle>
-                <CardDescription>
-                  Akun media sosial masjid
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Media Sosial" description="Akun media sosial masjid">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="facebook"
@@ -400,20 +485,14 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </TabsContent>
 
           {/* Bank Accounts Tab */}
           <TabsContent value="bank">
-            <Card>
-              <CardHeader>
-                <CardTitle>Rekening Donasi</CardTitle>
-                <CardDescription>
-                  Rekening bank untuk menerima infaq dan sedekah
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Rekening Donasi" description="Rekening bank untuk menerima infaq dan sedekah">
+              <div className="space-y-4">
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
@@ -485,8 +564,8 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                   <Plus className="mr-2 h-4 w-4" />
                   Tambah Rekening
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </TabsContent>
         </Tabs>
 

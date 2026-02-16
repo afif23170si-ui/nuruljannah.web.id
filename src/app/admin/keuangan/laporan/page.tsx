@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getFinanceSummary, getMonthlyReport } from "@/actions/finance";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -10,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TrendingUp, TrendingDown, Wallet, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Laporan Keuangan",
@@ -47,65 +48,63 @@ export default async function FinanceReportPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Laporan Keuangan</h1>
-        <p className="text-muted-foreground">Tahun {year}</p>
-      </div>
+      <AdminPageHeader 
+        title="Laporan Keuangan" 
+        description={`Laporan keuangan bulanan masjid Tahun ${year}`}
+        breadcrumbs={[
+            { label: "Dashboard", href: "/admin" },
+            { label: "Keuangan", href: "/admin/keuangan" },
+            { label: "Laporan" }
+        ]}
+      />
 
       {/* Yearly Summary */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <div className="metron-card bg-white p-6 border-l-4 border-l-green-500 shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
               Total Pemasukan {year}
-            </CardTitle>
+            </h3>
             <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="text-2xl font-bold text-green-600">
               {formatCurrency(yearlyIncome)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-l-4 border-l-red-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <div className="metron-card bg-white p-6 border-l-4 border-l-red-500 shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
               Total Pengeluaran {year}
-            </CardTitle>
+            </h3>
             <TrendingDown className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="text-2xl font-bold text-red-600">
               {formatCurrency(yearlyExpense)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-l-4 border-l-primary">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <div className="metron-card bg-white p-6 border-l-4 border-l-primary shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
               Saldo Tahun {year}
-            </CardTitle>
+            </h3>
             <Wallet className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className={`text-2xl font-bold ${yearlyBalance >= 0 ? "text-primary" : "text-red-600"}`}>
               {formatCurrency(yearlyBalance)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Monthly Breakdown Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Rekap Bulanan
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AdminCard title="Rekap Bulanan">
           <Table>
             <TableHeader>
               <TableRow>
@@ -159,8 +158,7 @@ export default async function FinanceReportPage() {
               </TableRow>
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+      </AdminCard>
     </div>
   );
 }

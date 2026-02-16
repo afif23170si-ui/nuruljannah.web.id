@@ -4,19 +4,19 @@ export const dynamic = 'force-dynamic';
 import { Metadata } from "next";
 import Link from "next/link";
 import { getTpaStats } from "@/actions/tpa";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
+import { CardTitle } from "@/components/ui/card";
 import {
   GraduationCap,
   Users,
   BookOpen,
   CalendarCheck,
-  Plus,
   ArrowRight,
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Administrasi TPA",
+  title: "Administrasi TPA - Metronic Admin",
   description: "Dashboard pengelolaan TPA Masjid Nurul Jannah",
 };
 
@@ -26,13 +26,13 @@ export default async function TpaDashboardPage() {
   const menuItems = [
     {
       title: "Data Santri",
-      description: "Kelola data santri, pendaftaran, dan kelas",
+      description: "Kelola data santri, pendaftaran, dan data kelas",
       icon: GraduationCap,
       href: "/admin/tpa/students",
       count: stats.students,
       label: "Total Santri",
       color: "text-blue-600",
-      bg: "bg-blue-100 dark:bg-blue-900/20",
+      bg: "bg-blue-50",
     },
     {
       title: "Data Asatidz",
@@ -42,7 +42,7 @@ export default async function TpaDashboardPage() {
       count: stats.teachers,
       label: "Total Pengajar",
       color: "text-emerald-600",
-      bg: "bg-emerald-100 dark:bg-emerald-900/20",
+      bg: "bg-emerald-50",
     },
     {
       title: "Kelas & Jadwal",
@@ -52,7 +52,7 @@ export default async function TpaDashboardPage() {
       count: stats.classes,
       label: "Kelas Aktif",
       color: "text-purple-600",
-      bg: "bg-purple-100 dark:bg-purple-900/20",
+      bg: "bg-purple-50",
     },
     {
       title: "Absensi",
@@ -62,41 +62,42 @@ export default async function TpaDashboardPage() {
       count: null,
       label: "Input Kehadiran",
       color: "text-orange-600",
-      bg: "bg-orange-100 dark:bg-orange-900/20",
+      bg: "bg-orange-50",
     },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard TPA</h1>
-        <p className="text-muted-foreground">
-          Pusat pengelolaan Taman Pendidikan Al-Quran
-        </p>
-      </div>
+    <div className="animate-fade-in">
+      <AdminPageHeader 
+        title="Dashboard TPA" 
+        description="Pusat pengelolaan Taman Pendidikan Al-Quran"
+      />
 
       {/* Stats & Quick Access Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
         {menuItems.map((item) => (
-          <Card key={item.title} className="relative overflow-hidden hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {item.title}
-              </CardTitle>
-              <item.icon className={`h-4 w-4 ${item.color}`} />
-            </CardHeader>
-            <CardContent>
-              {item.count !== null ? (
-                <div className="text-2xl font-bold">{item.count}</div>
-              ) : (
-                <div className="text-2xl font-bold">-</div>
-              )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {item.label}
-              </p>
-            </CardContent>
-            <div className={`absolute bottom-0 left-0 w-full h-1 ${item.bg.replace("bg-", "bg-opacity-100 ")}`} />
-          </Card>
+          <div key={item.title} className="metron-card p-6 flex flex-col justify-between hover:shadow-md transition-all group cursor-pointer relative overflow-hidden">
+             <div className={`absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity`}>
+                <item.icon className="h-24 w-24 -mr-8 -mt-8" />
+             </div>
+             
+             <div className="relative z-10">
+                <div className="flex justify-between items-start mb-4">
+                   <div className={`h-12 w-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center`}>
+                      <item.icon className="h-6 w-6" />
+                   </div>
+                </div>
+                
+                {item.count !== null ? (
+                   <div className="text-3xl font-bold text-gray-900 mb-1">{item.count}</div>
+                ) : (
+                   <div className="text-3xl font-bold text-gray-900 mb-1">-</div>
+                )}
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+                   {item.label}
+                </p>
+             </div>
+          </div>
         ))}
       </div>
 
@@ -104,28 +105,24 @@ export default async function TpaDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2">
         {menuItems.map((item) => (
           <Link key={item.href} href={item.href}>
-            <Card className="h-full hover:border-primary/50 transition-colors cursor-pointer group">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl ${item.bg}`}>
-                    <item.icon className={`h-6 w-6 ${item.color}`} />
+            <AdminCard className="h-full hover:border-blue-300 transition-colors group cursor-pointer">
+                <div className="flex items-start gap-5">
+                  <div className={`p-4 rounded-xl ${item.bg} shrink-0`}>
+                    <item.icon className={`h-8 w-8 ${item.color}`} />
                   </div>
-                  <div>
-                    <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                       {item.title}
-                    </CardTitle>
+                    </h3>
+                    <p className="text-gray-500 mb-4 leading-relaxed">
+                      {item.description}
+                    </p>
+                    <div className="flex items-center text-sm font-bold text-blue-600">
+                      Akses Menu <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  {item.description}
-                </p>
-                <div className="flex items-center text-sm font-medium text-primary">
-                  Akses Menu <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </div>
-              </CardContent>
-            </Card>
+            </AdminCard>
           </Link>
         ))}
       </div>

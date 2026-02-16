@@ -2,16 +2,20 @@
 export const dynamic = 'force-dynamic';
 
 import UserForm from "@/components/admin/UserForm";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 
 export default function NewUserPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Tambah User Baru</h1>
-        <p className="text-muted-foreground mt-1">
-          Buat akun pengguna baru dengan role yang sesuai
-        </p>
-      </div>
+      <AdminPageHeader 
+          title="Tambah User Baru" 
+          description="Buat akun pengguna baru dengan role yang sesuai"
+          breadcrumbs={[
+              { label: "Dashboard", href: "/admin" },
+              { label: "Users", href: "/admin/users" },
+              { label: "Buat Baru" }
+          ]}
+        />
       <UserForm />
     </div>
   );

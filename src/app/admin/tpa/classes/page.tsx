@@ -21,9 +21,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, MoreHorizontal, Edit, Trash2, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 
 export const metadata: Metadata = {
-  title: "Data Kelas",
+  title: "Data Classe",
   description: "Manajemen data kelas dan jadwal TPA",
 };
 
@@ -32,22 +34,25 @@ export default async function ClassesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Data Kelas</h1>
-          <p className="text-muted-foreground">
-            Daftar kelas dan jadwal pengajaran
-          </p>
-        </div>
-        <Link href="/admin/tpa/classes/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Tambah Kelas
-          </Button>
-        </Link>
-      </div>
+      <AdminPageHeader 
+        title="Data Kelas" 
+        description="Daftar kelas dan jadwal pengajaran"
+        breadcrumbs={[
+            { label: "Dashboard", href: "/admin" },
+            { label: "TPA", href: "/admin/tpa" },
+            { label: "Kelas" }
+        ]}
+        action={
+          <Link href="/admin/tpa/classes/new">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Tambah Kelas
+            </Button>
+          </Link>
+        }
+      />
 
-      <div className="rounded-md border bg-card">
+      <AdminCard>
         <Table>
           <TableHeader>
             <TableRow>
@@ -125,7 +130,7 @@ export default async function ClassesPage() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminCard>
     </div>
   );
 }

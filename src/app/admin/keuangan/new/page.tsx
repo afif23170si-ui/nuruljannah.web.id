@@ -2,10 +2,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { FinanceForm } from "@/components/admin/FinanceForm";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 
 export const metadata: Metadata = {
   title: "Tambah Transaksi",
@@ -15,20 +13,15 @@ export const metadata: Metadata = {
 export default function NewFinancePage() {
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/admin/keuangan">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold">Tambah Transaksi</h1>
-          <p className="text-muted-foreground">
-            Catat pemasukan atau pengeluaran baru
-          </p>
-        </div>
-      </div>
+      <AdminPageHeader 
+          title="Tambah Transaksi" 
+          description="Catat pemasukan atau pengeluaran rutin masjid"
+          breadcrumbs={[
+              { label: "Dashboard", href: "/admin" },
+              { label: "Keuangan", href: "/admin/keuangan" },
+              { label: "Buat Baru" }
+          ]}
+        />
 
       {/* Form */}
       <FinanceForm />

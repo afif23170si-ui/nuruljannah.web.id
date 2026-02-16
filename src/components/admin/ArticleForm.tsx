@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { toast } from "sonner";
 import { Loader2, Save, Send, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -112,11 +112,8 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Konten Artikel</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Konten Artikel">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="title"
@@ -175,17 +172,14 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pengaturan</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Pengaturan">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="category"
@@ -233,14 +227,11 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Aksi</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
+            <AdminCard title="Aksi">
+              <div className="space-y-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -268,8 +259,8 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
                   )}
                   Publikasikan
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </div>
         </div>
       </form>

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { toast } from "sonner";
 import { Loader2, Save, CalendarIcon } from "lucide-react";
 import { submitAttendance } from "@/actions/tpa";
@@ -108,8 +108,8 @@ export function AttendanceSheet({
   return (
     <div className="space-y-6">
       {/* Filtering Controls */}
-      <Card>
-        <CardContent className="pt-6 flex flex-col md:flex-row gap-4 items-end">
+      <AdminCard className="p-6">
+          <div className="flex flex-col md:flex-row gap-4 items-end">
           <div className="w-full md:w-1/3 space-y-2">
             <Label>Pilih Kelas</Label>
             <Select 
@@ -147,29 +147,25 @@ export function AttendanceSheet({
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+          </div>
+      </AdminCard>
 
       {/* Student List */}
       {selectedClass ? (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>
-              Daftar Santri 
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
-                {students.length > 0 ? `${students.length} Santri` : "Tidak ada santri"}
-              </span>
-            </CardTitle>
+        <AdminCard
+          title={`Daftar Santri (${students.length > 0 ? `${students.length} Santri` : "Tidak ada santri"})`}
+          action={
             <Button 
               onClick={handleSave} 
               disabled={saving || students.length === 0}
               className="gap-2"
+              size="sm"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Simpan Absensi
             </Button>
-          </CardHeader>
-          <CardContent>
+          }
+        >
             {students.length > 0 ? (
               <Table>
                 <TableHeader>
@@ -217,8 +213,7 @@ export function AttendanceSheet({
                 Tidak ada santri terdaftar di kelas ini.
               </div>
             )}
-          </CardContent>
-        </Card>
+        </AdminCard>
       ) : (
         <div className="text-center py-12 bg-muted/30 rounded-lg border-2 border-dashed">
           <p className="text-muted-foreground">Silakan pilih kelas terlebih dahulu untuk memulai absensi.</p>

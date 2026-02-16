@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { addImageToAlbum, deleteImage, setAlbumCover } from "@/actions/gallery";
 import { createClient } from "@supabase/supabase-js";
 import { 
@@ -127,13 +127,9 @@ export default function ImageUploader({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <ImageIcon className="h-5 w-5" />
-            Gambar ({images.length})
-          </span>
+    <AdminCard
+      title={`Gambar (${images.length})`}
+      action={
           <div>
             <Input
               ref={fileInputRef}
@@ -156,9 +152,8 @@ export default function ImageUploader({
               Upload Gambar
             </Button>
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+      }
+    >
         {images.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <ImageIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -216,7 +211,6 @@ export default function ImageUploader({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+    </AdminCard>
   );
 }

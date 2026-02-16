@@ -53,6 +53,7 @@ sudo su -
 cd /home/nuruljannah.web.id/app
 git pull origin main
 npm install
+export $(cat .env.local | grep -v '^#' | xargs) && npx prisma db push
 npx prisma generate
 npm run build
 

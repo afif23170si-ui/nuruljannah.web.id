@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, MoreHorizontal, Edit, Trash2, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 
 export const metadata: Metadata = {
   title: "Data Asatidz",
@@ -32,22 +34,25 @@ export default async function TeachersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Data Asatidz</h1>
-          <p className="text-muted-foreground">
-            Daftar pengajar TPA Masjid Nurul Jannah
-          </p>
-        </div>
-        <Link href="/admin/tpa/teachers/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Tambah Pengajar
-          </Button>
-        </Link>
-      </div>
+      <AdminPageHeader 
+        title="Data Asatidz" 
+        description="Daftar pengajar TPA Masjid Nurul Jannah"
+        breadcrumbs={[
+            { label: "Dashboard", href: "/admin" },
+            { label: "TPA", href: "/admin/tpa" },
+            { label: "Asatidz" }
+        ]}
+        action={
+          <Link href="/admin/tpa/teachers/new">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Tambah Pengajar
+            </Button>
+          </Link>
+        }
+      />
 
-      <div className="rounded-md border bg-card">
+      <AdminCard>
         <Table>
           <TableHeader>
             <TableRow>
@@ -132,7 +137,7 @@ export default async function TeachersPage() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminCard>
     </div>
   );
 }

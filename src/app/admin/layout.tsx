@@ -1,14 +1,18 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SessionProvider } from "next-auth/react";
-import { AdminSidebar, AdminHeader } from "@/components/admin/Sidebar";
+import AdminLayoutClient from "@/components/admin/AdminLayoutClient";
+import { getSiteSettings } from "@/actions/settings";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const [session, settings] = await Promise.all([
+    auth(),
+    getSiteSettings(),
+  ]);
 
   // Redirect ke login jika belum login
   if (!session?.user) {
@@ -22,16 +26,9 @@ export default async function AdminLayout({
 
   return (
     <SessionProvider session={session}>
-      <div className="min-h-screen bg-muted/30">
-        {/* Sidebar */}
-        <AdminSidebar />
-
-        {/* Main Content */}
-        <div className="lg:pl-64 transition-all duration-300">
-          <AdminHeader />
-          <main className="p-6">{children}</main>
-        </div>
-      </div>
+      <AdminLayoutClient logoUrl={settings.mosqueLogo}>
+        {children}
+      </AdminLayoutClient>
     </SessionProvider>
   );
 }

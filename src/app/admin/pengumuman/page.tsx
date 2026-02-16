@@ -16,7 +16,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -70,9 +71,9 @@ interface Announcement {
 }
 
 const typeStyles: Record<AnnouncementType, { badge: string; icon: typeof Info }> = {
-  INFO: { badge: "bg-emerald-100 text-emerald-800 border-emerald-200", icon: Info },
-  WARNING: { badge: "bg-amber-100 text-amber-800 border-amber-200", icon: AlertTriangle },
-  URGENT: { badge: "bg-red-100 text-red-800 border-red-200", icon: AlertCircle },
+  INFO: { badge: "bg-emerald-50 text-emerald-600 border-emerald-100", icon: Info },
+  WARNING: { badge: "bg-amber-50 text-amber-600 border-amber-100", icon: AlertTriangle },
+  URGENT: { badge: "bg-red-50 text-red-600 border-red-100", icon: AlertCircle },
 };
 
 const typeLabels: Record<AnnouncementType, string> = {
@@ -168,198 +169,187 @@ export default function AnnouncementAdminPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Pengumuman</h1>
-          <p className="text-muted-foreground">
-            Kelola pengumuman yang tampil di banner website
-          </p>
-        </div>
-        <Dialog open={dialogOpen} onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) resetForm();
-        }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Tambah Pengumuman
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingId ? "Edit Pengumuman" : "Tambah Pengumuman Baru"}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="message">Pesan Pengumuman</Label>
-                <Input
-                  id="message"
-                  placeholder="Contoh: Shalat Jumat dipindahkan ke lapangan"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Tipe</Label>
-                  <Select value={type} onValueChange={(v) => setType(v as AnnouncementType)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="INFO">🟢 Informasi</SelectItem>
-                      <SelectItem value="WARNING">🟡 Peringatan</SelectItem>
-                      <SelectItem value="URGENT">🔴 Penting</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priority">Prioritas</Label>
-                  <Input
-                    id="priority"
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={priority}
-                    onChange={(e) => setPriority(Number(e.target.value))}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate">Tanggal Mulai (opsional)</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endDate">Tanggal Berakhir (opsional)</Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Batal</Button>
-              </DialogClose>
-              <Button onClick={handleSave} disabled={saving || !message.trim()}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editingId ? "Simpan Perubahan" : "Tambah"}
+    <div className="animate-fade-in">
+      <AdminPageHeader 
+        title="Pengumuman" 
+        description="Kelola running text dan pengumuman banner website"
+        action={
+          <Dialog open={dialogOpen} onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) resetForm();
+          }}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Tambah Pengumuman
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingId ? "Edit Pengumuman" : "Tambah Pengumuman Baru"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="message">Pesan Pengumuman</Label>
+                  <Input
+                    id="message"
+                    placeholder="Contoh: Shalat Jumat dipindahkan ke lapangan"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Tipe</Label>
+                    <Select value={type} onValueChange={(v) => setType(v as AnnouncementType)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="INFO">🟢 Informasi</SelectItem>
+                        <SelectItem value="WARNING">🟡 Peringatan</SelectItem>
+                        <SelectItem value="URGENT">🔴 Penting</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="priority">Prioritas</Label>
+                    <Input
+                      id="priority"
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={priority}
+                      onChange={(e) => setPriority(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="startDate">Tanggal Mulai (opsional)</Label>
+                    <Input
+                      id="startDate"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="endDate">Tanggal Berakhir (opsional)</Label>
+                    <Input
+                      id="endDate"
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Batal</Button>
+                </DialogClose>
+                <Button onClick={handleSave} disabled={saving || !message.trim()} className="bg-blue-600 hover:bg-blue-700">
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {editingId ? "Simpan Perubahan" : "Tambah"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        }
+      />
 
-      {/* Announcements List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Megaphone className="h-5 w-5" />
-            Daftar Pengumuman
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AdminCard title={`Daftar Pengumuman (${announcements.length})`}>
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
             </div>
           ) : announcements.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Megaphone className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">Belum ada pengumuman</p>
-              <p className="text-xs mt-1">Klik &quot;Tambah Pengumuman&quot; untuk memulai</p>
+            <div className="text-center py-16">
+              <div className="bg-gray-50 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
+                 <Megaphone className="h-10 w-10 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Belum ada pengumuman</h3>
+              <p className="text-gray-500 mb-6">Tambahkan pengumuman penting untuk jamaah website.</p>
+              <Button variant="outline" onClick={() => setDialogOpen(true)} className="border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600">
+                Buat Pengumuman
+              </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {announcements.map((announcement) => {
                 const style = typeStyles[announcement.type];
                 const Icon = style.icon;
                 return (
                   <div
                     key={announcement.id}
-                    className={`flex items-start gap-4 p-4 rounded-xl border transition-colors ${
+                    className={`flex items-start gap-5 p-5 rounded-xl border transition-all duration-200 group ${
                       announcement.isActive
-                        ? "bg-background"
-                        : "bg-muted/50 opacity-60"
+                        ? "bg-white border-gray-100 hover:border-blue-200 hover:shadow-sm"
+                        : "bg-gray-50 border-gray-100 opacity-70"
                     }`}
                   >
                     {/* Icon */}
-                    <div className={`flex-shrink-0 p-2 rounded-lg ${style.badge}`}>
-                      <Icon className="h-4 w-4" />
+                    <div className={`flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center ${style.badge}`}>
+                      <Icon className="h-5 w-5" />
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm leading-relaxed">
+                    <div className="flex-1 min-w-0 pt-1">
+                      <p className="font-semibold text-gray-900 leading-relaxed mb-2">
                         {announcement.message}
                       </p>
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
-                        <Badge variant="outline" className={`text-xs ${style.badge}`}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className={`text-xs font-semibold border-none ${style.badge}`}>
                           {typeLabels[announcement.type]}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600 border-none font-medium">
                           Prioritas: {announcement.priority}
                         </Badge>
                         {announcement.isActive ? (
-                          <Badge className="text-xs bg-emerald-100 text-emerald-800 border-emerald-200">
+                          <Badge className="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-none font-semibold">
                             Aktif
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs bg-gray-200 text-gray-600 hover:bg-gray-300 border-none">
                             Nonaktif
                           </Badge>
                         )}
-                        {announcement.startDate && (
-                          <span className="text-xs text-muted-foreground">
-                            Mulai:{" "}
-                            {format(new Date(announcement.startDate), "d MMM yyyy", {
-                              locale: localeId,
-                            })}
-                          </span>
-                        )}
-                        {announcement.endDate && (
-                          <span className="text-xs text-muted-foreground">
-                            Sampai:{" "}
-                            {format(new Date(announcement.endDate), "d MMM yyyy", {
-                              locale: localeId,
-                            })}
-                          </span>
+                        {(announcement.startDate || announcement.endDate) && (
+                          <div className="text-xs text-gray-400 font-medium ml-1 flex items-center gap-1">
+                            <span>
+                              {announcement.startDate ? format(new Date(announcement.startDate), "d MMM", { locale: localeId }) : "..."}
+                            </span>
+                            <span>-</span>
+                            <span>
+                              {announcement.endDate ? format(new Date(announcement.endDate), "d MMM", { locale: localeId }) : "..."}
+                            </span>
+                          </div>
                         )}
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex items-center gap-1 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                         onClick={() => handleToggle(announcement.id)}
                         title={announcement.isActive ? "Nonaktifkan" : "Aktifkan"}
                       >
                         {announcement.isActive ? (
-                          <ToggleRight className="h-4 w-4 text-emerald-600" />
+                          <ToggleRight className="h-5 w-5 text-emerald-500" />
                         ) : (
-                          <ToggleLeft className="h-4 w-4 text-muted-foreground" />
+                          <ToggleLeft className="h-5 w-5" />
                         )}
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                         onClick={() => openEditDialog(announcement)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -369,12 +359,12 @@ export default function AnnouncementAdminPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="border-t-4 border-t-red-500">
                           <AlertDialogHeader>
                             <AlertDialogTitle>Hapus Pengumuman?</AlertDialogTitle>
                             <AlertDialogDescription>
@@ -385,7 +375,7 @@ export default function AnnouncementAdminPage() {
                             <AlertDialogCancel>Batal</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(announcement.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              className="bg-red-600 text-white hover:bg-red-700 border-none"
                             >
                               Hapus
                             </AlertDialogAction>
@@ -398,8 +388,7 @@ export default function AnnouncementAdminPage() {
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+      </AdminCard>
     </div>
   );
 }

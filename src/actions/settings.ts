@@ -26,6 +26,7 @@ export async function updateSiteSettings(data: {
   mosqueProvince?: string;
   mosquePostcode?: string;
   mosqueDescription?: string;
+  mosqueLogo?: string;
   phone?: string;
   whatsapp?: string;
   email?: string;
@@ -50,6 +51,7 @@ export async function updateSiteSettings(data: {
       mosqueProvince: data.mosqueProvince,
       mosquePostcode: data.mosquePostcode,
       mosqueDescription: data.mosqueDescription,
+      mosqueLogo: data.mosqueLogo,
       phone: data.phone,
       whatsapp: data.whatsapp,
       email: data.email,

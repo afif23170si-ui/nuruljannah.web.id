@@ -52,7 +52,12 @@ const navigation = [
   { name: "Galeri", href: "/galeri", icon: Images },
 ];
 
-export function Header() {
+interface HeaderProps {
+  logoUrl?: string | null;
+  mosqueName?: string;
+}
+
+export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
@@ -117,15 +122,15 @@ export function Header() {
             <Link href="/" className="flex items-center gap-2 group">
               <div className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-emerald-900/10 shadow-sm transition-transform group-hover:scale-105">
                 <Image 
-                  src="/logo.webp" 
-                  alt="Logo Nurul Jannah" 
+                  src={logoUrl || "/logo.webp"} 
+                  alt={`Logo ${mosqueName}`} 
                   fill 
                   className="object-cover"
                   priority
                 />
               </div>
               <span className="font-serif font-bold text-lg tracking-tight text-emerald-950">
-                Nurul Jannah
+                {mosqueName}
               </span>
             </Link>
           </div>
@@ -276,15 +281,15 @@ export function Header() {
                 <div className="flex items-center gap-3 px-2">
                   <div className="relative h-12 w-12 overflow-hidden rounded-full">
                   <Image 
-                    src="/logo.webp" 
-                    alt="Logo Nurul Jannah" 
+                    src={logoUrl || "/logo.webp"} 
+                    alt={`Logo ${mosqueName}`} 
                     fill 
                     className="object-cover"
                     priority
                   />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold font-serif">Masjid Nurul Jannah</h2>
+                    <h2 className="text-xl font-bold font-serif">Masjid {mosqueName}</h2>
                     <p className="text-xs text-muted-foreground">Menu Navigasi</p>
                   </div>
                 </div>

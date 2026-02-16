@@ -23,13 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { createUser, updateUser } from "@/actions/users";
 import { Loader2 } from "lucide-react";
 
@@ -107,16 +101,8 @@ export default function UserForm({ user }: UserFormProps) {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>{isEditing ? "Edit User" : "Tambah User Baru"}</CardTitle>
-        <CardDescription>
-          {isEditing
-            ? "Perbarui informasi user"
-            : "Tambahkan user baru ke sistem"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <AdminCard title={isEditing ? "Edit User" : "Tambah User Baru"} description={isEditing ? "Perbarui informasi user" : "Tambahkan user baru ke sistem"} className="max-w-2xl mx-auto">
+      <div className="space-y-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -221,7 +207,7 @@ export default function UserForm({ user }: UserFormProps) {
             </div>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </AdminCard>
   );
 }

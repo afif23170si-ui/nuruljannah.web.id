@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { EventForm } from "@/components/admin/EventForm";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 
 export const metadata: Metadata = {
   title: "Tambah Agenda",
@@ -9,12 +10,15 @@ export const metadata: Metadata = {
 export default function NewEventPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Tambah Agenda</h1>
-        <p className="text-muted-foreground">
-          Buat agenda kegiatan masjid baru
-        </p>
-      </div>
+      <AdminPageHeader 
+        title="Tambah Agenda" 
+        description="Buat agenda kegiatan masjid baru"
+        breadcrumbs={[
+            { label: "Dashboard", href: "/admin" },
+            { label: "Agenda", href: "/admin/kajian" },
+            { label: "Buat Baru" }
+        ]}
+      />
       <EventForm />
     </div>
   );

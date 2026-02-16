@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { createStudent, updateStudent } from "@/actions/tpa";
@@ -92,8 +92,7 @@ export function StudentForm({ initialData, classes, isEditing = false }: Student
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card>
-          <CardContent className="pt-6 space-y-4">
+        <AdminCard>
             <FormField
               control={form.control}
               name="name"
@@ -226,8 +225,7 @@ export function StudentForm({ initialData, classes, isEditing = false }: Student
               )}
               {isEditing ? "Simpan Perubahan" : "Daftarkan Santri"}
             </Button>
-          </CardContent>
-        </Card>
+        </AdminCard>
       </form>
     </Form>
   );

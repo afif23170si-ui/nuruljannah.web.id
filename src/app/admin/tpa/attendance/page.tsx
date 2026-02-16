@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import { getClasses, getStudents, getAttendance } from "@/actions/tpa";
 import { AttendanceSheet } from "@/components/admin/tpa/AttendanceSheet";
 import { Loader2 } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 
 export const metadata: Metadata = {
   title: "Absensi Santri",
@@ -50,12 +51,15 @@ export default async function AttendancePage({ searchParams }: AttendancePagePro
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Absensi Harian</h1>
-        <p className="text-muted-foreground">
-          Catat kehadiran santri berdasarkan kelas dan tanggal
-        </p>
-      </div>
+      <AdminPageHeader 
+        title="Absensi Harian" 
+        description="Catat kehadiran santri berdasarkan kelas dan tanggal"
+        breadcrumbs={[
+            { label: "Dashboard", href: "/admin" },
+            { label: "TPA", href: "/admin/tpa" },
+            { label: "Absensi" }
+        ]}
+      />
       
       <Suspense fallback={<LoadingFallback />}>
         <AttendanceSheet 

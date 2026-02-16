@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, Save, ArrowLeft } from "lucide-react";
@@ -157,11 +157,8 @@ export function EventForm({ initialData }: EventFormProps) {
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Detail Agenda</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Detail Agenda">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="title"
@@ -233,17 +230,14 @@ export function EventForm({ initialData }: EventFormProps) {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </div>
 
           {/* Sidebar Settings */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pengaturan</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Pengaturan">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="category"
@@ -385,11 +379,11 @@ export function EventForm({ initialData }: EventFormProps) {
                     )}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
 
-            <Card>
-              <CardContent className="pt-6 space-y-3">
+            <AdminCard>
+                <div className="space-y-3">
                 <Button
                   type="submit"
                   className="w-full gap-2"
@@ -402,8 +396,8 @@ export function EventForm({ initialData }: EventFormProps) {
                   )}
                   {initialData ? "Perbarui Agenda" : "Simpan Agenda"}
                 </Button>
-              </CardContent>
-            </Card>
+                </div>
+            </AdminCard>
           </div>
         </div>
       </form>

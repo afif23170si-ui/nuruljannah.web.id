@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -107,61 +107,53 @@ export function FinanceForm() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Transaction Type */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Jenis Transaksi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={(val) => handleTypeChange(val as "INCOME" | "EXPENSE")}
-                          defaultValue={field.value}
-                          className="grid grid-cols-2 gap-4"
+            <AdminCard title="Jenis Transaksi">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={(val) => handleTypeChange(val as "INCOME" | "EXPENSE")}
+                        defaultValue={field.value}
+                        className="grid grid-cols-2 gap-4"
+                      >
+                        <Label
+                          htmlFor="income"
+                          className={`flex items-center justify-center gap-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                            field.value === "INCOME"
+                              ? "border-green-500 bg-green-50 dark:bg-green-950"
+                              : "border-muted hover:bg-accent"
+                          }`}
                         >
-                          <Label
-                            htmlFor="income"
-                            className={`flex items-center justify-center gap-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
-                              field.value === "INCOME"
-                                ? "border-green-500 bg-green-50 dark:bg-green-950"
-                                : "border-muted hover:bg-accent"
-                            }`}
-                          >
-                            <RadioGroupItem value="INCOME" id="income" className="sr-only" />
-                            <TrendingUp className="h-5 w-5 text-green-600" />
-                            <span className="font-medium">Pemasukan</span>
-                          </Label>
-                          <Label
-                            htmlFor="expense"
-                            className={`flex items-center justify-center gap-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
-                              field.value === "EXPENSE"
-                                ? "border-red-500 bg-red-50 dark:bg-red-950"
-                                : "border-muted hover:bg-accent"
-                            }`}
-                          >
-                            <RadioGroupItem value="EXPENSE" id="expense" className="sr-only" />
-                            <TrendingDown className="h-5 w-5 text-red-600" />
-                            <span className="font-medium">Pengeluaran</span>
-                          </Label>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+                          <RadioGroupItem value="INCOME" id="income" className="sr-only" />
+                          <TrendingUp className="h-5 w-5 text-green-600" />
+                          <span className="font-medium">Pemasukan</span>
+                        </Label>
+                        <Label
+                          htmlFor="expense"
+                          className={`flex items-center justify-center gap-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                            field.value === "EXPENSE"
+                              ? "border-red-500 bg-red-50 dark:bg-red-950"
+                              : "border-muted hover:bg-accent"
+                          }`}
+                        >
+                          <RadioGroupItem value="EXPENSE" id="expense" className="sr-only" />
+                          <TrendingDown className="h-5 w-5 text-red-600" />
+                          <span className="font-medium">Pengeluaran</span>
+                        </Label>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AdminCard>
 
             {/* Transaction Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Detail Transaksi</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Detail Transaksi">
+              <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
@@ -212,17 +204,14 @@ export function FinanceForm() {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Kategori</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <AdminCard title="Kategori">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="category"
@@ -247,11 +236,11 @@ export function FinanceForm() {
                     </FormItem>
                   )}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </AdminCard>
 
-            <Card>
-              <CardContent className="pt-6">
+            <AdminCard>
+                <div className="space-y-3">
                 <Button type="submit" className="w-full gap-2" disabled={isLoading}>
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -260,8 +249,8 @@ export function FinanceForm() {
                   )}
                   Simpan Transaksi
                 </Button>
-              </CardContent>
-            </Card>
+                </div>
+            </AdminCard>
           </div>
         </div>
       </form>

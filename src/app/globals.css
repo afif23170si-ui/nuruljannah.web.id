@@ -314,17 +314,53 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   }
 
-  /* Navigation Glass */
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Metronic Style - Search & Navigation */
+  .metron-nav-active {
+    background-color: #EEF6FF;
+    color: #006AE6;
   }
 
-  .dark .glass-nav {
-    background: rgba(10, 20, 15, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  .metron-nav-hover:hover {
+    background-color: #F9F9F9;
+    color: #006AE6;
+    transition: all 0.2s ease;
+  }
+
+  /* Admin Sidebar - Solid */
+  .metron-sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid #F1F1F4;
+    box-shadow: none;
+  }
+
+  .dark .metron-sidebar {
+    background: #1e1e2d;
+    border-right: 1px solid #2b2b40;
+  }
+
+  /* Admin Header - Solid */
+  .metron-header {
+    background: #FFFFFF;
+    border-bottom: 1px solid #F1F1F4;
+  }
+
+  .dark .metron-header {
+    background: #1e1e2d; /* Metronic Dark Sidebar color */
+    border-bottom: 1px solid #2b2b40;
+  }
+
+  /* Metronic Card - Solid & Clean */
+  .metron-card {
+    background: #FFFFFF;
+    border: 1px solid #F1F1F4;
+    border-radius: 0.75rem; /* 12px */
+    box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03);
+  }
+
+  .dark .metron-card {
+    background: #1e1e2d;
+    border: 1px solid #2b2b40;
+    box-shadow: none;
   }
 
   /* Animations */

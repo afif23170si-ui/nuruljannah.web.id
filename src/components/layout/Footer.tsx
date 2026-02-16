@@ -13,7 +13,12 @@ import {
   ArrowUpRight
 } from "lucide-react";
 
-export function Footer() {
+interface FooterProps {
+  logoUrl?: string | null;
+  mosqueName?: string;
+}
+
+export function Footer({ logoUrl, mosqueName = "Nurul Jannah" }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -21,12 +26,7 @@ export function Footer() {
       {/* Background Pattern - Subtle Noise/Grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
       
-      {/* Big Watermark Typography */}
-      <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full text-center overflow-hidden pointer-events-none select-none z-0">
-        <h1 className="font-serif font-black text-[18vw] md:text-[16rem] leading-none tracking-tighter text-emerald-950 opacity-[0.03] whitespace-nowrap">
-          Nurul Jannah
-        </h1>
-      </div>
+
       
 
 
@@ -38,14 +38,14 @@ export function Footer() {
              <div className="flex items-center gap-4 group">
               <div className="relative h-12 w-12 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
                 <Image 
-                  src="/logo.webp" 
-                  alt="Logo Nurul Jannah" 
+                  src={logoUrl || "/logo.webp"} 
+                  alt={`Logo ${mosqueName}`} 
                   fill 
                   className="object-cover"
                 />
               </div>
               <div>
-                <h3 className="font-serif font-bold text-2xl tracking-tight text-emerald-950">Nurul Jannah</h3>
+                <h3 className="font-serif font-bold text-2xl tracking-tight text-emerald-950">{mosqueName}</h3>
                 <p className="text-emerald-700 text-sm font-medium tracking-wide uppercase">Masjid Ikatan Umat</p>
               </div>
             </div>
@@ -161,7 +161,7 @@ export function Footer() {
         <div className="border-t border-zinc-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
             <p className="text-zinc-500 text-xs tracking-wide">
-              © {currentYear} Masjid Nurul Jannah
+              © {currentYear} Masjid {mosqueName}
             </p>
             <div className="hidden md:block h-1 w-1 rounded-full bg-zinc-300"></div>
             <p className="text-zinc-500 text-xs tracking-wide hover:text-emerald-700 transition-colors cursor-default">
