@@ -26,7 +26,7 @@ export default async function AdminLayout({
 
   return (
     <SessionProvider session={session}>
-      <AdminLayoutClient logoUrl={settings.mosqueLogo}>
+      <AdminLayoutClient logoUrl={settings.logoUrl}>
         {children}
       </AdminLayoutClient>
     </SessionProvider>

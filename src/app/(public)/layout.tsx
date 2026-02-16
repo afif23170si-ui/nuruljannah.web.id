@@ -22,9 +22,9 @@ export default async function PublicLayout({
     <SessionProvider session={session}>
       <div className="relative flex min-h-screen flex-col">
         <AnnouncementBanner announcements={announcements} />
-        <Header logoUrl={settings.mosqueLogo} mosqueName={settings.mosqueName} />
+        <Header logoUrl={settings.logoUrl} mosqueName={settings.mosqueName} />
         <main className="flex-1">{children}</main>
-        <Footer logoUrl={settings.mosqueLogo} mosqueName={settings.mosqueName} />
+        <Footer logoUrl={settings.logoUrl} mosqueName={settings.mosqueName} />
       </div>
     </SessionProvider>
   );

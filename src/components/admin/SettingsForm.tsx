@@ -52,19 +52,25 @@ const bankAccountSchema = z.object({
 
 const settingsSchema = z.object({
   mosqueName: z.string().min(1, "Nama masjid wajib diisi"),
-  mosqueAddress: z.string().optional(),
-  mosqueCity: z.string().optional(),
-  mosqueProvince: z.string().optional(),
-  mosquePostcode: z.string().optional(),
-  mosqueDescription: z.string().optional(),
-  mosqueLogo: z.string().optional(),
+  tagline: z.string().optional(),
+  address: z.string().optional(),
+  village: z.string().optional(),
+  district: z.string().optional(),
+  city: z.string().optional(),
+  province: z.string().optional(),
+  postalCode: z.string().optional(),
+  description: z.string().optional(),
+  logoUrl: z.string().optional(),
   phone: z.string().optional(),
   whatsapp: z.string().optional(),
   email: z.string().email("Format email tidak valid").optional().or(z.literal("")),
   facebook: z.string().optional(),
   instagram: z.string().optional(),
+  twitter: z.string().optional(),
   youtube: z.string().optional(),
-  tiktok: z.string().optional(),
+  history: z.string().optional(),
+  vision: z.string().optional(),
+  mission: z.string().optional(),
   bankAccounts: z.array(bankAccountSchema).optional(),
 });
 
@@ -74,19 +80,25 @@ interface SettingsFormProps {
   settings: {
     id: string;
     mosqueName: string;
-    mosqueAddress: string | null;
-    mosqueCity: string | null;
-    mosqueProvince: string | null;
-    mosquePostcode: string | null;
-    mosqueDescription: string | null;
+    tagline: string | null;
+    address: string | null;
+    village: string | null;
+    district: string | null;
+    city: string | null;
+    province: string | null;
+    postalCode: string | null;
+    description: string | null;
     phone: string | null;
     whatsapp: string | null;
     email: string | null;
     facebook: string | null;
     instagram: string | null;
+    twitter: string | null;
     youtube: string | null;
-    tiktok: string | null;
-    mosqueLogo: string | null;
+    logoUrl: string | null;
+    history: string | null;
+    vision: string | null;
+    mission: string | null;
     bankAccounts: unknown;
   };
 }
@@ -106,19 +118,25 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       mosqueName: settings.mosqueName || "",
-      mosqueAddress: settings.mosqueAddress || "",
-      mosqueCity: settings.mosqueCity || "",
-      mosqueProvince: settings.mosqueProvince || "",
-      mosquePostcode: settings.mosquePostcode || "",
-      mosqueDescription: settings.mosqueDescription || "",
-      mosqueLogo: settings.mosqueLogo || "",
+      tagline: settings.tagline || "",
+      address: settings.address || "",
+      village: settings.village || "",
+      district: settings.district || "",
+      city: settings.city || "",
+      province: settings.province || "",
+      postalCode: settings.postalCode || "",
+      description: settings.description || "",
+      logoUrl: settings.logoUrl || "",
       phone: settings.phone || "",
       whatsapp: settings.whatsapp || "",
       email: settings.email || "",
       facebook: settings.facebook || "",
       instagram: settings.instagram || "",
+      twitter: settings.twitter || "",
       youtube: settings.youtube || "",
-      tiktok: settings.tiktok || "",
+      history: settings.history || "",
+      vision: settings.vision || "",
+      mission: settings.mission || "",
       bankAccounts: bankAccounts,
     },
   });
@@ -161,7 +179,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
         return;
       }
 
-      form.setValue("mosqueLogo", result.url!);
+      form.setValue("logoUrl", result.url!);
       toast.success("Logo berhasil diupload");
     } catch (error: any) {
       console.error("Logo upload error:", error);
@@ -273,7 +291,21 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="mosqueAddress"
+                  name="tagline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tagline</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Pusat Ibadah, Dakwah, dan Pendidikan" {...field} className="h-10 md:h-11" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="address"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Alamat</FormLabel>
@@ -292,7 +324,37 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="mosqueCity"
+                    name="village"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Kelurahan/Desa</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Kelurahan" {...field} className="h-10 md:h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="district"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Kecamatan</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Kecamatan" {...field} className="h-10 md:h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="city"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Kota/Kabupaten</FormLabel>
@@ -306,7 +368,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
                   <FormField
                     control={form.control}
-                    name="mosqueProvince"
+                    name="province"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Provinsi</FormLabel>
@@ -321,7 +383,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="mosquePostcode"
+                  name="postalCode"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Kode Pos</FormLabel>
@@ -335,7 +397,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="mosqueDescription"
+                  name="description"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Deskripsi Masjid</FormLabel>
@@ -357,7 +419,64 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="mosqueLogo"
+                  name="vision"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Visi</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Visi masjid..."
+                          rows={3}
+                          {...field}
+                          className="min-h-[80px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="mission"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Misi</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Misi masjid..."
+                          rows={3}
+                          {...field}
+                          className="min-h-[80px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="history"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sejarah Masjid</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Sejarah berdirinya masjid..."
+                          rows={4}
+                          {...field}
+                          className="min-h-[120px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="logoUrl"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Logo Masjid</FormLabel>
@@ -544,13 +663,13 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="tiktok"
+                  name="twitter"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>TikTok</FormLabel>
+                      <FormLabel>Twitter / X</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="https://tiktok.com/@masjidnuruljannah"
+                          placeholder="https://twitter.com/masjidnuruljannah"
                           {...field}
                           className="h-10 md:h-11"
                         />

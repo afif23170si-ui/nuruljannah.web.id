@@ -15,7 +15,7 @@ export default async function HomePage() {
   const finance = await getFinanceSummary();
 
   // Build location string from settings
-  const location = settings?.mosqueCity || settings?.mosqueProvince || "Indonesia";
+  const location = settings?.city || settings?.province || "Indonesia";
 
   return (
     <>

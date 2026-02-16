@@ -40,12 +40,6 @@ async function DkmSection() {
               <Badge variant="default" className="mb-3">
                 {member.position}
               </Badge>
-              {member.phone && (
-                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                  <Phone className="h-3 w-3" />
-                  {member.phone}
-                </p>
-              )}
             </CardContent>
           </Card>
         ))}

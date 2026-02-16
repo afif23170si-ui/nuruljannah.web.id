@@ -21,19 +21,27 @@ export async function getSiteSettings() {
 // Update site settings
 export async function updateSiteSettings(data: {
   mosqueName?: string;
-  mosqueAddress?: string;
-  mosqueCity?: string;
-  mosqueProvince?: string;
-  mosquePostcode?: string;
-  mosqueDescription?: string;
-  mosqueLogo?: string;
+  tagline?: string;
+  description?: string;
+  address?: string;
+  village?: string;
+  district?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  logoUrl?: string;
   phone?: string;
   whatsapp?: string;
   email?: string;
   facebook?: string;
   instagram?: string;
+  twitter?: string;
   youtube?: string;
-  tiktok?: string;
+  history?: string;
+  vision?: string;
+  mission?: string;
+  latitude?: number;
+  longitude?: number;
   bankAccounts?: Array<{
     bankName: string;
     accountNumber: string;
@@ -46,19 +54,27 @@ export async function updateSiteSettings(data: {
     where: { id: settings.id },
     data: {
       mosqueName: data.mosqueName,
-      mosqueAddress: data.mosqueAddress,
-      mosqueCity: data.mosqueCity,
-      mosqueProvince: data.mosqueProvince,
-      mosquePostcode: data.mosquePostcode,
-      mosqueDescription: data.mosqueDescription,
-      mosqueLogo: data.mosqueLogo,
+      tagline: data.tagline,
+      description: data.description,
+      address: data.address,
+      village: data.village,
+      district: data.district,
+      city: data.city,
+      province: data.province,
+      postalCode: data.postalCode,
+      logoUrl: data.logoUrl,
       phone: data.phone,
       whatsapp: data.whatsapp,
       email: data.email,
       facebook: data.facebook,
       instagram: data.instagram,
+      twitter: data.twitter,
       youtube: data.youtube,
-      tiktok: data.tiktok,
+      history: data.history,
+      vision: data.vision,
+      mission: data.mission,
+      latitude: data.latitude,
+      longitude: data.longitude,
       bankAccounts: data.bankAccounts,
     },
   });

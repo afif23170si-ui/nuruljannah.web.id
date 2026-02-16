@@ -62,14 +62,17 @@ async function main() {
   });
   console.log("✅ Pengelola TPA user created:", pengelolaTpa.email);
 
-  // Create Mosque Profile
-  const mosqueProfile = await prisma.mosqueProfile.upsert({
-    where: { id: "mosque-profile-1" },
+  // Create Site Settings (merged from MosqueProfile + SiteSettings)
+  const siteSettings = await prisma.siteSettings.upsert({
+    where: { id: "site-settings-1" },
     update: {},
     create: {
-      id: "mosque-profile-1",
-      name: "Masjid Nurul Jannah",
-      address: "Jl. Masjid Nurul Jannah No. 1, Jakarta, Indonesia",
+      id: "site-settings-1",
+      mosqueName: "Masjid Nurul Jannah",
+      tagline: "Pusat Ibadah, Dakwah, dan Pendidikan Islam",
+      address: "Jl. Masjid Nurul Jannah No. 1",
+      city: "Jakarta",
+      province: "DKI Jakarta",
       phone: "+62 21 1234 5678",
       email: "info@nuruljannah.or.id",
       description:
@@ -82,7 +85,7 @@ async function main() {
       longitude: 106.816666,
     },
   });
-  console.log("✅ Mosque profile created:", mosqueProfile.name);
+  console.log("✅ Site settings created:", siteSettings.mosqueName);
 
   // Create Sample DKM Members
   const dkmMembers = [

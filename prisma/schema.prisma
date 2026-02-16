@@ -21,6 +21,7 @@ model User {
   email         String    @unique
   password      String
   role          Role      @default(JAMAAH)
+  isActive      Boolean   @default(true)
   image         String?
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
@@ -32,6 +33,8 @@ model User {
   auditLogs  AuditLog[]
   accounts   Account[]
   sessions   Session[]
+
+  @@map("users")
 }
 
 model Account {
@@ -338,35 +341,18 @@ model TpaClass {
 // MOSQUE PROFILE
 // ==========================================
 
-model MosqueProfile {
-  id          String   @id @default(cuid())
-  name        String
-  address     String
-  phone       String?
-  email       String?
-  description String?  @db.Text
-  vision      String?  @db.Text
-  mission     String?  @db.Text
-  history     String?  @db.Text
-  latitude    Float?
-  longitude   Float?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+// MosqueProfile model removed — merged into SiteSettings
 
 model DkmMember {
   id        String   @id @default(cuid())
   name      String
   position  String
   photo     String?
-  phone     String?
   order     Int      @default(0)
   isActive  Boolean  @default(true)
-  period    String? // e.g., "2024-2027"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  period    String?
 
-  @@index([order])
+  @@map("dkm_members")
 }
 
 // ==========================================
@@ -391,32 +377,46 @@ model PrayerTimeSetting {
 model SiteSettings {
   id              String   @id @default(cuid())
   
-  // Mosque Profile
-  mosqueName      String   @default("Masjid Nurul Jannah")
-  mosqueAddress   String?
-  mosqueCity      String?
-  mosqueProvince  String?
-  mosquePostcode  String?
-  mosqueDescription String? @db.Text
-  mosqueLogo      String?
-  mosqueImage     String?
+  // Profile
+  mosqueName      String
+  tagline         String?
+  description     String?  @db.Text
+  address         String?  @db.Text
+  village         String?
+  district        String?
+  city            String?
+  province        String?
+  postalCode      String?
   
-  // Contact Info
+  // Contact
   phone           String?
-  whatsapp        String?
   email           String?
+  whatsapp        String?
   
   // Social Media
   facebook        String?
   instagram       String?
+  twitter         String?
   youtube         String?
-  tiktok          String?
   
-  // Bank Accounts (JSON array)
+  // Banking
   bankAccounts    Json?    // [{bankName, accountNumber, accountName}]
   
-  createdAt       DateTime @default(now())
+  // Location
+  latitude        Float?
+  longitude       Float?
+  
+  // Branding
+  logoUrl         String?
+  
+  // History & Vision
+  history         String?  @db.Text
+  vision          String?  @db.Text
+  mission         String?  @db.Text
+  
   updatedAt       DateTime @updatedAt
+  
+  @@map("site_settings")
 }
 
 // ==========================================

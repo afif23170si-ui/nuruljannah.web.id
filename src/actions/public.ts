@@ -3,35 +3,34 @@
 import prisma from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 
-// Get Mosque Profile
+// Get Mosque Profile — reads directly from SiteSettings (MosqueProfile removed)
 export const getMosqueProfile = unstable_cache(
   async () => {
-    // First try to get from SiteSettings (new)
     const siteSettings = await prisma.siteSettings.findFirst();
     
-    // Fallback to MosqueProfile (legacy)
-    const profile = await prisma.mosqueProfile.findFirst();
+    if (!siteSettings) return null;
     
-    // Merge data - prefer SiteSettings for address/contact
-    if (siteSettings) {
-      const fullAddress = [
-        siteSettings.mosqueAddress,
-        siteSettings.mosqueCity,
-        siteSettings.mosqueProvince,
-        siteSettings.mosquePostcode
-      ].filter(Boolean).join(", ");
-      
-      return {
-        ...profile,
-        name: siteSettings.mosqueName || profile?.name || "Masjid Nurul Jannah",
-        address: fullAddress || profile?.address,
-        phone: siteSettings.phone || siteSettings.whatsapp || profile?.phone,
-        email: siteSettings.email || profile?.email,
-        description: siteSettings.mosqueDescription || profile?.description,
-      };
-    }
+    const fullAddress = [
+      siteSettings.address,
+      siteSettings.village,
+      siteSettings.district,
+      siteSettings.city,
+      siteSettings.province,
+      siteSettings.postalCode
+    ].filter(Boolean).join(", ");
     
-    return profile;
+    return {
+      name: siteSettings.mosqueName || "Masjid Nurul Jannah",
+      address: fullAddress || null,
+      phone: siteSettings.phone || siteSettings.whatsapp,
+      email: siteSettings.email,
+      description: siteSettings.description,
+      vision: siteSettings.vision,
+      mission: siteSettings.mission,
+      history: siteSettings.history,
+      latitude: siteSettings.latitude,
+      longitude: siteSettings.longitude,
+    };
   },
   ["mosque-profile"],
   { revalidate: 60, tags: ["mosque-profile", "site-settings"] }
