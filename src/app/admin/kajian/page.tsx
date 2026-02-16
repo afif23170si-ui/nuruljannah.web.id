@@ -27,6 +27,7 @@ import {
   CalendarDays,
   Repeat,
   MapPin,
+  Edit,
 } from "lucide-react";
 import { DeleteEventButton } from "./DeleteEventButton";
 
