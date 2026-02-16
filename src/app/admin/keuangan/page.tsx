@@ -9,14 +9,7 @@ import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ResponsiveDataList } from "@/components/admin/shared/ResponsiveDataList";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -208,50 +201,73 @@ export default async function FinanceAdminPage() {
 
       {/* Recent Transactions */}
       <AdminCard title="Transaksi Terbaru">
-          {recentTransactions.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="bg-gray-50 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
-                 <Wallet className="h-10 w-10 text-gray-300" />
-              </div>
-              <p className="text-gray-500 mb-6">Belum ada transaksi tercatat.</p>
-              <Link href="/admin/keuangan/new">
-                <Button variant="outline" className="border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600">
-                  Tambah Transaksi Pertama
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-b border-gray-100">
-                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Tanggal</TableHead>
-                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Deskripsi</TableHead>
-                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">Kategori</TableHead>
-                  <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4 text-right">Jumlah</TableHead>
-                  <TableHead className="w-[70px] py-4"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentTransactions.map((tx) => (
-                  <TableRow key={tx.id} className="hover:bg-gray-50 border-b border-gray-50 transition-colors">
-                    <TableCell className="py-4 text-sm text-gray-500">
-                      {format(new Date(tx.date), "d MMM yyyy", { locale: id })}
-                    </TableCell>
-                    <TableCell className="py-4 font-medium text-gray-900 max-w-[200px] truncate">
-                      {tx.description}
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <Badge variant="outline" className="font-semibold text-gray-600 border-gray-200">{CATEGORY_LABELS[tx.category] || tx.category}</Badge>
-                    </TableCell>
-                    <TableCell
-                      className={`py-4 text-right font-bold ${
-                        tx.type === "INCOME" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {tx.type === "INCOME" ? "+" : "-"} {formatCurrency(Number(tx.amount)).replace("Rp", "")}
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <DropdownMenu>
+          <ResponsiveDataList 
+            data={recentTransactions}
+            keyExtractor={(tx) => tx.id}
+            columns={[
+              {
+                header: "Tanggal",
+                cell: (tx) => <span className="text-sm text-gray-500">{format(new Date(tx.date), "d MMM yyyy", { locale: id })}</span>
+              },
+              {
+                header: "Deskripsi",
+                cell: (tx) => <span className="font-medium text-gray-900 line-clamp-1">{tx.description}</span>
+              },
+              {
+                header: "Kategori",
+                cell: (tx) => <Badge variant="outline" className="font-semibold text-gray-600 border-gray-200">{CATEGORY_LABELS[tx.category] || tx.category}</Badge>
+              },
+              {
+                header: "Jumlah",
+                cell: (tx) => (
+                  <span className={`font-bold ${tx.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
+                    {tx.type === "INCOME" ? "+" : "-"} {formatCurrency(Number(tx.amount)).replace("Rp", "")}
+                  </span>
+                ),
+                className: "text-right"
+              },
+              {
+                header: "",
+                cell: (tx) => (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Edit className="mr-2 h-4 w-4 text-blue-500" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600 cursor-pointer focus:bg-red-50 focus:text-red-700">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Hapus
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ),
+                className: "text-right"
+              }
+            ]}
+            renderMobileItem={(tx) => (
+              <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col gap-3">
+                 <div className="flex justify-between items-start">
+                    <div className="flex flex-col gap-1">
+                       <span className="text-xs text-gray-500">{format(new Date(tx.date), "d MMM yyyy", { locale: id })}</span>
+                       <h4 className="font-bold text-gray-900 text-sm line-clamp-2">{tx.description}</h4>
+                    </div>
+                    <Badge variant="outline" className="font-semibold text-gray-600 border-gray-200 text-[10px] h-6">
+                        {CATEGORY_LABELS[tx.category] || tx.category}
+                    </Badge>
+                 </div>
+                 
+                 <div className="flex items-center justify-between pt-3 border-t border-dashed border-gray-100">
+                     <span className={`font-bold ${tx.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
+                        {tx.type === "INCOME" ? "+" : "-"} {formatCurrency(Number(tx.amount)).replace("Rp", "")}
+                     </span>
+                     
+                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50">
                             <MoreHorizontal className="h-4 w-4" />
@@ -268,12 +284,23 @@ export default async function FinanceAdminPage() {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                 </div>
+              </div>
+            )}
+            emptyMessage={
+              <div className="text-center py-16">
+                <div className="bg-gray-50 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
+                   <Wallet className="h-10 w-10 text-gray-300" />
+                </div>
+                <p className="text-gray-500 mb-6">Belum ada transaksi tercatat.</p>
+                <Link href="/admin/keuangan/new">
+                  <Button variant="outline" className="border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600">
+                    Tambah Transaksi Pertama
+                  </Button>
+                </Link>
+              </div>
+            }
+          />
       </AdminCard>
     </div>
   );

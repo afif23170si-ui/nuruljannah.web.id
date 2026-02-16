@@ -35,62 +35,7 @@ import {
 import { useState, useEffect } from "react";
 
 // Navigation Data
-const navigation = [
-  {
-    name: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-    roles: ["ADMIN", "BENDAHARA", "TAKMIR", "PENGELOLA_TPA"],
-  },
-  {
-    name: "Artikel & Berita",
-    href: "/admin/artikel",
-    icon: FileText,
-    roles: ["ADMIN", "TAKMIR"],
-  },
-  {
-    name: "Pengumuman",
-    href: "/admin/pengumuman",
-    icon: Megaphone,
-    roles: ["ADMIN", "TAKMIR"],
-  },
-  {
-    name: "Agenda Masjid",
-    href: "/admin/kajian",
-    icon: Calendar,
-    roles: ["ADMIN", "TAKMIR"],
-  },
-  {
-    name: "Keuangan",
-    href: "/admin/keuangan",
-    icon: Wallet,
-    roles: ["ADMIN", "BENDAHARA"],
-  },
-  {
-    name: "TPA / TPQ",
-    href: "/admin/tpa",
-    icon: GraduationCap,
-    roles: ["ADMIN", "PENGELOLA_TPA"],
-  },
-  {
-    name: "Galeri",
-    href: "/admin/gallery",
-    icon: Images,
-    roles: ["ADMIN", "TAKMIR"],
-  },
-  {
-    name: "Users",
-    href: "/admin/users",
-    icon: Users,
-    roles: ["ADMIN"],
-  },
-  {
-    name: "Pengaturan",
-    href: "/admin/settings",
-    icon: Settings,
-    roles: ["ADMIN"],
-  },
-];
+import { navigation } from "@/components/admin/navigation-data";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -119,7 +64,7 @@ export function AdminSidebar({ collapsed, setCollapsed, logoUrl }: SidebarProps)
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
+        "fixed inset-y-0 left-0 z-50 hidden lg:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
         isExpanded ? "w-[280px]" : "w-[80px]",
         (collapsed && hovered) && "shadow-2xl"
       )}
@@ -215,12 +160,15 @@ export function AdminSidebar({ collapsed, setCollapsed, logoUrl }: SidebarProps)
   );
 }
 
+import { MobileSidebar } from "@/components/admin/shared/MobileSidebar";
+
 interface HeaderProps {
    collapsed: boolean;
    setCollapsed: (v: boolean) => void;
+   logoUrl?: string | null;
 }
 
-export function AdminHeader({ collapsed, setCollapsed }: HeaderProps) {
+export function AdminHeader({ collapsed, setCollapsed, logoUrl }: HeaderProps) {
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
 
@@ -230,20 +178,18 @@ export function AdminHeader({ collapsed, setCollapsed }: HeaderProps) {
 
   return (
     <header className={cn(
-       "sticky top-0 z-40 flex h-[70px] items-center justify-between border-b border-gray-200 bg-white px-8 transition-all duration-300",
+       "sticky top-0 z-40 flex h-[70px] items-center justify-between border-b border-gray-200 bg-white px-4 lg:px-8 transition-all duration-300",
        // Note: Header width/margin is handled by the layout wrapper, so we just set height/style here.
     )}>
       {/* Left: Mobile Toggle & Title */}
       <div className="flex items-center gap-4">
-        <Button 
-           variant="ghost" 
-           size="icon" 
-           className="lg:hidden text-gray-500 hover:bg-gray-100"
-           onClick={() => setCollapsed(!collapsed)}
-        >
-          <Menu className="h-6 w-6" />
-        </Button>
-        <div className="hidden md:flex items-center gap-2 text-gray-400">
+        {/* Mobile Hamburger Sidebar */}
+        <div className="lg:hidden">
+           <MobileSidebar logoUrl={logoUrl} />
+        </div>
+
+        {/* Desktop Search */}
+        <div className="hidden lg:flex items-center gap-2 text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
            <Search className="h-4 w-4" />
            <span className="text-sm">Search (Ctrl + K)</span>
         </div>

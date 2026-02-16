@@ -19,15 +19,7 @@ import { Button } from "@/components/ui/button";
 import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { ResponsiveModal } from "@/components/admin/shared/ResponsiveModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -174,22 +166,20 @@ export default function AnnouncementAdminPage() {
         title="Pengumuman" 
         description="Kelola running text dan pengumuman banner website"
         action={
-          <Dialog open={dialogOpen} onOpenChange={(open) => {
-            setDialogOpen(open);
-            if (!open) resetForm();
-          }}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Tambah Pengumuman
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingId ? "Edit Pengumuman" : "Tambah Pengumuman Baru"}
-                </DialogTitle>
-              </DialogHeader>
+          <ResponsiveModal 
+            title={editingId ? "Edit Pengumuman" : "Tambah Pengumuman Baru"}
+            open={dialogOpen}
+            onOpenChange={(open) => {
+                setDialogOpen(open);
+                if (!open) resetForm();
+            }}
+            trigger={
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Tambah Pengumuman
+                </Button>
+            }
+          >
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
                   <Label htmlFor="message">Pesan Pengumuman</Label>
@@ -246,18 +236,16 @@ export default function AnnouncementAdminPage() {
                     />
                   </div>
                 </div>
+                
+                <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setDialogOpen(false)}>Batal</Button>
+                    <Button onClick={handleSave} disabled={saving || !message.trim()} className="bg-blue-600 hover:bg-blue-700">
+                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {editingId ? "Simpan Perubahan" : "Tambah"}
+                    </Button>
+                </div>
               </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Batal</Button>
-                </DialogClose>
-                <Button onClick={handleSave} disabled={saving || !message.trim()} className="bg-blue-600 hover:bg-blue-700">
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {editingId ? "Simpan Perubahan" : "Tambah"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          </ResponsiveModal>
         }
       />
 

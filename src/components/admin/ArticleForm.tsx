@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { Loader2, Save, Send, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { createArticle, updateArticle } from "@/actions/admin";
+import { FullScreenMobileForm } from "@/components/admin/shared/FullScreenMobileForm";
 
 const articleSchema = z.object({
   title: z.string().min(5, "Judul minimal 5 karakter"),
@@ -109,6 +110,42 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
   return (
     <Form {...form}>
       <form className="space-y-6">
+        <FullScreenMobileForm
+          mobileActionHeader={
+            <>
+                <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => router.back()}
+                    className="-ml-2"
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        type="button"
+                        variant="ghost" 
+                        size="sm"
+                        disabled={isLoading}
+                        onClick={form.handleSubmit((data) => onSubmit(data, "DRAFT"))}
+                        className="text-gray-500"
+                    >
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Draft"}
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        disabled={isLoading}
+                        onClick={form.handleSubmit((data) => onSubmit(data, "PUBLISHED"))}
+                        className="bg-blue-600 text-white"
+                    >
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publikasi"}
+                    </Button>
+                </div>
+            </>
+          }
+        >
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -230,7 +267,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
               </div>
             </AdminCard>
 
-            <AdminCard title="Aksi">
+            <AdminCard title="Aksi" className="hidden lg:block">
               <div className="space-y-3">
                 <Button
                   type="button"
@@ -263,6 +300,7 @@ export function ArticleForm({ initialData }: ArticleFormProps) {
             </AdminCard>
           </div>
         </div>
+        </FullScreenMobileForm>
       </form>
     </Form>
   );
