@@ -9,6 +9,7 @@ import {
   Settings,
   Images,
   Megaphone,
+  Moon,
 } from "lucide-react";
 
 export const navigation = [
@@ -34,6 +35,12 @@ export const navigation = [
     name: "Agenda Masjid",
     href: "/admin/kajian",
     icon: Calendar,
+    roles: ["ADMIN", "TAKMIR"],
+  },
+  {
+    name: "Ibadah",
+    href: "/admin/ibadah",
+    icon: Moon,
     roles: ["ADMIN", "TAKMIR"],
   },
   {

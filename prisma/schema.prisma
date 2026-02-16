@@ -360,14 +360,83 @@ model DkmMember {
 // ==========================================
 
 model PrayerTimeSetting {
-  id             String   @id @default(cuid())
-  method         Int      @default(20) // Calculation method (20 = KEMENAG)
-  latitude       Float
-  longitude      Float
-  timezone       String   @default("Asia/Jakarta")
-  iqamahOffsets  Json? // {"fajr": 10, "dhuhr": 10, ...}
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(cuid())
+  method          Int      @default(20) // Calculation method (20 = KEMENAG)
+  latitude        Float
+  longitude       Float
+  timezone        String   @default("Asia/Jakarta")
+  
+  // Iqamah offsets (in minutes after adzan)
+  fajrOffset      Int      @default(10)
+  dhuhrOffset     Int      @default(5)
+  asrOffset       Int      @default(5)
+  maghribOffset   Int      @default(5)
+  ishaOffset      Int      @default(10)
+  
+  updatedAt       DateTime @updatedAt
+  
+  @@map("prayer_time_settings")
+}
+
+model PrayerOfficer {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String?
+  role        OfficerRole
+  isActive    Boolean  @default(true)
+  notes       String?
+  
+  schedules   OfficerSchedule[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("prayer_officers")
+}
+
+model OfficerSchedule {
+  id          String   @id @default(cuid())
+  officerId   String
+  officer     PrayerOfficer @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  
+  date        DateTime @db.Date
+  prayer      PrayerTime
+  role        OfficerRole
+  
+  notes       String?
+  
+  @@unique([date, prayer, role])
+  @@map("officer_schedules")
+}
+
+model Khutbah {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  khatib      String
+  title       String
+  theme       String?
+  summary     String?  @db.Text
+  audioUrl    String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("khutbah")
+}
+
+enum OfficerRole {
+  IMAM
+  MUADZIN
+  KHATIB
+}
+
+enum PrayerTime {
+  FAJR
+  DHUHR
+  ASR
+  MAGHRIB
+  ISHA
+  JUMAT
 }
 
 // ==========================================
