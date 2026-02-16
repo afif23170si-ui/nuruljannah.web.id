@@ -29,44 +29,97 @@ Dokumentasi deploy website **Masjid Nurul Jannah** (Next.js 16) ke private serve
 
 ---
 
+## ❓ Kenapa Lokal Aman Tapi Server Error?
+
+| Penyebab | Penjelasan |
+|----------|------------|
+| `npm run dev` vs `npm run build` | Dev mode skip TypeScript error, build mode strict — import hilang langsung gagal |
+| Standalone mode | Build output di `.next/standalone/` butuh copy manual: static, public, env, server-wrapper |
+| Proxy chain | Cloudflare → OpenLiteSpeed → Node.js menyebabkan header duplikat (`X-Forwarded-Host`), perlu `server-wrapper.js` |
+| PM2 entry point | HARUS pakai `server-wrapper.js`, BUKAN `server.js` langsung |
+
+---
+
 ## 🔄 Update/Redeploy Website (Rutin)
 
-> Jalankan ini **setiap kali** ada perubahan code yang sudah di-push ke GitHub.
+> **WAJIB ikuti semua step secara urut!**
 
-### Di Mac (Lokal):
+### Step 1: Build Dulu di Lokal (WAJIB!)
+
+> ⚠️ **JANGAN langsung push sebelum build berhasil di lokal.** Ini mencegah 90% error di server.
 
 ```bash
 cd /Applications/MAMP/htdocs/nuruljannah
+npm run build
+```
+
+- ✅ Kalau berhasil → lanjut Step 2
+- ❌ Kalau error → fix dulu, baru ulangi build
+
+### Step 2: Push ke GitHub
+
+```bash
 git add .
 git commit -m "update: deskripsi perubahan"
 git push origin main
 ```
 
-### Di Server (SSH):
+### Step 3: Deploy di Server
 
+**Cara Cepat (Recommended):**
 ```bash
-# Connect SSH
 ssh kvm1@IP_SERVER -p 5903
 sudo su -
-
-# Pull & Rebuild
 cd /home/nuruljannah.web.id/app
+bash deploy.sh
+```
+
+**Cara Manual (jika perlu):**
+```bash
+ssh kvm1@IP_SERVER -p 5903
+sudo su -
+cd /home/nuruljannah.web.id/app
+
+# 1. Pull latest
 git pull origin main
+
+# 2. Install & Generate
 npm install
-export $(cat .env.local | grep -v '^#' | xargs) && npx prisma db push
 npx prisma generate
+
+# 3. Build
 npm run build
 
-# Copy files ke standalone (WAJIB setelah setiap build)
+# 4. Copy files ke standalone (WAJIB setelah setiap build!)
 cp -r .next/static .next/standalone/.next/static
 cp -r public .next/standalone/public
 cp .env.local .next/standalone/.env.local
+cp server-wrapper.js .next/standalone/server-wrapper.js
 
-# Restart app
-pm2 restart nuruljannah
+# 5. Restart PM2 (HARUS pakai server-wrapper.js!)
+pm2 delete nuruljannah 2>/dev/null || true
+PORT=4000 HOSTNAME=0.0.0.0 NODE_OPTIONS="--max-http-header-size=65536" \
+  pm2 start .next/standalone/server-wrapper.js --name nuruljannah
+pm2 save
 ```
 
-> ⚠️ **PENTING:** 3 perintah `cp` di atas WAJIB dijalankan setelah setiap `npm run build` karena folder `.next/standalone/` dibikin ulang saat build.
+### Step 4: Verifikasi
+
+```bash
+# Cek status
+pm2 status nuruljannah
+
+# Cek log (pastikan tidak ada error)
+pm2 logs nuruljannah --lines 10
+
+# Test website
+curl -I https://nuruljannah.web.id
+```
+
+> ⚠️ **PENTING:**
+> - 4 perintah `cp` di Step 3 WAJIB dijalankan setelah setiap `npm run build` karena folder `.next/standalone/` dibuat ulang saat build.
+> - PM2 HARUS start dengan `server-wrapper.js` (bukan `server.js`) untuk mengatasi bug proxy header duplikat.
+> - Jika ada perubahan schema Prisma: tambahkan `npx prisma db push` sebelum build.
 
 ---
 
