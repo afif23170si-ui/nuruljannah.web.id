@@ -1,22 +1,37 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-// Use Service Role Key (server-side only) — bypasses RLS completely
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
+// Lazy-initialized Supabase Admin client
+let supabaseAdmin: SupabaseClient | null = null;
+
+function getSupabaseAdmin(): SupabaseClient {
+  if (supabaseAdmin) return supabaseAdmin;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error("MISSING ENV VARS:", {
+      NEXT_PUBLIC_SUPABASE_URL: !!supabaseUrl,
+      SUPABASE_SERVICE_ROLE_KEY: !!serviceRoleKey,
+    });
+    throw new Error("Server configuration error: Missing Supabase credentials");
+  }
+
+  supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
     },
-  }
-);
+  });
+
+  return supabaseAdmin;
+}
 
 async function ensureBucketExists(bucketName: string) {
-  // Check if bucket exists
-  const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
+  const admin = getSupabaseAdmin();
+  const { data: buckets, error: listError } = await admin.storage.listBuckets();
 
   if (listError) {
     console.error("Failed to list buckets:", listError);
@@ -27,7 +42,7 @@ async function ensureBucketExists(bucketName: string) {
 
   if (!exists) {
     console.log(`Bucket "${bucketName}" not found. Creating...`);
-    const { error: createError } = await supabaseAdmin.storage.createBucket(bucketName, {
+    const { error: createError } = await admin.storage.createBucket(bucketName, {
       public: true,
       fileSizeLimit: 10485760, // 10MB
     });
@@ -52,6 +67,8 @@ export async function uploadLogo(formData: FormData) {
       return { success: false, error: "Ukuran file maksimal 2MB" };
     }
 
+    const admin = getSupabaseAdmin();
+
     // Ensure the media bucket exists
     await ensureBucketExists("media");
 
@@ -64,7 +81,7 @@ export async function uploadLogo(formData: FormData) {
     const buffer = Buffer.from(arrayBuffer);
 
     // Upload using admin client
-    const { error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await admin.storage
       .from("media")
       .upload(filePath, buffer, {
         contentType: file.type,
@@ -77,7 +94,7 @@ export async function uploadLogo(formData: FormData) {
     }
 
     // Get public URL
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = admin.storage
       .from("media")
       .getPublicUrl(filePath);
 
@@ -87,3 +104,4 @@ export async function uploadLogo(formData: FormData) {
     return { success: false, error: error.message || "Terjadi kesalahan saat upload" };
   }
 }
+
