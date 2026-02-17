@@ -121,70 +121,47 @@ export async function deletePrayerOfficer(id: string) {
 }
 
 // ============================
-// OFFICER SCHEDULES
+// OFFICER SCHEDULES (Weekly)
 // ============================
 
-export async function getOfficerSchedules(options?: {
-  startDate?: Date;
-  endDate?: Date;
-  prayer?: PrayerTime;
-  role?: OfficerRole;
-}) {
+// Get all schedules for a specific day
+export async function getSchedulesByDay(dayOfWeek: number) {
   return prisma.officerSchedule.findMany({
-    where: {
-      ...(options?.startDate && options?.endDate
-        ? { date: { gte: options.startDate, lte: options.endDate } }
-        : {}),
-      ...(options?.prayer ? { prayer: options.prayer } : {}),
-      ...(options?.role ? { role: options.role } : {}),
-    },
+    where: { dayOfWeek },
     include: { officer: true },
-    orderBy: [{ date: "asc" }, { prayer: "asc" }],
+    orderBy: { prayer: "asc" },
   });
 }
 
-export async function getWeeklySchedule(weekStart: Date) {
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 6);
-
+// Get the full weekly schedule (all 7 days)
+export async function getFullWeeklySchedule() {
   return prisma.officerSchedule.findMany({
-    where: {
-      date: { gte: weekStart, lte: weekEnd },
-    },
     include: { officer: true },
-    orderBy: [{ date: "asc" }, { prayer: "asc" }],
+    orderBy: [{ dayOfWeek: "asc" }, { prayer: "asc" }, { role: "asc" }],
   });
 }
 
-export async function createOfficerSchedule(data: {
-  officerId: string;
-  date: Date;
+// Upsert a schedule slot (create or update)
+export async function upsertOfficerSchedule(data: {
+  dayOfWeek: number;
   prayer: PrayerTime;
   role: OfficerRole;
+  officerId: string;
   notes?: string;
 }) {
-  const schedule = await prisma.officerSchedule.create({
-    data,
-    include: { officer: true },
-  });
-  revalidatePath("/admin/ibadah");
-  revalidatePath("/ibadah");
-  return schedule;
-}
-
-export async function updateOfficerSchedule(
-  id: string,
-  data: {
-    officerId?: string;
-    date?: Date;
-    prayer?: PrayerTime;
-    role?: OfficerRole;
-    notes?: string;
-  }
-) {
-  const schedule = await prisma.officerSchedule.update({
-    where: { id },
-    data,
+  const schedule = await prisma.officerSchedule.upsert({
+    where: {
+      dayOfWeek_prayer_role: {
+        dayOfWeek: data.dayOfWeek,
+        prayer: data.prayer,
+        role: data.role,
+      },
+    },
+    update: {
+      officerId: data.officerId,
+      notes: data.notes,
+    },
+    create: data,
     include: { officer: true },
   });
   revalidatePath("/admin/ibadah");
@@ -230,6 +207,7 @@ export async function getUpcomingKhutbah() {
 export async function createKhutbah(data: {
   date: Date;
   khatib: string;
+  muadzin?: string;
   title: string;
   theme?: string;
   summary?: string;
@@ -246,6 +224,7 @@ export async function updateKhutbah(
   data: {
     date?: Date;
     khatib?: string;
+    muadzin?: string;
     title?: string;
     theme?: string;
     summary?: string;
@@ -273,7 +252,7 @@ export async function deleteKhutbah(id: string) {
 
 export const getIbadahPublicData = unstable_cache(
   async () => {
-    const [prayerSettings, officers, upcomingKhutbah, recentKhutbah] =
+    const [prayerSettings, officers, upcomingKhutbah, recentKhutbah, weeklySchedule] =
       await Promise.all([
         getPrayerTimeSettings(),
         prisma.prayerOfficer.findMany({
@@ -285,26 +264,11 @@ export const getIbadahPublicData = unstable_cache(
           orderBy: { date: "desc" },
           take: 5,
         }),
+        prisma.officerSchedule.findMany({
+          include: { officer: true },
+          orderBy: [{ dayOfWeek: "asc" }, { prayer: "asc" }, { role: "asc" }],
+        }),
       ]);
-
-    // Get this week's schedule
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - dayOfWeek);
-    weekStart.setHours(0, 0, 0, 0);
-
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
-
-    const weeklySchedule = await prisma.officerSchedule.findMany({
-      where: {
-        date: { gte: weekStart, lte: weekEnd },
-      },
-      include: { officer: true },
-      orderBy: [{ date: "asc" }, { prayer: "asc" }],
-    });
 
     return {
       prayerSettings,
@@ -317,3 +281,4 @@ export const getIbadahPublicData = unstable_cache(
   ["ibadah-public-data"],
   { revalidate: 300 }
 );
+

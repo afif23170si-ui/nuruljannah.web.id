@@ -6,6 +6,7 @@ import {
   getAllPrayerOfficers,
   getKhutbahList,
   getPrayerTimeSettings,
+  getFullWeeklySchedule,
 } from "@/actions/ibadah";
 import { IbadahAdminClient } from "./IbadahAdminClient";
 
@@ -15,10 +16,11 @@ export const metadata: Metadata = {
 };
 
 export default async function IbadahAdminPage() {
-  const [officers, khutbahList, prayerSettings] = await Promise.all([
+  const [officers, khutbahList, prayerSettings, weeklySchedule] = await Promise.all([
     getAllPrayerOfficers(),
     getKhutbahList(),
     getPrayerTimeSettings(),
+    getFullWeeklySchedule(),
   ]);
 
   return (
@@ -32,6 +34,7 @@ export default async function IbadahAdminPage() {
         officers={officers}
         khutbahList={khutbahList}
         prayerSettings={prayerSettings}
+        weeklySchedule={weeklySchedule}
       />
     </div>
   );

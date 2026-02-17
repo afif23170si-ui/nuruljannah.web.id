@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Clock,
   Info,
-  Users,
   Mic2,
   AlarmClock,
   Sun,
@@ -14,7 +13,9 @@ import {
   CloudMoon,
   BookOpen,
 } from "lucide-react";
-import { PrayerTimesWidget } from "@/components/home/PrayerTimesWidget";
+import Image from "next/image";
+import { PrayerTimesCard } from "@/components/ibadah/PrayerTimesCard";
+import { WeeklySchedule } from "@/components/ibadah/WeeklySchedule";
 import { getIbadahPublicData } from "@/actions/ibadah";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +31,9 @@ const PRAYER_INFO = [
     name: "Subuh",
     arabic: "الفجر",
     description:
-      "Waktu shalat Subuh dimulai dari terbit fajar shadiq hingga terbit matahari.",
+      "Terbit fajar shadiq hingga terbit matahari.",
     rakaat: "2 rakaat",
-    sunnah: "2 rakaat sebelum (Qabliyah)",
+    sunnah: "2 sblm",
     icon: Sunrise,
     offsetKey: "fajrOffset" as const,
   },
@@ -40,9 +41,9 @@ const PRAYER_INFO = [
     name: "Dzuhur",
     arabic: "الظهر",
     description:
-      "Waktu shalat Dzuhur dimulai setelah matahari tergelincir dari tengah langit.",
+      "Matahari tergelincir.",
     rakaat: "4 rakaat",
-    sunnah: "2/4 rakaat sebelum, 2 rakaat sesudah",
+    sunnah: "2/4 sblm, 2 ssdh",
     icon: Sun,
     offsetKey: "dhuhrOffset" as const,
   },
@@ -50,9 +51,9 @@ const PRAYER_INFO = [
     name: "Ashar",
     arabic: "العصر",
     description:
-      "Waktu shalat Ashar dimulai ketika bayangan benda sama panjang dengan bendanya.",
+      "Bayangan benda sama panjang.",
     rakaat: "4 rakaat",
-    sunnah: "2/4 rakaat sebelum (tidak mu'akkad)",
+    sunnah: "2/4 sblm",
     icon: CloudMoon,
     offsetKey: "asrOffset" as const,
   },
@@ -60,9 +61,9 @@ const PRAYER_INFO = [
     name: "Maghrib",
     arabic: "المغرب",
     description:
-      "Waktu shalat Maghrib dimulai saat matahari terbenam hingga hilangnya mega merah.",
+      "Matahari terbenam.",
     rakaat: "3 rakaat",
-    sunnah: "2 rakaat sesudah",
+    sunnah: "2 ssdh",
     icon: Sunset,
     offsetKey: "maghribOffset" as const,
   },
@@ -70,401 +71,209 @@ const PRAYER_INFO = [
     name: "Isya",
     arabic: "العشاء",
     description:
-      "Waktu shalat Isya dimulai setelah hilangnya mega merah hingga pertengahan malam.",
+      "Hilangnya mega merah.",
     rakaat: "4 rakaat",
-    sunnah: "2 rakaat sesudah",
+    sunnah: "2 ssdh",
     icon: Moon,
     offsetKey: "ishaOffset" as const,
   },
 ];
 
-const ROLE_LABELS: Record<string, string> = {
-  IMAM: "Imam",
-  MUADZIN: "Muadzin",
-  KHATIB: "Khatib",
-};
-
 export default async function IbadahPage() {
   const data = await getIbadahPublicData();
 
-  const imams = data.officers.filter((o) => o.role === "IMAM");
-  const muadzins = data.officers.filter((o) => o.role === "MUADZIN");
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 via-white to-amber-50/30 py-16 md:py-20">
-        <div className="absolute inset-0 pattern-overlay opacity-20" />
-        <div className="container relative mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4 gap-1.5">
-            <Clock className="h-3 w-3" />
-            Ibadah
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-emerald-950">
-            Ibadah
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Jadwal shalat, adzan & iqomah, dan informasi ibadah harian di Masjid
-            Nurul Jannah
-          </p>
+    <div className="min-h-screen bg-white text-gray-900 pb-20">
+      {/* Hero Section - Clean & Minimal with Image */}
+      <section className="px-4 md:px-0 pt-4 md:pt-6">
+        <div className="relative h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/hero-masjid.webp"
+              alt="Masjid Nurul Jannah"
+              fill
+              className="object-cover opacity-80"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          </div>
+          
+          <div className="container relative z-10 mx-auto max-w-3xl text-center text-white pb-10 px-4">
+            <Badge variant="outline" className="mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+              Jadwal & Kegiatan
+            </Badge>
+            
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 md:mb-4 drop-shadow-sm">
+              Ibadah
+            </h1>
+            
+            <p className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto">
+              Informasi lengkap jadwal shalat, petugas, dan kegiatan ibadah harian di Masjid Nurul Jannah.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Prayer Times Widget */}
-      <section className="py-4">
-        <PrayerTimesWidget />
+      {/* Prayer Times Card - Overlapping Hero */}
+      <section className="px-4 -mt-16 md:-mt-20 relative z-20 mb-12 md:mb-20">
+        <div className="container mx-auto max-w-5xl">
+          <PrayerTimesCard 
+            latitude={data.prayerSettings.latitude}
+            longitude={data.prayerSettings.longitude}
+          />
+        </div>
       </section>
 
-      {/* Adzan & Iqomah + Jumat */}
-      <section className="py-12 md:py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Adzan & Iqomah - now data-driven */}
-            <Card className="border-l-4 border-l-emerald-500">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlarmClock className="h-5 w-5 text-emerald-600" />
-                  Jadwal Adzan & Iqomah
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Iqomah dilaksanakan setelah adzan dengan jeda waktu yang
-                  bervariasi agar jamaah memiliki waktu untuk bersiap.
-                </p>
-                <div className="grid grid-cols-2 gap-3">
+      {/* Adzan & Jumat Info */}
+      <section className="mb-12 md:mb-20 px-4 md:px-0">
+        <div className="mx-auto w-full md:w-[96%] max-w-7xl">
+          <div className="grid gap-6 md:gap-8 md:grid-cols-2">
+            
+            {/* Adzan & Iqomah */}
+            <div className="space-y-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Adzan & Iqomah</h2>
+              </div>
+              
+              <div className="bg-white rounded-xl border border-gray-100 p-1">
+                <div className="grid grid-cols-1 divide-y divide-gray-50">
                   {PRAYER_INFO.map((prayer) => (
-                    <div
-                      key={prayer.name}
-                      className="flex justify-between items-center rounded-lg border p-3"
-                    >
-                      <span className="text-sm font-medium">
-                        {prayer.name}
-                      </span>
-                      <Badge variant="secondary" className="text-xs">
+                    <div key={prayer.name} className="flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+                            <prayer.icon className="w-4 h-4" />
+                         </div>
+                         <span className="font-medium text-gray-700">{prayer.name}</span>
+                      </div>
+                      <div className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md">
                         +{data.prayerSettings[prayer.offsetKey]} menit
-                      </Badge>
+                      </div>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground italic">
-                  * Jeda iqomah dapat berubah sewaktu-waktu
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+              <p className="text-xs text-gray-400 px-2">
+                * Waktu iqomah dihitung setelah adzan selesai berkumandang.
+              </p>
+            </div>
 
-            {/* Shalat Jumat / Upcoming Khutbah */}
-            <Card className="border-l-4 border-l-amber-500">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mic2 className="h-5 w-5 text-amber-600" />
-                  Shalat Jumat
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between rounded-lg border p-3">
-                    <span className="text-sm text-muted-foreground">
-                      Adzan Pertama
-                    </span>
-                    <Badge variant="outline">11:30 WIB</Badge>
-                  </div>
-                  <div className="flex items-center justify-between rounded-lg border p-3">
-                    <span className="text-sm text-muted-foreground">
-                      Adzan Kedua
-                    </span>
-                    <Badge variant="outline">12:00 WIB</Badge>
-                  </div>
-                  <div className="flex items-center justify-between rounded-lg border p-3 bg-amber-50/50">
-                    <span className="text-sm font-medium">Khutbah Jumat</span>
-                    <Badge className="bg-amber-600">12:05 WIB</Badge>
-                  </div>
-                </div>
+            {/* Shalat Jumat */}
+            <div className="space-y-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Shalat Jumat</h2>
+              </div>
 
-                {/* Upcoming Khutbah Info */}
-                {data.upcomingKhutbah && (
-                  <div className="border-t pt-4 mt-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
-                      Khutbah Jumat Mendatang
-                    </p>
-                    <div className="bg-amber-50/50 rounded-lg p-3 space-y-1">
-                      <p className="font-semibold text-sm">
-                        {data.upcomingKhutbah.title}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Khatib: {data.upcomingKhutbah.khatib}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(data.upcomingKhutbah.date).toLocaleDateString(
-                          "id-ID",
-                          {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          }
-                        )}
-                      </p>
+              <div className="bg-white rounded-xl border border-gray-100 p-4 md:p-6">
+                {data.upcomingKhutbah ? (
+                  <div className="space-y-5">
+                    {/* Tanggal */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                        Jumat, {new Date(data.upcomingKhutbah.date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                      </span>
                     </div>
+
+                    {/* Judul Khutbah */}
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 leading-snug">
+                        {data.upcomingKhutbah.title}
+                      </h3>
+                      {data.upcomingKhutbah.theme && (
+                        <span className="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
+                          {data.upcomingKhutbah.theme}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Petugas */}
+                    <div className="pt-4 border-t border-gray-50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-500 text-sm">Khatib</span>
+                        <span className="text-sm font-semibold text-gray-900">{data.upcomingKhutbah.khatib}</span>
+                      </div>
+                      {data.upcomingKhutbah.muadzin && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-500 text-sm">Bilal / Muadzin</span>
+                          <span className="text-sm font-semibold text-gray-900">{data.upcomingKhutbah.muadzin}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="text-sm text-gray-400">Jadwal Jumat belum tersedia</p>
                   </div>
                 )}
+              </div>
+            </div>
 
-                <p className="text-sm text-muted-foreground">
-                  Jamaah diharapkan hadir sebelum adzan kedua. Disunnahkan
-                  mandi, memakai pakaian terbaik, dan memperbanyak shalawat.
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
 
-      {/* Imam & Muadzin - now data-driven */}
-      <section className="py-12 md:py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-emerald-950">
-              Imam & Muadzin
-            </h2>
-            <p className="text-muted-foreground">
-              Petugas ibadah harian Masjid Nurul Jannah
-            </p>
+      {/* Weekly Schedule */}
+      <section className="mb-12 md:mb-20 px-4 md:px-0">
+        <div className="mx-auto w-full md:w-[96%] max-w-7xl bg-emerald-950 py-16 md:py-24 rounded-2xl md:rounded-3xl relative overflow-hidden">
+          {/* Decorative background elements */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-5xl opacity-10 pointer-events-none">
+              <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-500 rounded-full blur-[100px]" />
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-400 rounded-full blur-[100px]" />
           </div>
 
-          {imams.length === 0 && muadzins.length === 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 max-w-2xl mx-auto">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-emerald-700" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                        Imam
-                      </p>
-                      <p className="font-semibold text-lg">
-                        Sesuai jadwal petugas
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
-                      <Mic2 className="h-6 w-6 text-amber-700" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                        Muadzin
-                      </p>
-                      <p className="font-semibold text-lg">
-                        Sesuai jadwal petugas
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="container mx-auto max-w-5xl relative z-10 px-4 md:px-8">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 md:mb-3">Petugas Ibadah</h2>
+              <p className="text-emerald-200/80 text-xs md:text-sm">Jadwal Imam dan Muadzin harian</p>
             </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-              {/* Imam List */}
-              {imams.length > 0 && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                        <Users className="h-4 w-4 text-emerald-700" />
-                      </div>
-                      Imam
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {imams.map((imam) => (
-                      <div
-                        key={imam.id}
-                        className="flex items-center gap-3 rounded-lg border p-3"
-                      >
-                        <div className="h-8 w-8 rounded-full bg-emerald-50 flex items-center justify-center text-sm font-bold text-emerald-700">
-                          {imam.name.charAt(0)}
-                        </div>
-                        <span className="font-medium text-sm">
-                          {imam.name}
-                        </span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
 
-              {/* Muadzin List */}
-              {muadzins.length > 0 && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
-                        <Mic2 className="h-4 w-4 text-amber-700" />
-                      </div>
-                      Muadzin
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {muadzins.map((muadzin) => (
-                      <div
-                        key={muadzin.id}
-                        className="flex items-center gap-3 rounded-lg border p-3"
-                      >
-                        <div className="h-8 w-8 rounded-full bg-amber-50 flex items-center justify-center text-sm font-bold text-amber-700">
-                          {muadzin.name.charAt(0)}
-                        </div>
-                        <span className="font-medium text-sm">
-                          {muadzin.name}
-                        </span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          )}
+            <WeeklySchedule schedule={data.weeklySchedule} variant="light" />
+          </div>
         </div>
       </section>
-
-      {/* Recent Khutbah Archive */}
-      {data.recentKhutbah.length > 0 && (
-        <section className="py-12 md:py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-emerald-950">
-                Arsip Khutbah Jumat
-              </h2>
-              <p className="text-muted-foreground">
-                Catatan khutbah Jumat terbaru
-              </p>
+      
+      {/* Khutbah Archive */}
+      {data.recentKhutbah && data.recentKhutbah.length > 0 && (
+         <section className="mb-20 px-4 md:px-0">
+            <div className="mx-auto w-full md:w-[96%] max-w-7xl">
+               <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900">Arsip Khutbah</h2>
+                  {/* Could add a 'View All' link here in future */}
+               </div>
+               
+               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {data.recentKhutbah.map((k) => (
+                     <div key={k.id} className="group p-5 rounded-xl border border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm transition-all">
+                        <div className="flex items-center gap-2 mb-3 text-xs text-gray-400">
+                           <BookOpen className="w-3.5 h-3.5" />
+                           <span>{new Date(k.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</span>
+                        </div>
+                        <h3 className="font-bold text-gray-900 mb-1 group-hover:text-emerald-700 transition-colors line-clamp-2">
+                           {k.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-3">{k.khatib}</p>
+                        {k.summary && (
+                           <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                              {k.summary}
+                           </p>
+                        )}
+                     </div>
+                  ))}
+               </div>
             </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
-              {data.recentKhutbah.map((k) => (
-                <Card key={k.id} className="card-hover">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <Badge
-                        variant="outline"
-                        className="bg-amber-50 text-amber-700 border-none text-xs"
-                      >
-                        <BookOpen className="h-3 w-3 mr-1" />
-                        Khutbah
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(k.date).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </div>
-                    <h3 className="font-semibold text-sm mb-1">{k.title}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      Khatib: {k.khatib}
-                    </p>
-                    {k.theme && (
-                      <Badge variant="secondary" className="mt-2 text-xs">
-                        {k.theme}
-                      </Badge>
-                    )}
-                    {k.summary && (
-                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                        {k.summary}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
+         </section>
       )}
 
-      {/* Prayer Information */}
-      <section className="py-12 md:py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-emerald-950">
-              Informasi Waktu Shalat
-            </h2>
-            <p className="text-muted-foreground">
-              Penjelasan tentang waktu-waktu shalat wajib
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {PRAYER_INFO.map((prayer) => {
-              const Icon = prayer.icon;
-              return (
-                <Card key={prayer.name} className="card-hover">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-emerald-600" />
-                        <CardTitle className="text-lg">
-                          {prayer.name}
-                        </CardTitle>
-                      </div>
-                      <span className="text-xl arabic-text text-emerald-700">
-                        {prayer.arabic}
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      {prayer.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">{prayer.rakaat}</Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {prayer.sunnah}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
+      {/* Footer Notes */}
+      <section className="px-4 pb-10">
+         <div className="container mx-auto max-w-3xl text-center">
+            <div className="inline-flex items-center gap-2 text-xs text-gray-400 bg-gray-50 px-4 py-2 rounded-full">
+               <Info className="w-3.5 h-3.5" />
+               <span>Waktu shalat mengacu pada standar Kemenag RI sesuai lokasi masjid.</span>
+            </div>
+         </div>
       </section>
 
-      {/* Notes */}
-      <section className="py-12 md:py-16">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto border-emerald-200/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Info className="h-5 w-5 text-emerald-600" />
-                Catatan Penting
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm text-muted-foreground">
-              <p>
-                <strong>Metode Perhitungan:</strong> Jadwal shalat menggunakan
-                metode perhitungan Kementerian Agama RI (KEMENAG) yang merupakan
-                standar resmi di Indonesia.
-              </p>
-              <p>
-                <strong>Lokasi:</strong> Waktu shalat dihitung berdasarkan
-                koordinat Masjid Nurul Jannah. Untuk lokasi yang berbeda, waktu
-                mungkin sedikit berbeda.
-              </p>
-              <p>
-                <strong>Waktu Iqamah:</strong> Waktu iqamah di masjid mengikuti
-                jeda yang tertera di atas setelah waktu adzan. Jamaah diharapkan
-                hadir sebelum waktu iqamah.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
     </div>
   );
 }

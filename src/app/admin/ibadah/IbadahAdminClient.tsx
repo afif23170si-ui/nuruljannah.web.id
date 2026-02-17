@@ -43,6 +43,7 @@ import {
   Phone,
   Loader2,
   Clock,
+  CalendarDays,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -53,8 +54,10 @@ import {
   updateKhutbah,
   deleteKhutbah,
   updatePrayerTimeSettings,
+  upsertOfficerSchedule,
+  deleteOfficerSchedule,
 } from "@/actions/ibadah";
-import type { OfficerRole } from "@prisma/client";
+import type { OfficerRole, PrayerTime } from "@prisma/client";
 
 type Officer = {
   id: string;
@@ -69,6 +72,7 @@ type KhutbahItem = {
   id: string;
   date: Date;
   khatib: string;
+  muadzin: string | null;
   title: string;
   theme: string | null;
   summary: string | null;
@@ -88,45 +92,78 @@ type PrayerSettings = {
   ishaOffset: number;
 };
 
+type ScheduleItem = {
+  id: string;
+  dayOfWeek: number;
+  prayer: PrayerTime;
+  role: OfficerRole;
+  officerId: string;
+  notes: string | null;
+  officer: { id: string; name: string; role: OfficerRole };
+};
+
 interface IbadahAdminClientProps {
   officers: Officer[];
   khutbahList: KhutbahItem[];
   prayerSettings: PrayerSettings;
+  weeklySchedule: ScheduleItem[];
 }
 
 const ROLE_LABELS: Record<string, string> = {
   IMAM: "Imam",
   MUADZIN: "Muadzin",
-  KHATIB: "Khatib",
 };
 
 const ROLE_COLORS: Record<string, string> = {
   IMAM: "bg-emerald-50 text-emerald-700 border-none",
   MUADZIN: "bg-blue-50 text-blue-700 border-none",
-  KHATIB: "bg-amber-50 text-amber-700 border-none",
 };
+
+const DAY_NAMES = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+
+const PRAYER_NAMES: Record<string, string> = {
+  FAJR: "Subuh",
+  DHUHR: "Dzuhur",
+  ASR: "Ashar",
+  MAGHRIB: "Maghrib",
+  ISHA: "Isya",
+};
+
+const PRAYER_ORDER: PrayerTime[] = ["FAJR", "DHUHR", "ASR", "MAGHRIB", "ISHA"] as PrayerTime[];
 
 export function IbadahAdminClient({
   officers,
   khutbahList,
   prayerSettings,
+  weeklySchedule,
 }: IbadahAdminClientProps) {
   return (
-    <Tabs defaultValue="officers" className="space-y-6">
+    <Tabs defaultValue="schedule" className="space-y-6">
       <TabsList className="bg-gray-100/80 p-1">
+        <TabsTrigger value="schedule" className="gap-1.5 text-xs sm:text-sm">
+          <CalendarDays className="h-4 w-4" />
+          <span className="hidden sm:inline">Jadwal</span>
+        </TabsTrigger>
         <TabsTrigger value="officers" className="gap-1.5 text-xs sm:text-sm">
           <Users className="h-4 w-4" />
           <span className="hidden sm:inline">Petugas</span>
         </TabsTrigger>
         <TabsTrigger value="khutbah" className="gap-1.5 text-xs sm:text-sm">
           <BookOpen className="h-4 w-4" />
-          <span className="hidden sm:inline">Khutbah</span>
+          <span className="hidden sm:inline">Jumat</span>
         </TabsTrigger>
         <TabsTrigger value="settings" className="gap-1.5 text-xs sm:text-sm">
           <Settings className="h-4 w-4" />
           <span className="hidden sm:inline">Pengaturan</span>
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="schedule">
+        <ScheduleTab
+          weeklySchedule={weeklySchedule}
+          officers={officers.filter((o) => o.isActive)}
+        />
+      </TabsContent>
 
       <TabsContent value="officers">
         <OfficersTab officers={officers} />
@@ -140,6 +177,275 @@ export function IbadahAdminClient({
         <PrayerSettingsTab settings={prayerSettings} />
       </TabsContent>
     </Tabs>
+  );
+}
+
+// ============================
+// SCHEDULE TAB
+// ============================
+
+function ScheduleTab({
+  weeklySchedule,
+  officers,
+}: {
+  weeklySchedule: ScheduleItem[];
+  officers: Officer[];
+}) {
+  const [isPending, startTransition] = useTransition();
+  const [editSlot, setEditSlot] = useState<{
+    dayOfWeek: number;
+    prayer: PrayerTime;
+    role: OfficerRole;
+    currentOfficerId?: string;
+    scheduleId?: string;
+  } | null>(null);
+
+  // Build a lookup map: dayOfWeek-prayer-role -> schedule item
+  const scheduleMap = new Map<string, ScheduleItem>();
+  weeklySchedule.forEach((s) => {
+    scheduleMap.set(`${s.dayOfWeek}-${s.prayer}-${s.role}`, s);
+  });
+
+  const getScheduleFor = (day: number, prayer: PrayerTime, role: OfficerRole) => {
+    return scheduleMap.get(`${day}-${prayer}-${role}`);
+  };
+
+  const imams = officers.filter((o) => o.role === "IMAM");
+  const muadzins = officers.filter((o) => o.role === "MUADZIN");
+
+  const handleAssign = (officerId: string) => {
+    if (!editSlot || !officerId) return;
+
+    startTransition(async () => {
+      try {
+        await upsertOfficerSchedule({
+          dayOfWeek: editSlot.dayOfWeek,
+          prayer: editSlot.prayer,
+          role: editSlot.role,
+          officerId,
+        });
+        toast.success("Jadwal berhasil disimpan");
+        setEditSlot(null);
+      } catch {
+        toast.error("Gagal menyimpan jadwal");
+      }
+    });
+  };
+
+  const handleRemove = (id: string) => {
+    startTransition(async () => {
+      try {
+        await deleteOfficerSchedule(id);
+        toast.success("Jadwal berhasil dihapus");
+        setEditSlot(null);
+      } catch {
+        toast.error("Gagal menghapus jadwal");
+      }
+    });
+  };
+
+  return (
+    <AdminCard
+      title="Jadwal Petugas Mingguan"
+      description="Atur imam dan muadzin untuk setiap waktu shalat per hari"
+    >
+      <Dialog open={!!editSlot} onOpenChange={(open) => !open && setEditSlot(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {editSlot && `${DAY_NAMES[editSlot.dayOfWeek]} — ${PRAYER_NAMES[editSlot.prayer]}`}
+            </DialogTitle>
+            <DialogDescription>
+              Pilih {editSlot?.role === "IMAM" ? "imam" : "muadzin"} untuk slot ini
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            {(editSlot?.role === "IMAM" ? imams : muadzins).map((officer) => (
+              <button
+                key={officer.id}
+                onClick={() => handleAssign(officer.id)}
+                disabled={isPending}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all
+                  ${officer.id === editSlot?.currentOfficerId
+                    ? "bg-emerald-50 border-emerald-300 ring-2 ring-emerald-200"
+                    : "hover:bg-gray-50 border-gray-100"
+                  }
+                `}
+              >
+                <div className={`h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold
+                  ${editSlot?.role === "IMAM" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
+                  {officer.name.charAt(0)}
+                </div>
+                <span className="font-medium text-sm">{officer.name}</span>
+                {officer.id === editSlot?.currentOfficerId && (
+                  <Badge className="ml-auto bg-emerald-600 text-white text-[10px]">Saat ini</Badge>
+                )}
+              </button>
+            ))}
+
+            {(editSlot?.role === "IMAM" ? imams : muadzins).length === 0 && (
+              <p className="text-center text-sm text-gray-500 py-4">
+                Belum ada {editSlot?.role === "IMAM" ? "imam" : "muadzin"} aktif. Tambahkan di tab Petugas.
+              </p>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            {editSlot?.scheduleId && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleRemove(editSlot.scheduleId!)}
+                disabled={isPending}
+              >
+                {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Hapus
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setEditSlot(null)}>
+              Batal
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Desktop view: Full table */}
+      <div className="hidden md:block overflow-x-auto -mx-6 px-6">
+        <table className="w-full table-fixed border-collapse">
+          <thead>
+            <tr className="border-b bg-gray-50/80">
+              <th className="text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2.5 w-[88px]">
+                Hari
+              </th>
+              {PRAYER_ORDER.map((prayer) => (
+                <th
+                  key={prayer}
+                  className="text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider px-1.5 py-2.5"
+                >
+                  {PRAYER_NAMES[prayer]}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+              <tr key={day} className="hover:bg-gray-50/50">
+                <td className="font-bold text-sm text-gray-900 px-3 py-2">
+                  {DAY_NAMES[day]}
+                </td>
+                {PRAYER_ORDER.map((prayer) => {
+                  const imam = getScheduleFor(day, prayer, "IMAM" as OfficerRole);
+                  const muadzin = getScheduleFor(day, prayer, "MUADZIN" as OfficerRole);
+                  return (
+                    <td key={prayer} className="px-1 py-1.5">
+                      <div className="space-y-1">
+                        {/* Imam slot */}
+                        <button
+                          onClick={() =>
+                            setEditSlot({
+                              dayOfWeek: day,
+                              prayer,
+                              role: "IMAM" as OfficerRole,
+                              currentOfficerId: imam?.officerId,
+                              scheduleId: imam?.id,
+                            })
+                          }
+                          className="w-full text-left px-2 py-1 rounded-md border border-dashed text-xs transition-all hover:bg-emerald-50 hover:border-emerald-300 min-h-[36px]"
+                        >
+                          <span className="text-[9px] font-bold text-gray-400 uppercase block leading-none mb-0.5">Imam</span>
+                          <span className={`block truncate text-[11px] leading-tight ${imam ? "text-emerald-700 font-semibold" : "text-gray-300"}`}>
+                            {imam ? imam.officer.name : "—"}
+                          </span>
+                        </button>
+                        {/* Muadzin slot */}
+                        <button
+                          onClick={() =>
+                            setEditSlot({
+                              dayOfWeek: day,
+                              prayer,
+                              role: "MUADZIN" as OfficerRole,
+                              currentOfficerId: muadzin?.officerId,
+                              scheduleId: muadzin?.id,
+                            })
+                          }
+                          className="w-full text-left px-2 py-1 rounded-md border border-dashed text-xs transition-all hover:bg-blue-50 hover:border-blue-300 min-h-[36px]"
+                        >
+                          <span className="text-[9px] font-bold text-gray-400 uppercase block leading-none mb-0.5">Muadzin</span>
+                          <span className={`block truncate text-[11px] leading-tight ${muadzin ? "text-blue-700 font-semibold" : "text-gray-300"}`}>
+                            {muadzin ? muadzin.officer.name : "—"}
+                          </span>
+                        </button>
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile view: Card per day */}
+      <div className="md:hidden space-y-4">
+        {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+          <div key={day} className="rounded-xl border border-gray-100 overflow-hidden">
+            <div className="bg-gray-50 px-4 py-2.5 border-b border-gray-100">
+              <h4 className="font-bold text-sm text-gray-900">{DAY_NAMES[day]}</h4>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {PRAYER_ORDER.map((prayer) => {
+                const imam = getScheduleFor(day, prayer, "IMAM" as OfficerRole);
+                const muadzin = getScheduleFor(day, prayer, "MUADZIN" as OfficerRole);
+                return (
+                  <div key={prayer} className="px-4 py-3 flex items-center gap-3">
+                    <div className="w-16 shrink-0">
+                      <span className="text-xs font-bold text-gray-500 uppercase">
+                        {PRAYER_NAMES[prayer]}
+                      </span>
+                    </div>
+                    <div className="flex-1 flex gap-2">
+                      <button
+                        onClick={() =>
+                          setEditSlot({
+                            dayOfWeek: day,
+                            prayer,
+                            role: "IMAM" as OfficerRole,
+                            currentOfficerId: imam?.officerId,
+                            scheduleId: imam?.id,
+                          })
+                        }
+                        className="flex-1 text-left px-2 py-1.5 rounded-lg border border-dashed text-xs transition-all active:scale-95"
+                      >
+                        <span className="text-[9px] font-bold text-emerald-600 uppercase block">Imam</span>
+                        <span className={imam ? "text-gray-900 font-medium" : "text-gray-300"}>
+                          {imam ? imam.officer.name : "—"}
+                        </span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          setEditSlot({
+                            dayOfWeek: day,
+                            prayer,
+                            role: "MUADZIN" as OfficerRole,
+                            currentOfficerId: muadzin?.officerId,
+                            scheduleId: muadzin?.id,
+                          })
+                        }
+                        className="flex-1 text-left px-2 py-1.5 rounded-lg border border-dashed text-xs transition-all active:scale-95"
+                      >
+                        <span className="text-[9px] font-bold text-blue-600 uppercase block">Muadzin</span>
+                        <span className={muadzin ? "text-gray-900 font-medium" : "text-gray-300"}>
+                          {muadzin ? muadzin.officer.name : "—"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </AdminCard>
   );
 }
 
@@ -209,7 +515,7 @@ function OfficersTab({ officers }: { officers: Officer[] }) {
   return (
     <AdminCard
       title={`Petugas Ibadah (${officers.length})`}
-      description="Imam, muadzin, dan khatib masjid"
+      description="Daftar imam dan muadzin masjid"
     >
       <div className="flex justify-end mb-4">
         <Dialog
@@ -236,7 +542,7 @@ function OfficersTab({ officers }: { officers: Officer[] }) {
                 <DialogDescription>
                   {editingOfficer
                     ? "Perbarui informasi petugas ibadah"
-                    : "Tambahkan imam, muadzin, atau khatib baru"}
+                    : "Tambahkan imam atau muadzin baru"}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -262,7 +568,6 @@ function OfficersTab({ officers }: { officers: Officer[] }) {
                     <SelectContent>
                       <SelectItem value="IMAM">Imam</SelectItem>
                       <SelectItem value="MUADZIN">Muadzin</SelectItem>
-                      <SelectItem value="KHATIB">Khatib</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -417,6 +722,7 @@ function KhutbahTab({ khutbahList }: { khutbahList: KhutbahItem[] }) {
     const data = {
       date: new Date(formData.get("date") as string),
       khatib: formData.get("khatib") as string,
+      muadzin: (formData.get("muadzin") as string) || undefined,
       title: formData.get("title") as string,
       theme: (formData.get("theme") as string) || undefined,
       summary: (formData.get("summary") as string) || undefined,
@@ -512,6 +818,15 @@ function KhutbahTab({ khutbahList }: { khutbahList: KhutbahItem[] }) {
                   />
                 </div>
                 <div>
+                  <Label htmlFor="muadzin">Bilal / Muadzin</Label>
+                  <Input
+                    id="muadzin"
+                    name="muadzin"
+                    defaultValue={editingKhutbah?.muadzin || ""}
+                    placeholder="Nama bilal/muadzin Jumat"
+                  />
+                </div>
+                <div>
                   <Label htmlFor="title">Judul Khutbah</Label>
                   <Input
                     id="title"
@@ -573,6 +888,9 @@ function KhutbahTab({ khutbahList }: { khutbahList: KhutbahItem[] }) {
               <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">
                 Khatib
               </TableHead>
+              <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4 hidden md:table-cell">
+                Bilal
+              </TableHead>
               <TableHead className="text-xs font-bold text-gray-400 uppercase tracking-wider py-4">
                 Judul
               </TableHead>
@@ -604,6 +922,11 @@ function KhutbahTab({ khutbahList }: { khutbahList: KhutbahItem[] }) {
                       {k.khatib}
                     </span>
                   </div>
+                </TableCell>
+                <TableCell className="py-4 hidden md:table-cell">
+                  <span className="text-sm text-gray-700">
+                    {k.muadzin || "-"}
+                  </span>
                 </TableCell>
                 <TableCell className="py-4">
                   <span className="text-sm text-gray-700">{k.title}</span>

@@ -105,3 +105,53 @@ export async function uploadLogo(formData: FormData) {
   }
 }
 
+export async function uploadEditorImage(formData: FormData) {
+  try {
+    const file = formData.get("file") as File;
+    if (!file) {
+      return { success: false, error: "No file provided" };
+    }
+
+    // Validate file size (5MB max for editor images)
+    if (file.size > 5 * 1024 * 1024) {
+      return { success: false, error: "Ukuran file maksimal 5MB" };
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      return { success: false, error: "Format file harus JPG, PNG, WEBP, atau GIF" };
+    }
+
+    const admin = getSupabaseAdmin();
+    await ensureBucketExists("media");
+
+    const fileExt = file.name.split(".").pop();
+    const fileName = `editor-${Date.now()}.${fileExt}`;
+    const filePath = `editor/${fileName}`;
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const { error: uploadError } = await admin.storage
+      .from("media")
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error("Editor image upload error:", uploadError);
+      return { success: false, error: `Upload gagal: ${uploadError.message}` };
+    }
+
+    const { data: urlData } = admin.storage
+      .from("media")
+      .getPublicUrl(filePath);
+
+    return { success: true, url: urlData.publicUrl };
+  } catch (error: any) {
+    console.error("Editor image upload error:", error);
+    return { success: false, error: error.message || "Terjadi kesalahan saat upload" };
+  }
+}

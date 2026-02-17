@@ -24,7 +24,14 @@ export default async function PublicLayout({
         <AnnouncementBanner announcements={announcements} />
         <Header logoUrl={settings.logoUrl} mosqueName={settings.mosqueName} />
         <main className="flex-1">{children}</main>
-        <Footer logoUrl={settings.logoUrl} mosqueName={settings.mosqueName} />
+        <Footer 
+          logoUrl={settings.logoUrl} 
+          mosqueName={settings.mosqueName}
+          address={settings.address}
+          phone={settings.phone}
+          whatsapp={settings.whatsapp}
+          email={settings.email}
+        />
       </div>
     </SessionProvider>
   );

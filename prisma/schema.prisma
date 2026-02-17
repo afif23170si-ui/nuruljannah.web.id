@@ -399,13 +399,13 @@ model OfficerSchedule {
   officerId   String
   officer     PrayerOfficer @relation(fields: [officerId], references: [id], onDelete: Cascade)
   
-  date        DateTime @db.Date
+  dayOfWeek   Int      // 1=Senin, 2=Selasa, ..., 7=Minggu
   prayer      PrayerTime
   role        OfficerRole
   
   notes       String?
   
-  @@unique([date, prayer, role])
+  @@unique([dayOfWeek, prayer, role])
   @@map("officer_schedules")
 }
 
@@ -413,6 +413,7 @@ model Khutbah {
   id          String   @id @default(cuid())
   date        DateTime @db.Date
   khatib      String
+  muadzin     String?
   title       String
   theme       String?
   summary     String?  @db.Text
@@ -427,7 +428,6 @@ model Khutbah {
 enum OfficerRole {
   IMAM
   MUADZIN
-  KHATIB
 }
 
 enum PrayerTime {

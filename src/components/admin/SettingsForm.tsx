@@ -6,6 +6,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,13 +21,7 @@ import {
 } from "@/components/ui/form";
 import { AdminCard } from "@/components/admin/shared/AdminCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { updateSiteSettings } from "@/actions/settings";
 import { 
   Loader2, 
@@ -43,6 +38,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { uploadLogo } from "@/actions/upload";
+
+const RichTextEditor = dynamic(
+  () => import("@/components/ui/rich-text-editor").then(mod => ({ default: mod.RichTextEditor })),
+  { ssr: false, loading: () => <div className="h-[200px] rounded-lg border border-gray-200 bg-gray-50 animate-pulse" /> }
+);
 
 const bankAccountSchema = z.object({
   bankName: z.string().min(1, "Nama bank wajib diisi"),
@@ -105,7 +105,7 @@ interface SettingsFormProps {
 
 export default function SettingsForm({ settings }: SettingsFormProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("profile");
+
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const bankAccounts = (settings.bankAccounts as Array<{
@@ -192,84 +192,27 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          {/* Mobile Navigation */}
-          <div className="md:hidden">
-             <label htmlFor="settings-tab" className="sr-only">Navigasi Pengaturan</label>
-             <Select value={activeTab} onValueChange={setActiveTab}>
-                <SelectTrigger id="settings-tab" className="w-full h-12 bg-white">
-                   <SelectValue placeholder="Pilih bagian pengaturan" />
-                </SelectTrigger>
-                <SelectContent>
-                   <SelectItem value="profile">
-                      <div className="flex items-center gap-2">
-                         <Building2 className="h-4 w-4" />
-                         <span>Profil Masjid</span>
-                      </div>
-                   </SelectItem>
-                   <SelectItem value="contact">
-                      <div className="flex items-center gap-2">
-                         <Phone className="h-4 w-4" />
-                         <span>Kontak</span>
-                      </div>
-                   </SelectItem>
-                   <SelectItem value="social">
-                      <div className="flex items-center gap-2">
-                         <Share2 className="h-4 w-4" />
-                         <span>Media Sosial</span>
-                      </div>
-                   </SelectItem>
-                   <SelectItem value="bank">
-                      <div className="flex items-center gap-2">
-                         <CreditCard className="h-4 w-4" />
-                         <span>Rekening Donasi</span>
-                      </div>
-                   </SelectItem>
-                </SelectContent>
-             </Select>
-          </div>
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="bg-gray-100/80 p-1 h-auto inline-flex items-center justify-start w-auto">
+            <TabsTrigger value="profile" className="gap-2 px-4 py-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Building2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Profil Masjid</span>
+            </TabsTrigger>
+            <TabsTrigger value="contact" className="gap-2 px-4 py-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Phone className="h-4 w-4" />
+              <span className="hidden sm:inline">Kontak</span>
+            </TabsTrigger>
+            <TabsTrigger value="social" className="gap-2 px-4 py-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Share2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Media Sosial</span>
+            </TabsTrigger>
+            <TabsTrigger value="bank" className="gap-2 px-4 py-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <CreditCard className="h-4 w-4" />
+              <span className="hidden sm:inline">Rekening Donasi</span>
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Desktop + Mobile Content Layout */}
-          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-8 items-start">
-             {/* Desktop Sidebar Navigation (hidden on mobile) */}
-             <div className="hidden md:block sticky top-24">
-               <div className="py-2">
-                 <h3 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pengaturan</h3>
-                 <TabsList className="flex flex-col h-auto bg-transparent p-0 space-y-1 w-full justify-start">
-                    <TabsTrigger 
-                       value="profile" 
-                       className="w-full justify-start px-4 py-3 h-auto text-sm font-medium text-gray-600 bg-transparent hover:bg-gray-50 data-[state=active]:bg-blue-50/80 data-[state=active]:text-blue-600 data-[state=active]:shadow-none border-0 ring-0 focus-visible:ring-0 rounded-lg transition-all"
-                    >
-                      <Building2 className="h-4 w-4 mr-3" />
-                      Profil Masjid
-                    </TabsTrigger>
-                    <TabsTrigger 
-                       value="contact" 
-                       className="w-full justify-start px-4 py-3 h-auto text-sm font-medium text-gray-600 bg-transparent hover:bg-gray-50 data-[state=active]:bg-blue-50/80 data-[state=active]:text-blue-600 data-[state=active]:shadow-none border-0 ring-0 focus-visible:ring-0 rounded-lg transition-all"
-                    >
-                      <Phone className="h-4 w-4 mr-3" />
-                      Kontak
-                    </TabsTrigger>
-                    <TabsTrigger 
-                       value="social" 
-                       className="w-full justify-start px-4 py-3 h-auto text-sm font-medium text-gray-600 bg-transparent hover:bg-gray-50 data-[state=active]:bg-blue-50/80 data-[state=active]:text-blue-600 data-[state=active]:shadow-none border-0 ring-0 focus-visible:ring-0 rounded-lg transition-all"
-                    >
-                      <Share2 className="h-4 w-4 mr-3" />
-                      Media Sosial
-                    </TabsTrigger>
-                    <TabsTrigger 
-                       value="bank" 
-                       className="w-full justify-start px-4 py-3 h-auto text-sm font-medium text-gray-600 bg-transparent hover:bg-gray-50 data-[state=active]:bg-blue-50/80 data-[state=active]:text-blue-600 data-[state=active]:shadow-none border-0 ring-0 focus-visible:ring-0 rounded-lg transition-all"
-                    >
-                      <CreditCard className="h-4 w-4 mr-3" />
-                      Rekening Donasi
-                    </TabsTrigger>
-                 </TabsList>
-               </div>
-             </div>
-
-             {/* Content Area (visible on both mobile and desktop) */}
-             <div className="min-w-0 space-y-6">
+          <div className="min-w-0 space-y-6">
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -402,15 +345,14 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     <FormItem>
                       <FormLabel>Deskripsi Masjid</FormLabel>
                       <FormControl>
-                        <Textarea
+                        <RichTextEditor
+                          content={field.value || ""}
+                          onChange={field.onChange}
                           placeholder="Tentang masjid..."
-                          rows={4}
-                          {...field}
-                          className="min-h-[120px]"
                         />
                       </FormControl>
                       <FormDescription>
-                        Deskripsi singkat tentang masjid yang akan ditampilkan di halaman Profil
+                        Deskripsi tentang masjid yang akan ditampilkan di halaman Profil
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -424,11 +366,10 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     <FormItem>
                       <FormLabel>Visi</FormLabel>
                       <FormControl>
-                        <Textarea
+                        <RichTextEditor
+                          content={field.value || ""}
+                          onChange={field.onChange}
                           placeholder="Visi masjid..."
-                          rows={3}
-                          {...field}
-                          className="min-h-[80px]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -443,11 +384,10 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     <FormItem>
                       <FormLabel>Misi</FormLabel>
                       <FormControl>
-                        <Textarea
+                        <RichTextEditor
+                          content={field.value || ""}
+                          onChange={field.onChange}
                           placeholder="Misi masjid..."
-                          rows={3}
-                          {...field}
-                          className="min-h-[80px]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -462,13 +402,15 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     <FormItem>
                       <FormLabel>Sejarah Masjid</FormLabel>
                       <FormControl>
-                        <Textarea
-                          placeholder="Sejarah berdirinya masjid..."
-                          rows={4}
-                          {...field}
-                          className="min-h-[120px]"
+                        <RichTextEditor
+                          content={field.value || ""}
+                          onChange={field.onChange}
+                          placeholder="Tulis sejarah masjid dengan format yang menarik..."
                         />
                       </FormControl>
+                      <FormDescription>
+                        Gunakan toolbar untuk menambahkan judul, list, kutipan, dan format lainnya
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -793,7 +735,6 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
             <Save className="mr-2 h-4 w-4" />
             Simpan Pengaturan
           </Button>
-        </div>
         </div>
         </div>
         </Tabs>

@@ -35,6 +35,7 @@ export function HeroSection() {
             src="/hero-masjid.webp"
             alt="Masjid Nurul Jannah"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />

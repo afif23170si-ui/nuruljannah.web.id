@@ -16,9 +16,20 @@ import {
 interface FooterProps {
   logoUrl?: string | null;
   mosqueName?: string;
+  address?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  email?: string | null;
 }
 
-export function Footer({ logoUrl, mosqueName = "Nurul Jannah" }: FooterProps) {
+export function Footer({ 
+  logoUrl, 
+  mosqueName = "Nurul Jannah",
+  address,
+  phone,
+  whatsapp,
+  email,
+}: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -128,7 +139,7 @@ export function Footer({ logoUrl, mosqueName = "Nurul Jannah" }: FooterProps) {
                 <div className="space-y-1">
                   <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Alamat</span>
                   <span className="block text-zinc-600 text-sm leading-relaxed">
-                    Jl. Sriwedari Ujung Gg. Tanjung II, Kel. Tanjung Palas, Kec. Dumai Timur, Kota Dumai, Riau, 28826
+                    {address || "Jl. Sriwedari Ujung Gg. Tanjung II, Kel. Tanjung Palas, Kec. Dumai Timur, Kota Dumai, Riau, 28826"}
                   </span>
                 </div>
               </li>
@@ -139,7 +150,7 @@ export function Footer({ logoUrl, mosqueName = "Nurul Jannah" }: FooterProps) {
                 </div>
                 <div className="space-y-1">
                   <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Telepon / WhatsApp</span>
-                   <span className="block text-zinc-600 text-sm">+62 812-3456-7890</span>
+                   <span className="block text-zinc-600 text-sm">{whatsapp || phone || "+62 812-3456-7890"}</span>
                 </div>
               </li>
 
@@ -149,7 +160,7 @@ export function Footer({ logoUrl, mosqueName = "Nurul Jannah" }: FooterProps) {
                 </div>
                 <div className="space-y-1">
                   <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Email</span>
-                  <span className="block text-zinc-600 text-sm">info@nuruljannah.or.id</span>
+                  <span className="block text-zinc-600 text-sm">{email || "info@nuruljannah.or.id"}</span>
                 </div>
               </li>
             </ul>

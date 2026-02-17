@@ -5,6 +5,7 @@ import {
   Calendar,
   Wallet,
   Users,
+  UsersRound,
   GraduationCap,
   Settings,
   Images,
@@ -41,6 +42,12 @@ export const navigation = [
     name: "Ibadah",
     href: "/admin/ibadah",
     icon: Moon,
+    roles: ["ADMIN", "TAKMIR"],
+  },
+  {
+    name: "Struktur DKM",
+    href: "/admin/dkm",
+    icon: UsersRound,
     roles: ["ADMIN", "TAKMIR"],
   },
   {

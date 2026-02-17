@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { getMosqueProfile } from "@/actions/public";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Phone, Mail, Target, Eye, History, Users } from "lucide-react";
 import { getDkmMembers } from "@/actions/public";
@@ -11,7 +11,7 @@ async function DkmSection() {
   const members = await getDkmMembers();
 
   if (members.length === 0) {
-    return <p className="text-muted-foreground">Data pengurus belum tersedia.</p>;
+    return <p className="text-gray-400 italic">Data pengurus belum tersedia.</p>;
   }
 
   return (
@@ -19,49 +19,45 @@ async function DkmSection() {
       {/* Period Badge */}
       {members[0]?.period && (
         <div className="text-center">
-          <Badge variant="secondary" className="text-sm px-4 py-1">
+          <Badge variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-100 px-4 py-1 text-xs">
             Periode {members[0].period}
           </Badge>
         </div>
       )}
 
       {/* Leadership - First 2 members */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         {members.slice(0, 2).map((member) => (
-          <Card key={member.id} className="card-hover border-2 border-primary/10">
-            <CardContent className="p-6 text-center">
-              <Avatar className="h-24 w-24 mx-auto mb-4 ring-4 ring-primary/20">
-                <AvatarImage src={member.photo || ""} alt={member.name} />
-                <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                  {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-              <Badge variant="default" className="mb-3">
-                {member.position}
-              </Badge>
-            </CardContent>
-          </Card>
+          <div key={member.id} className="bg-white rounded-xl border border-gray-100 p-6 text-center hover:border-emerald-100 hover:shadow-sm transition-all group">
+            <Avatar className="h-24 w-24 mx-auto mb-4 ring-4 ring-gray-50 group-hover:ring-emerald-50 transition-all">
+              <AvatarImage src={member.photo || ""} alt={member.name} />
+              <AvatarFallback className="text-xl bg-emerald-50 text-emerald-600">
+                {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
+            <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
+              {member.position}
+            </span>
+          </div>
         ))}
       </div>
 
       {/* Other members */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {members.slice(2).map((member) => (
-          <Card key={member.id} className="card-hover">
-            <CardContent className="p-5 text-center">
-              <Avatar className="h-16 w-16 mx-auto mb-3">
-                <AvatarImage src={member.photo || ""} alt={member.name} />
-                <AvatarFallback className="bg-accent text-accent-foreground">
-                  {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <h3 className="font-semibold mb-1">{member.name}</h3>
-              <Badge variant="outline" className="text-xs">
-                {member.position}
-              </Badge>
-            </CardContent>
-          </Card>
+          <div key={member.id} className="bg-white rounded-xl border border-gray-100 p-4 text-center hover:border-gray-200 transition-all">
+            <Avatar className="h-14 w-14 mx-auto mb-3">
+              <AvatarImage src={member.photo || ""} alt={member.name} />
+              <AvatarFallback className="bg-gray-50 text-gray-500 text-xs">
+                {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+            <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-1">{member.name}</h3>
+            <p className="text-xs text-gray-500">
+              {member.position}
+            </p>
+          </div>
         ))}
       </div>
     </div>
@@ -89,133 +85,134 @@ export default async function ProfilPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Background Image */}
-      <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <Image
-          src="/bg-nj.webp"
-          alt="Masjid Nurul Jannah"
-          fill
-          className="object-cover object-center"
-          priority
-          sizes="100vw"
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/50 z-[1]" />
-        
-        {/* Content */}
-        <div className="container relative z-10 mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4 border-white/30 text-white bg-white/10 backdrop-blur-sm">
-            Tentang Kami
-          </Badge>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 text-white drop-shadow-lg">{profile.name}</h1>
-          <p className="text-white/80 max-w-2xl mx-auto text-lg font-light">
-            Pusat Ibadah, Dakwah, dan Pendidikan Islam
-          </p>
+      {/* Hero Section - Floating Style - Mobile: px-4, Desktop: w-[96%] */}
+      <section className="px-4 md:px-0 pt-4 md:pt-6">
+        <div className="relative h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/hero-masjid.webp"
+              alt="Masjid Nurul Jannah"
+              fill
+              className="object-cover opacity-80"
+              priority
+              sizes="(max-width: 768px) 100vw, 1200px"
+            />
+            {/* Dark Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          </div>
+          
+          {/* Content */}
+          <div className="container relative z-10 mx-auto px-4 text-center pb-10">
+            <Badge variant="outline" className="mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+              Tentang Kami
+            </Badge>
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 md:mb-4 drop-shadow-sm">{profile.name}</h1>
+            <p className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto">
+              Pusat Ibadah, Dakwah, dan Pendidikan Islam
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-12 md:py-16">
+      <div className="mx-auto w-full md:w-[96%] max-w-7xl px-4 md:px-0 py-12 md:py-16">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
             {profile.description && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <History className="h-5 w-5 text-primary" />
-                    Tentang Masjid
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {profile.description}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-xl border border-gray-100 p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                    <History className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Tentang Masjid</h2>
+                </div>
+                <div
+                  className="prose prose-gray max-w-none prose-p:text-gray-600 prose-p:leading-relaxed prose-p:text-sm md:prose-p:text-base prose-headings:text-gray-900 prose-li:text-gray-600 prose-li:text-sm md:prose-li:text-base prose-img:rounded-lg prose-strong:text-gray-800"
+                  dangerouslySetInnerHTML={{ __html: profile.description }}
+                />
+              </div>
             )}
 
             {/* Vision */}
             {profile.vision && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="h-5 w-5 text-primary" />
-                    Visi
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {profile.vision}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-xl border border-gray-100 p-6 md:p-8">
+                 <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                    <Eye className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Visi</h2>
+                </div>
+                <div
+                  className="prose prose-gray max-w-none prose-p:text-gray-600 prose-p:leading-relaxed prose-p:text-sm md:prose-p:text-base prose-headings:text-gray-900 prose-li:text-gray-600 prose-li:text-sm md:prose-li:text-base prose-img:rounded-lg prose-strong:text-gray-800"
+                  dangerouslySetInnerHTML={{ __html: profile.vision }}
+                />
+              </div>
             )}
 
             {/* Mission */}
             {profile.mission && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    Misi
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {profile.mission}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-xl border border-gray-100 p-6 md:p-8">
+                 <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Misi</h2>
+                </div>
+                <div
+                  className="prose prose-gray max-w-none prose-p:text-gray-600 prose-p:leading-relaxed prose-p:text-sm md:prose-p:text-base prose-headings:text-gray-900 prose-li:text-gray-600 prose-li:text-sm md:prose-li:text-base prose-img:rounded-lg prose-strong:text-gray-800"
+                  dangerouslySetInnerHTML={{ __html: profile.mission }}
+                />
+              </div>
             )}
 
-            {/* History */}
+            {/* History - Link to dedicated page */}
             {profile.history && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <History className="h-5 w-5 text-primary" />
-                    Sejarah Masjid
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {profile.history}
-                  </p>
-                </CardContent>
-              </Card>
+              <Link href="/profil/sejarah" className="block group">
+                <div className="bg-white rounded-xl border border-gray-100 p-6 md:p-8 hover:border-purple-200 hover:shadow-sm transition-all">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
+                        <History className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900">Sejarah Masjid</h2>
+                        <p className="text-sm text-gray-400 mt-0.5">Kisah perjalanan {profile.name}</p>
+                      </div>
+                    </div>
+                    <span className="text-purple-500 text-sm font-medium group-hover:translate-x-0.5 transition-transform">
+                      Selengkapnya →
+                    </span>
+                  </div>
+                </div>
+              </Link>
             )}
+            
             {/* Struktur DKM Section */}
-            <div id="struktur-dkm">
-                <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    Struktur DKM
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <DkmSection />
-                </CardContent>
-                </Card>
+            <div id="struktur-dkm" className="bg-white rounded-xl border border-gray-100 p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Struktur DKM</h2>
+                </div>
+                <DkmSection />
             </div>
           </div>
 
           {/* Sidebar - Contact Info */}
           <div className="space-y-6">
-            <Card className="sticky top-20">
-              <CardHeader>
-                <CardTitle>Informasi Kontak</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="bg-white rounded-xl border border-gray-100 p-6 sticky top-24">
+              <h3 className="font-bold text-gray-900 mb-6 border-b border-gray-50 pb-4">Informasi Kontak</h3>
+              <div className="space-y-5">
                 {profile.address && (
                   <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <MapPin className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-sm">Alamat</p>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="font-medium text-sm text-gray-900">Alamat</p>
+                      <p className="text-gray-500 text-sm leading-relaxed">
                         {profile.address}
                       </p>
                     </div>
@@ -224,10 +221,10 @@ export default async function ProfilPage() {
 
                 {profile.phone && (
                   <div className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <Phone className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-sm">Telepon</p>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="font-medium text-sm text-gray-900">Telepon</p>
+                      <p className="text-gray-500 text-sm">
                         {profile.phone}
                       </p>
                     </div>
@@ -236,10 +233,10 @@ export default async function ProfilPage() {
 
                 {profile.email && (
                   <div className="flex items-start gap-3">
-                    <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <Mail className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-sm">Email</p>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="font-medium text-sm text-gray-900">Email</p>
+                      <p className="text-gray-500 text-sm">
                         {profile.email}
                       </p>
                     </div>
@@ -247,9 +244,9 @@ export default async function ProfilPage() {
                 )}
 
                 {/* Map Embed */}
-                <div className="pt-4 border-t">
-                  <p className="font-medium text-sm mb-3">Lokasi</p>
-                  <div className="aspect-video rounded-lg overflow-hidden bg-muted">
+                <div className="pt-4 border-t border-gray-50 mt-2">
+                  <p className="font-medium text-sm text-gray-900 mb-3">Lokasi</p>
+                  <div className="aspect-video rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d31905.02528780722!2d101.47609448681641!3d1.6677856430902873!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d3afc6fd238d29%3A0xde7b2557466c5100!2sMasjid%20Nurul%20Jannah!5e0!3m2!1sid!2sid!4v1770197713908!5m2!1sid!2sid"
                       width="100%"
@@ -261,8 +258,8 @@ export default async function ProfilPage() {
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -40,10 +40,10 @@ const navigation = [
     href: "/profil", 
     icon: Info,
     children: [
-      { name: "Profil Masjid", href: "/profil", icon: Info },
+      { name: "Tentang Masjid", href: "/profil", icon: Info },
       { name: "Visi & Misi", href: "/profil", icon: BookOpen },
       { name: "Struktur DKM", href: "/profil#struktur-dkm", icon: Users },
-      { name: "Sejarah", href: "/profil", icon: Calendar }, // Using Calendar as placeholder or maybe I should import History icon if available, but for now reuse existing or generic
+      { name: "Sejarah", href: "/profil/sejarah", icon: Calendar },
     ]
   },
   { name: "Ibadah", href: "/ibadah", icon: Clock },
@@ -109,7 +109,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 transition-all duration-300">
+    <header suppressHydrationWarning className="sticky top-0 left-0 right-0 z-50 transition-all duration-300">
       <div className={cn(
         "w-full transition-all duration-500",
         "bg-white/90 backdrop-blur-xl",
@@ -125,6 +125,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                   src={logoUrl || "/logo.webp"} 
                   alt={`Logo ${mosqueName}`} 
                   fill 
+                  sizes="32px"
                   className="object-cover"
                   priority
                 />
@@ -284,6 +285,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                     src={logoUrl || "/logo.webp"} 
                     alt={`Logo ${mosqueName}`} 
                     fill 
+                    sizes="48px"
                     className="object-cover"
                     priority
                   />

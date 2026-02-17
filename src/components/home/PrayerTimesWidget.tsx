@@ -17,6 +17,7 @@ const CALCULATION_METHOD = 20;
 
 // Fallback prayer times (used if API fails)
 const fallbackPrayerTimes = [
+  { name: "Imsak", time: "04:20" },
   { name: "Shubuh", time: "04:30" },
   { name: "Dzuhur", time: "12:00" },
   { name: "Ashar", time: "15:15" },
@@ -101,6 +102,7 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
       const timings = data.data.timings;
 
       const newPrayerTimes: PrayerTime[] = [
+        { name: "Imsak", time: formatApiTime(timings.Imsak) },
         { name: "Shubuh", time: formatApiTime(timings.Fajr) },
         { name: "Dzuhur", time: formatApiTime(timings.Dhuhr) },
         { name: "Ashar", time: formatApiTime(timings.Asr) },
