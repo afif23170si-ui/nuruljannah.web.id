@@ -30,8 +30,8 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
 export const metadata: Metadata = {
-  title: "Kelola Keuangan - Metronic Admin",
-  description: "Kelola pemasukan dan pengeluaran masjid",
+  title: "Kelola Keuangan - Admin Panel",
+  description: "Manajemen laporan keuangan dan transparansi infaq",
 };
 
 function formatCurrency(amount: number) {

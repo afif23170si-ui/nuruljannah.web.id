@@ -30,6 +30,7 @@ export const getMosqueProfile = unstable_cache(
       history: siteSettings.history,
       latitude: siteSettings.latitude,
       longitude: siteSettings.longitude,
+      contacts: siteSettings.contacts as Array<{ label: string; phone: string; link?: string }> | null,
     };
   },
   ["mosque-profile"],

@@ -9,11 +9,11 @@ async function main() {
   // Create Admin User
   const adminPassword = await bcrypt.hash("admin123", 10);
   const admin = await prisma.user.upsert({
-    where: { email: "admin@nuruljannah.or.id" },
+    where: { email: "admin@nuruljannah.web.id" },
     update: {},
     create: {
       name: "Administrator",
-      email: "admin@nuruljannah.or.id",
+      email: "admin@nuruljannah.web.id",
       password: adminPassword,
       role: "ADMIN",
     },
@@ -23,11 +23,11 @@ async function main() {
   // Create Bendahara User
   const bendaharaPassword = await bcrypt.hash("bendahara123", 10);
   const bendahara = await prisma.user.upsert({
-    where: { email: "bendahara@nuruljannah.or.id" },
+    where: { email: "bendahara@nuruljannah.web.id" },
     update: {},
     create: {
       name: "Bendahara Masjid",
-      email: "bendahara@nuruljannah.or.id",
+      email: "bendahara@nuruljannah.web.id",
       password: bendaharaPassword,
       role: "BENDAHARA",
     },
@@ -37,11 +37,11 @@ async function main() {
   // Create Takmir User
   const takmirPassword = await bcrypt.hash("takmir123", 10);
   const takmir = await prisma.user.upsert({
-    where: { email: "takmir@nuruljannah.or.id" },
+    where: { email: "takmir@nuruljannah.web.id" },
     update: {},
     create: {
       name: "Takmir Masjid",
-      email: "takmir@nuruljannah.or.id",
+      email: "takmir@nuruljannah.web.id",
       password: takmirPassword,
       role: "TAKMIR",
     },
@@ -51,11 +51,11 @@ async function main() {
   // Create Pengelola TPA User
   const tpaPassword = await bcrypt.hash("tpa123", 10);
   const pengelolaTpa = await prisma.user.upsert({
-    where: { email: "tpa@nuruljannah.or.id" },
+    where: { email: "tpa@nuruljannah.web.id" },
     update: {},
     create: {
       name: "Pengelola TPA",
-      email: "tpa@nuruljannah.or.id",
+      email: "tpa@nuruljannah.web.id",
       password: tpaPassword,
       role: "PENGELOLA_TPA",
     },
@@ -68,13 +68,13 @@ async function main() {
     update: {},
     create: {
       id: "site-settings-1",
-      mosqueName: "Masjid Nurul Jannah",
+      mosqueName: "Nurul Jannah",
       tagline: "Pusat Ibadah, Dakwah, dan Pendidikan Islam",
-      address: "Jl. Masjid Nurul Jannah No. 1",
-      city: "Jakarta",
-      province: "DKI Jakarta",
-      phone: "+62 21 1234 5678",
-      email: "info@nuruljannah.or.id",
+      address: "Jl. Sriwedari Ujung Gg. Tanjung II, Kel. Tanjung Palas, Kec. Dumai Timur, Kota Dumai, Riau, 28826",
+      city: "Dumai",
+      province: "Riau",
+      phone: "+62 0852-2544-1245",
+      email: "masjidnuruljannahtp@gmail.com",
       description:
         "Masjid Nurul Jannah adalah pusat kegiatan ibadah, pendidikan Islam, dan aktivitas sosial umat. Didirikan dengan tujuan menjadi rumah bagi seluruh jamaah dalam mendekatkan diri kepada Allah SWT.",
       vision:

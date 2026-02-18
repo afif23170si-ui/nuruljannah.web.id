@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getMosqueProfile } from "@/actions/public";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Target, Eye, History, Users } from "lucide-react";
+import { MapPin, Phone, Mail, Target, Eye, History, Users, MessageCircle } from "lucide-react";
 import { getDkmMembers } from "@/actions/public";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -219,7 +219,35 @@ export default async function ProfilPage() {
                   </div>
                 )}
 
-                {profile.phone && (
+                {profile.contacts && profile.contacts.length > 0 ? (
+                  <div className="flex items-start gap-3">
+                    <Phone className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm text-gray-900">Kontak Pengurus</p>
+                      <div className="space-y-2 mt-1">
+                        {profile.contacts.map((contact, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-gray-500 text-sm">
+                            <div>
+                              <span className="font-medium text-gray-700">{contact.label}:</span>{" "}
+                              <span>{contact.phone}</span>
+                            </div>
+                            {contact.link && (
+                              <a
+                                href={contact.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors flex-shrink-0"
+                                aria-label={`WhatsApp ${contact.label}`}
+                              >
+                                <MessageCircle className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : profile.phone ? (
                   <div className="flex items-start gap-3">
                     <Phone className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
                     <div>
@@ -229,7 +257,7 @@ export default async function ProfilPage() {
                       </p>
                     </div>
                   </div>
-                )}
+                ) : null}
 
                 {profile.email && (
                   <div className="flex items-start gap-3">

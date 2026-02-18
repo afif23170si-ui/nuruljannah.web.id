@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Administrasi TPA - Metronic Admin",
+  title: "Administrasi TPA - Admin Panel",
   description: "Dashboard pengelolaan TPA Masjid Nurul Jannah",
 };
 

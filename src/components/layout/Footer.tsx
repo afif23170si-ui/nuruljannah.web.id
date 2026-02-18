@@ -10,7 +10,8 @@ import {
   Facebook, 
   Instagram, 
   Youtube,
-  ArrowUpRight
+  ArrowUpRight,
+  MessageCircle
 } from "lucide-react";
 
 interface FooterProps {
@@ -20,6 +21,7 @@ interface FooterProps {
   phone?: string | null;
   whatsapp?: string | null;
   email?: string | null;
+  contacts?: Array<{ label: string; phone: string; link?: string }> | null;
 }
 
 export function Footer({ 
@@ -29,6 +31,7 @@ export function Footer({
   phone,
   whatsapp,
   email,
+  contacts,
 }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
@@ -44,8 +47,8 @@ export function Footer({
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           
-          {/* Brand Column (Span 4) */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* Brand Column (Span 3) */}
+          <div className="lg:col-span-3 space-y-6">
              <div className="flex items-center gap-4 group">
               <div className="relative h-12 w-12 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
                 <Image 
@@ -128,8 +131,8 @@ export function Footer({
             </ul>
           </div>
 
-          {/* Contact (Span 3) */}
-          <div className="lg:col-span-3">
+          {/* Contact (Span 4) */}
+          <div className="lg:col-span-4">
              <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Hubungi Kami</h4>
              <ul className="space-y-5">
               <li className="flex items-start gap-4 group">
@@ -144,15 +147,48 @@ export function Footer({
                 </div>
               </li>
               
-              <li className="flex items-start gap-4 group">
-                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <Phone className="h-5 w-5" />
-                </div>
-                <div className="space-y-1">
-                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Telepon / WhatsApp</span>
-                   <span className="block text-zinc-600 text-sm">{whatsapp || phone || "+62 812-3456-7890"}</span>
-                </div>
-              </li>
+              {/* Dynamic Contacts (Pengurus Inti) */}
+              {contacts && contacts.length > 0 ? (
+                <li className="flex items-start gap-4 group">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Kontak Pengurus</span>
+                    <div className="space-y-2">
+                      {contacts.map((contact, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-zinc-600 text-sm">
+                          <div>
+                            <span className="font-medium text-zinc-700">{contact.label}:</span>{" "}
+                            <span>{contact.phone}</span>
+                          </div>
+                          {contact.link && (
+                            <a
+                              href={contact.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors flex-shrink-0"
+                              aria-label={`WhatsApp ${contact.label}`}
+                            >
+                              <MessageCircle className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </li>
+              ) : (phone || whatsapp) ? (
+                <li className="flex items-start gap-4 group">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Telepon / WhatsApp</span>
+                     <span className="block text-zinc-600 text-sm">{whatsapp || phone}</span>
+                  </div>
+                </li>
+              ) : null}
 
               <li className="flex items-start gap-4 group">
                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -160,7 +196,7 @@ export function Footer({
                 </div>
                 <div className="space-y-1">
                   <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Email</span>
-                  <span className="block text-zinc-600 text-sm">{email || "info@nuruljannah.or.id"}</span>
+                  <span className="block text-zinc-600 text-sm">{email || "masjidnuruljannahtp@gmail.com"}</span>
                 </div>
               </li>
             </ul>

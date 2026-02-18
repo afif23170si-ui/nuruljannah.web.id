@@ -47,6 +47,11 @@ export async function updateSiteSettings(data: {
     accountNumber: string;
     accountName: string;
   }>;
+  contacts?: Array<{
+    label: string;
+    phone: string;
+    link?: string;
+  }>;
 }) {
   const settings = await getSiteSettings();
   
@@ -76,6 +81,7 @@ export async function updateSiteSettings(data: {
       latitude: data.latitude,
       longitude: data.longitude,
       bankAccounts: data.bankAccounts,
+      contacts: data.contacts,
     },
   });
   

@@ -32,8 +32,8 @@ import {
 import { DeleteEventButton } from "./DeleteEventButton";
 
 export const metadata: Metadata = {
-  title: "Kelola Agenda - Metronic Admin",
-  description: "Kelola agenda dan kegiatan masjid",
+  title: "Kelola Agenda - Admin Panel",
+  description: "Manajemen jadwal kajian dan kegiatan masjid",
 };
 
 const DAYS = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];

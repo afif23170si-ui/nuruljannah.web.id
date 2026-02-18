@@ -17,9 +17,9 @@ import { id } from "date-fns/locale";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { QuickActions } from "@/components/admin/QuickActions";
 
-export const metadata: Metadata = {
-  title: "Dashboard Admin - Metronic",
-  description: "Dashboard admin Masjid Nurul Jannah",
+export const metadata = {
+  title: "Dashboard Admin - Nurul Jannah",
+  description: "Pusat kontrol manajemen Masjid Nurul Jannah",
 };
 
 function formatCurrency(amount: number) {

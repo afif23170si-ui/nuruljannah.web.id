@@ -24,8 +24,8 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
 export const metadata: Metadata = {
-  title: "Kelola Artikel - Metronic Admin",
-  description: "Kelola artikel dan berita masjid",
+  title: "Kelola Artikel - Admin Panel",
+  description: "Manajemen konten artikel dan berita masjid",
 };
 
 // Prevent static generation - render on demand only

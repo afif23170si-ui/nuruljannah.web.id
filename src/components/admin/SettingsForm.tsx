@@ -35,6 +35,7 @@ import {
   Image as ImageIcon,
   Upload,
   X,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 import { uploadLogo } from "@/actions/upload";
@@ -48,6 +49,12 @@ const bankAccountSchema = z.object({
   bankName: z.string().min(1, "Nama bank wajib diisi"),
   accountNumber: z.string().min(1, "Nomor rekening wajib diisi"),
   accountName: z.string().min(1, "Nama pemilik wajib diisi"),
+});
+
+const contactSchema = z.object({
+  label: z.string().min(1, "Label kontak wajib diisi"),
+  phone: z.string().min(1, "Nomor telepon wajib diisi"),
+  link: z.string().optional(),
 });
 
 const settingsSchema = z.object({
@@ -72,6 +79,7 @@ const settingsSchema = z.object({
   vision: z.string().optional(),
   mission: z.string().optional(),
   bankAccounts: z.array(bankAccountSchema).optional(),
+  contacts: z.array(contactSchema).optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -100,6 +108,7 @@ interface SettingsFormProps {
     vision: string | null;
     mission: string | null;
     bankAccounts: unknown;
+    contacts: unknown;
   };
 }
 
@@ -112,6 +121,12 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     bankName: string;
     accountNumber: string;
     accountName: string;
+  }>) || [];
+
+  const contacts = (settings.contacts as Array<{
+    label: string;
+    phone: string;
+    link?: string;
   }>) || [];
 
   const form = useForm<SettingsFormData>({
@@ -138,12 +153,18 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
       vision: settings.vision || "",
       mission: settings.mission || "",
       bankAccounts: bankAccounts,
+      contacts: contacts,
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "bankAccounts",
+  });
+
+  const { fields: contactFields, append: appendContact, remove: removeContact } = useFieldArray({
+    control: form.control,
+    name: "contacts",
   });
 
   const onSubmit = async (data: SettingsFormData) => {
@@ -489,7 +510,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
           </TabsContent>
 
           {/* Contact Tab */}
-          <TabsContent value="contact" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <TabsContent value="contact" className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-6">
             <AdminCard title="Informasi Kontak" description="Nomor telepon dan email untuk dihubungi" compact={true}>
               <div className="space-y-4 md:space-y-6">
                 <FormField
@@ -541,6 +562,103 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     </FormItem>
                   )}
                 />
+              </div>
+            </AdminCard>
+
+            {/* Kontak Pengurus Inti */}
+            <AdminCard title="Kontak Pengurus Inti" description="Daftar kontak pengurus yang bisa dihubungi jamaah" compact={true}>
+              <div className="space-y-4 md:space-y-6">
+                {contactFields.length === 0 && (
+                  <div className="text-center py-10 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+                    <Users className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm mb-4">Belum ada kontak pengurus ditambahkan</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => appendContact({ label: "", phone: "", link: "" })}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Tambah Kontak Pengurus
+                    </Button>
+                  </div>
+                )}
+
+                {contactFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="relative flex flex-col gap-4 p-5 border border-gray-100 bg-white rounded-xl shadow-sm group hover:border-emerald-100 transition-colors"
+                  >
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                        onClick={() => removeContact(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="font-medium text-sm text-gray-500 mb-2">Kontak #{index + 1}</div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`contacts.${index}.label`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Label / Nama</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Pengurus I (Ns. Rico, S.Kep)" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`contacts.${index}.phone`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nomor Telepon</FormLabel>
+                            <FormControl>
+                              <Input placeholder="+62 852-2544-1245" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`contacts.${index}.link`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Link WhatsApp</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://wa.me/6285225441245" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                {contactFields.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-gray-300 hover:border-emerald-500 hover:text-emerald-600 h-12"
+                    onClick={() => appendContact({ label: "", phone: "", link: "" })}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Tambah Kontak Lainnya
+                  </Button>
+                )}
               </div>
             </AdminCard>
           </TabsContent>

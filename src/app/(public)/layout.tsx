@@ -18,6 +18,15 @@ export default async function PublicLayout({
     getSiteSettings(),
   ]);
 
+  const fullAddress = [
+    settings.address,
+    settings.village,
+    settings.district,
+    settings.city,
+    settings.province,
+    settings.postalCode,
+  ].filter(Boolean).join(", ");
+
   return (
     <SessionProvider session={session}>
       <div className="relative flex min-h-screen flex-col">
@@ -27,10 +36,11 @@ export default async function PublicLayout({
         <Footer 
           logoUrl={settings.logoUrl} 
           mosqueName={settings.mosqueName}
-          address={settings.address}
+          address={fullAddress || settings.address}
           phone={settings.phone}
           whatsapp={settings.whatsapp}
           email={settings.email}
+          contacts={settings.contacts as Array<{ label: string; phone: string; link?: string }> | null}
         />
       </div>
     </SessionProvider>

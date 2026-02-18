@@ -508,6 +508,9 @@ model SiteSettings {
   // Banking
   bankAccounts    Json?    // [{bankName, accountNumber, accountName}]
   
+  // Contacts (Pengurus Inti)
+  contacts        Json?    // [{label, phone}]
+  
   // Location
   latitude        Float?
   longitude       Float?
