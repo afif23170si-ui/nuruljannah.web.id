@@ -54,7 +54,11 @@ function toHijri(date: Date): { day: number; month: number; year: number } {
 // Find the Gregorian date of a given Hijri month/day.
 // Strategy: Starting from roughly today, scan forward day-by-day
 // until we find the target Hijri date (within the next ~400 days).
-// This is brute-force but reliable and avoids complex conversion math.
+// 
+// IMPORTANT: The browser's islamic-umalqura calendar is typically
+// 1 day ahead of the official Kemenag calendar (sidang isbat).
+// We apply adj=+1 day to the result to compensate (equivalent to 
+// myQuran API's adj=-1 parameter).
 // ============================================================
 
 function findGregorianDate(hijriMonth: number, hijriDay: number, afterDate: Date): Date | null {
@@ -67,6 +71,8 @@ function findGregorianDate(hijriMonth: number, hijriDay: number, afterDate: Date
     candidate.setDate(candidate.getDate() + i);
     const h = toHijri(candidate);
     if (h.month === hijriMonth && h.day === hijriDay) {
+      // Adjust +1 day to match sidang isbat (adj=-1)
+      candidate.setDate(candidate.getDate() + 1);
       return candidate;
     }
   }

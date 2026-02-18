@@ -31,6 +31,8 @@ export async function updatePrayerTimeSettings(data: {
   latitude?: number;
   longitude?: number;
   timezone?: string;
+  cityCode?: string;
+  cityName?: string;
   fajrOffset?: number;
   dhuhrOffset?: number;
   asrOffset?: number;

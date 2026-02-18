@@ -118,10 +118,7 @@ export default async function IbadahPage() {
       {/* Prayer Times Card - Overlapping Hero */}
       <section className="px-4 -mt-16 md:-mt-20 relative z-20 mb-12 md:mb-20">
         <div className="container mx-auto max-w-5xl">
-          <PrayerTimesCard 
-            latitude={data.prayerSettings.latitude}
-            longitude={data.prayerSettings.longitude}
-          />
+          <PrayerTimesCard />
         </div>
       </section>
 

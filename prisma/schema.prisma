@@ -366,6 +366,10 @@ model PrayerTimeSetting {
   longitude       Float
   timezone        String   @default("Asia/Jakarta")
   
+  // myQuran API city code (Kemenag)
+  cityCode        String   @default("93db85ed909c13838ff95ccfa94cebd9") // KOTA DUMAI
+  cityName        String   @default("KOTA DUMAI")
+  
   // Iqamah offsets (in minutes after adzan)
   fajrOffset      Int      @default(10)
   dhuhrOffset     Int      @default(5)
@@ -376,6 +380,39 @@ model PrayerTimeSetting {
   updatedAt       DateTime @updatedAt
   
   @@map("prayer_time_settings")
+}
+
+// ==========================================
+// DAILY PRAYER TIMES (Server-owned data)
+// ==========================================
+
+model DailyPrayerTime {
+  id              String   @id @default(cuid())
+  date            DateTime @unique @db.Date
+  
+  // Waktu sholat (format "HH:mm")
+  imsak           String
+  subuh           String
+  terbit          String
+  dhuha           String
+  dzuhur          String
+  ashar           String
+  maghrib         String
+  isya            String
+  
+  // Kalender Hijriah (dari /v3/cal/hijr)
+  hijriDay        Int?
+  hijriMonth      Int?
+  hijriMonthName  String?
+  hijriYear       Int?
+  hijriDayName    String?
+  hijriFullDate   String?    // e.g. "1 Ramadan 1447 H"
+  
+  // Metadata
+  sumberApi       String   @default("myquran")
+  fetchedAt       DateTime @default(now())
+  
+  @@map("daily_prayer_times")
 }
 
 model PrayerOfficer {

@@ -1,19 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { MapPin, Loader2, Clock, ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
-
-// Masjid Nurul Jannah coordinates (Dumai Timur, Riau)
-const MASJID_COORDINATES = {
-  latitude: 1.6637656782492023,
-  longitude: 101.46989980345897,
-};
-
-// ... (rest of constants and interfaces remain same)
-
-// Calculation method: 20 = Kementerian Agama Indonesia
-const CALCULATION_METHOD = 20;
+import { MapPin, Loader2, Clock, ChevronDown, ChevronUp } from "lucide-react";
 
 // Fallback prayer times (used if API fails)
 const fallbackPrayerTimes = [
@@ -36,8 +25,20 @@ interface PrayerInfo {
   timeInMinutes: number;
 }
 
-interface PrayerTimesWidgetProps {
-  location?: string;
+interface PrayerApiResponse {
+  success: boolean;
+  data: {
+    imsak: string;
+    subuh: string;
+    dzuhur: string;
+    ashar: string;
+    maghrib: string;
+    isya: string;
+    hijri: {
+      fullDate: string;
+    } | null;
+    location: string;
+  } | null;
 }
 
 function parseTimeToMinutes(time: string): number {
@@ -61,78 +62,63 @@ function getCurrentSeconds(): number {
   return new Date().getSeconds();
 }
 
-// Format time from API (remove seconds if present, e.g., "04:30 (WIB)" -> "04:30")
-function formatApiTime(time: string): string {
-  // Extract just HH:MM from the time string
-  const match = time.match(/^(\d{2}:\d{2})/);
-  return match ? match[1] : time;
-}
-
-export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidgetProps) {
+export function PrayerTimesWidget() {
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [nextPrayer, setNextPrayer] = useState<PrayerInfo | null>(null);
   const [countdown, setCountdown] = useState("00:00:00");
   const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>(fallbackPrayerTimes);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastFetchDate, setLastFetchDate] = useState<string>("");
-  const [isExpanded, setIsExpanded] = useState(false); // New state for mobile expansion
+  const [location, setLocation] = useState("Kota Dumai");
+  const [hijriDate, setHijriDate] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  // Fetch prayer times from Aladhan API
+  // Fetch prayer times from our own API (backed by database)
   const fetchPrayerTimes = useCallback(async () => {
-    const today = new Date();
-    const dateString = today.toISOString().split("T")[0];
-
-    // Only fetch once per day
-    if (dateString === lastFetchDate) {
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const { latitude, longitude } = MASJID_COORDINATES;
-      const url = `https://api.aladhan.com/v1/timings/${Math.floor(today.getTime() / 1000)}?latitude=${latitude}&longitude=${longitude}&method=${CALCULATION_METHOD}`;
+      const response = await fetch("/api/prayer-today");
+      const result: PrayerApiResponse = await response.json();
 
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch prayer times");
+      if (result.success && result.data) {
+        const d = result.data;
+        const newPrayerTimes: PrayerTime[] = [
+          { name: "Imsak", time: d.imsak },
+          { name: "Shubuh", time: d.subuh },
+          { name: "Dzuhur", time: d.dzuhur },
+          { name: "Ashar", time: d.ashar },
+          { name: "Maghrib", time: d.maghrib },
+          { name: "Isya", time: d.isya },
+        ];
+
+        setPrayerTimes(newPrayerTimes);
+        setLocation(d.location);
+        if (d.hijri?.fullDate) {
+          setHijriDate(d.hijri.fullDate);
+        }
       }
-
-      const data = await response.json();
-      const timings = data.data.timings;
-
-      const newPrayerTimes: PrayerTime[] = [
-        { name: "Imsak", time: formatApiTime(timings.Imsak) },
-        { name: "Shubuh", time: formatApiTime(timings.Fajr) },
-        { name: "Dzuhur", time: formatApiTime(timings.Dhuhr) },
-        { name: "Ashar", time: formatApiTime(timings.Asr) },
-        { name: "Maghrib", time: formatApiTime(timings.Maghrib) },
-        { name: "Isya", time: formatApiTime(timings.Isha) },
-      ];
-
-      setPrayerTimes(newPrayerTimes);
-      setLastFetchDate(dateString);
     } catch (error) {
       console.error("Error fetching prayer times:", error);
-      // Keep using fallback times if fetch fails
+      // Keep using fallback times
     } finally {
       setIsLoading(false);
     }
-  }, [lastFetchDate]);
+  }, []);
+
+  const prayerTimesRef = useRef(prayerTimes);
+  prayerTimesRef.current = prayerTimes;
 
   // Calculate next prayer and countdown
   const calculatePrayerStates = useCallback(() => {
     const nowMinutes = getCurrentTimeInMinutes();
     const nowSeconds = getCurrentSeconds();
 
-    // Convert prayer times to minutes for comparison
-    const prayers: PrayerInfo[] = prayerTimes.map((p) => ({
+    const prayers: PrayerInfo[] = prayerTimesRef.current.map((p) => ({
       ...p,
       timeInMinutes: parseTimeToMinutes(p.time),
     }));
 
-    // Find next prayer
-    let next = prayers[0]; // Default to Shubuh (next day)
+    let next = prayers[0]; // Default to first prayer (next day)
     let foundNext = false;
     for (let i = 0; i < prayers.length; i++) {
       if (nowMinutes < prayers[i].timeInMinutes) {
@@ -142,21 +128,18 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
       }
     }
 
-    // Calculate countdown in seconds
     let diffMinutes: number;
     if (foundNext) {
       diffMinutes = next.timeInMinutes - nowMinutes;
     } else {
-      // Next prayer is Shubuh tomorrow
       diffMinutes = 24 * 60 - nowMinutes + next.timeInMinutes;
     }
 
-    // Convert to seconds and subtract current seconds
     const totalSeconds = Math.max(0, diffMinutes * 60 - nowSeconds);
 
     setNextPrayer(next);
     setCountdown(formatCountdown(totalSeconds));
-  }, [prayerTimes]);
+  }, []); // No prayerTimes dependency — uses ref
 
   // Update current time display
   const updateCurrentTime = useCallback(() => {
@@ -170,38 +153,29 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
         })
       .replace(/\./g, ":");
 
-    const dateStr = now.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
-    setCurrentTime(`${timeStr} | ${dateStr}`);
+    setCurrentTime(timeStr);
   }, []);
 
-  // Initial fetch and setup intervals
+  // Initial fetch — runs once on mount
   useEffect(() => {
     setMounted(true);
     fetchPrayerTimes();
+  }, [fetchPrayerTimes]);
+
+  // Countdown interval — runs once on mount, uses refs for latest data
+  useEffect(() => {
     calculatePrayerStates();
     updateCurrentTime();
 
-    // Update countdown every second
     const countdownInterval = setInterval(() => {
       calculatePrayerStates();
       updateCurrentTime();
     }, 1000);
 
-    // Check for new day every minute to refetch prayer times
-    const fetchInterval = setInterval(() => {
-      fetchPrayerTimes();
-    }, 60000);
-
     return () => {
       clearInterval(countdownInterval);
-      clearInterval(fetchInterval);
     };
-  }, [fetchPrayerTimes, calculatePrayerStates, updateCurrentTime]);
+  }, [calculatePrayerStates, updateCurrentTime]);
 
   if (!mounted) return null;
 
@@ -237,14 +211,21 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
                  {location}
                </span>
                <span className="w-0.5 h-0.5 rounded-full bg-emerald-100/40" />
-               <span className="font-mono">{currentTime.split("|")[0]}</span>
+               <span className="font-mono">{currentTime}</span>
             </div>
+
+            {/* Hijri Date */}
+            {hijriDate && (
+              <div className="mt-1.5 text-[9px] text-emerald-200/50 font-medium tracking-wide">
+                {hijriDate}
+              </div>
+            )}
         </div>
 
         {/* Separator - Visible only when expanded on mobile, or always on desktop */}
         <div className={cn(
             "h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-opacity duration-300",
-            isExpanded ? "opacity-100" : "opacity-0 md:opacity-100 hidden md:block" // Hidden on mobile if collapsed
+            isExpanded ? "opacity-100" : "opacity-0 md:opacity-100 hidden md:block"
         )} />
 
         {/* Footer: Compact Prayer List - Collapsible on mobile */}
@@ -306,4 +287,3 @@ export function PrayerTimesWidget({ location = "Dumai, Riau" }: PrayerTimesWidge
     </div>
   );
 }
-

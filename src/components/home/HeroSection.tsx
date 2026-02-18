@@ -97,7 +97,7 @@ export function HeroSection() {
 
         {/* Right Content: Prayer Times Widget */}
         <div className="relative z-20 w-full md:w-auto flex flex-col items-center md:items-end mt-auto md:mt-0 md:ml-auto">
-           <PrayerTimesWidget location="Kota Dumai" />
+           <PrayerTimesWidget />
         </div>
 
       </div>

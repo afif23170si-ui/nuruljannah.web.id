@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Loader2, Clock, MapPin, CalendarDays } from "lucide-react";
-
-const CALCULATION_METHOD = 20;
 
 const fallbackPrayerTimes = [
   { name: "Imsak", time: "04:20" },
@@ -26,10 +24,23 @@ interface PrayerInfo {
   timeInMinutes: number;
 }
 
-interface PrayerTimesCardProps {
-  location?: string;
-  latitude?: number;
-  longitude?: number;
+interface PrayerApiResponse {
+  success: boolean;
+  data: {
+    imsak: string;
+    subuh: string;
+    terbit: string;
+    dhuha: string;
+    dzuhur: string;
+    ashar: string;
+    maghrib: string;
+    isya: string;
+    hijri: {
+      fullDate: string;
+      dayName: string;
+    } | null;
+    location: string;
+  } | null;
 }
 
 function parseTimeToMinutes(time: string): number {
@@ -53,65 +64,57 @@ function getCurrentSeconds(): number {
   return new Date().getSeconds();
 }
 
-function formatApiTime(time: string): string {
-  const match = time.match(/^(\d{2}:\d{2})/);
-  return match ? match[1] : time;
-}
-
-export function PrayerTimesCard({ 
-  location = "Tanjung Palas, Dumai Timur",
-  latitude = 1.66395,
-  longitude = 101.45298
-}: PrayerTimesCardProps) {
+export function PrayerTimesCard() {
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
+  const [hijriDate, setHijriDate] = useState<string | null>(null);
+  const [location, setLocation] = useState("Tanjung Palas, Dumai Timur");
   const [nextPrayer, setNextPrayer] = useState<PrayerInfo | null>(null);
   const [countdown, setCountdown] = useState("00:00:00");
   const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>(fallbackPrayerTimes);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastFetchDate, setLastFetchDate] = useState<string>("");
 
+  // Fetch prayer times from our own API (backed by database)
   const fetchPrayerTimes = useCallback(async () => {
-    const today = new Date();
-    const dateString = today.toISOString().split("T")[0];
-
-    if (dateString === lastFetchDate) return;
-
     try {
       setIsLoading(true);
-      const url = `https://api.aladhan.com/v1/timings/${Math.floor(today.getTime() / 1000)}?latitude=${latitude}&longitude=${longitude}&method=${CALCULATION_METHOD}&school=0&timezonestring=Asia/Jakarta`;
+      const response = await fetch("/api/prayer-today");
+      const result: PrayerApiResponse = await response.json();
 
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch prayer times");
+      if (result.success && result.data) {
+        const d = result.data;
+        const newPrayerTimes: PrayerTime[] = [
+          { name: "Imsak", time: d.imsak },
+          { name: "Shubuh", time: d.subuh },
+          { name: "Dzuhur", time: d.dzuhur },
+          { name: "Ashar", time: d.ashar },
+          { name: "Maghrib", time: d.maghrib },
+          { name: "Isya", time: d.isya },
+        ];
 
-      const data = await response.json();
-      const timings = data.data.timings;
-
-      const newPrayerTimes: PrayerTime[] = [
-        { name: "Imsak", time: formatApiTime(timings.Imsak) },
-        { name: "Shubuh", time: formatApiTime(timings.Fajr) },
-        { name: "Dzuhur", time: formatApiTime(timings.Dhuhr) },
-        { name: "Ashar", time: formatApiTime(timings.Asr) },
-        { name: "Maghrib", time: formatApiTime(timings.Maghrib) },
-        { name: "Isya", time: formatApiTime(timings.Isha) },
-      ];
-
-      setPrayerTimes(newPrayerTimes);
-      setLastFetchDate(dateString);
+        setPrayerTimes(newPrayerTimes);
+        setLocation(d.location);
+        if (d.hijri?.fullDate) {
+          setHijriDate(d.hijri.fullDate);
+        }
+      }
     } catch (error) {
       console.error("Error fetching prayer times:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [lastFetchDate, latitude, longitude]);
+  }, []);
+
+  const prayerTimesRef = useRef(prayerTimes);
+  prayerTimesRef.current = prayerTimes;
 
   const calculatePrayerStates = useCallback(() => {
     const nowMinutes = getCurrentTimeInMinutes();
     const nowSeconds = getCurrentSeconds();
 
     // Only use actual prayer times for countdown (skip Imsak)
-    const prayers: PrayerInfo[] = prayerTimes
+    const prayers: PrayerInfo[] = prayerTimesRef.current
       .filter((p) => p.name !== "Imsak")
       .map((p) => ({
         ...p,
@@ -139,7 +142,7 @@ export function PrayerTimesCard({
 
     setNextPrayer(next);
     setCountdown(formatCountdown(totalSeconds));
-  }, [prayerTimes]);
+  }, []); // No prayerTimes dependency — uses ref
 
   const updateCurrentTime = useCallback(() => {
     const now = new Date();
@@ -162,9 +165,14 @@ export function PrayerTimesCard({
     );
   }, []);
 
+  // Initial fetch — runs once on mount
   useEffect(() => {
     setMounted(true);
     fetchPrayerTimes();
+  }, [fetchPrayerTimes]);
+
+  // Countdown interval — runs once on mount, uses refs for latest data
+  useEffect(() => {
     calculatePrayerStates();
     updateCurrentTime();
 
@@ -173,15 +181,10 @@ export function PrayerTimesCard({
       updateCurrentTime();
     }, 1000);
 
-    const fetchInterval = setInterval(() => {
-      fetchPrayerTimes();
-    }, 60000);
-
     return () => {
       clearInterval(countdownInterval);
-      clearInterval(fetchInterval);
     };
-  }, [fetchPrayerTimes, calculatePrayerStates, updateCurrentTime]);
+  }, [calculatePrayerStates, updateCurrentTime]);
 
   if (!mounted) return null;
 
@@ -263,9 +266,15 @@ export function PrayerTimesCard({
          <div className="flex items-center gap-2 font-medium text-gray-500">
             <CalendarDays className="w-3.5 h-3.5" />
             <span>{currentDate}</span>
+            {hijriDate && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                <span className="text-emerald-600 font-semibold">{hijriDate}</span>
+              </>
+            )}
          </div>
          <div className="text-[10px] md:text-xs">
-            Metode: Kemenag RI (20°)
+            Sumber: Kemenag RI
          </div>
       </div>
     </div>
