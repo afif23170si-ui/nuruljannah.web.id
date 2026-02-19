@@ -10,20 +10,12 @@ import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ResponsiveDataList } from "@/components/admin/shared/ResponsiveDataList";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { TransactionActions } from "@/components/admin/TransactionActions";
 import {
   Plus,
   TrendingUp,
   TrendingDown,
   Wallet,
-  MoreHorizontal,
-  Edit,
-  Trash2,
   FileText,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -229,23 +221,7 @@ export default async function FinanceAdminPage() {
               {
                 header: "",
                 cell: (tx) => (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Edit className="mr-2 h-4 w-4 text-blue-500" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600 cursor-pointer focus:bg-red-50 focus:text-red-700">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Hapus
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <TransactionActions transactionId={tx.id} description={tx.description} />
                 ),
                 className: "text-right"
               }
@@ -267,23 +243,7 @@ export default async function FinanceAdminPage() {
                         {tx.type === "INCOME" ? "+" : "-"} {formatCurrency(Number(tx.amount)).replace("Rp", "")}
                      </span>
                      
-                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="cursor-pointer">
-                            <Edit className="mr-2 h-4 w-4 text-blue-500" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600 cursor-pointer focus:bg-red-50 focus:text-red-700">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Hapus
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                     <TransactionActions transactionId={tx.id} description={tx.description} />
                  </div>
               </div>
             )}

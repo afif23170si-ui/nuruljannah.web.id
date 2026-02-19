@@ -189,16 +189,19 @@ enum AnnouncementType {
 // ==========================================
 
 model Finance {
-  id          String          @id @default(cuid())
-  type        FinanceType
-  category    FinanceCategory
-  amount      Decimal         @db.Decimal(15, 2)
-  description String
-  date        DateTime
-  createdBy   String
-  creator     User            @relation(fields: [createdBy], references: [id])
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id            String          @id @default(cuid())
+  type          FinanceType
+  category      FinanceCategory
+  amount        Decimal         @db.Decimal(15, 2)
+  description   String
+  date          DateTime
+  donorName     String?         // Nama donatur (opsional)
+  paymentMethod String?         // CASH, TRANSFER, QRIS, EWALLET
+  isAnonymous   Boolean         @default(false)
+  createdBy     String
+  creator       User            @relation(fields: [createdBy], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   @@index([type, date])
   @@index([category])
@@ -216,6 +219,11 @@ enum FinanceCategory {
   DONASI
   INFAQ
   ZAKAT
+  ZAKAT_FITRAH
+  ZAKAT_MAAL
+  SEDEKAH
+  WAKAF
+  FIDYAH
   // Expense Categories
   OPERASIONAL
   SOSIAL
@@ -507,6 +515,8 @@ model SiteSettings {
   
   // Banking
   bankAccounts    Json?    // [{bankName, accountNumber, accountName}]
+  qrisImageUrl    String?  // URL gambar QRIS
+  ewallets        Json?    // [{name, number, logo}]
   
   // Contacts (Pengurus Inti)
   contacts        Json?    // [{label, phone}]

@@ -14,6 +14,7 @@ import {
 import { TrendingUp, TrendingDown, Wallet, BarChart3, Shield, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import Image from "next/image";
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = "force-dynamic";
@@ -50,261 +51,252 @@ export default async function TransparansiPage() {
   const yearlyExpense = monthlyReport.reduce((sum, m) => sum + m.expense, 0);
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 to-secondary/10 py-16 md:py-20">
-        <div className="absolute inset-0 pattern-overlay opacity-30" />
-        <div className="container relative mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4">
-            <Shield className="h-3 w-3 mr-1" />
-            Transparansi
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Transparansi Keuangan</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Laporan keuangan masjid yang akuntabel dan transparan untuk seluruh jamaah
-          </p>
+    <div className="min-h-screen bg-white pb-20">
+      {/* ── Floating Hero Section ── */}
+      <section className="px-4 md:px-0 pt-4 md:pt-6">
+        <div className="relative h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+           {/* Hero Image */}
+           <Image
+              src="/hero-masjid.webp"
+              alt="Laporan Keuangan Masjid Nurul Jannah"
+              fill
+              className="object-cover object-center opacity-80"
+              priority
+              sizes="100vw"
+           />
+           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+           
+           <div className="container relative z-10 mx-auto px-4 text-center">
+            <Badge variant="outline" className="mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/5 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+              Transparansi
+            </Badge>
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 md:mb-4 drop-shadow-sm">
+              Laporan Keuangan
+            </h1>
+            <p className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto leading-relaxed">
+              Laporan keuangan masjid yang akuntabel dan terbuka untuk seluruh jamaah sebagai bentuk pertanggungjawaban amanah.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 py-12 md:py-16">
-        {/* Current Month Summary */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            {MONTH_NAMES[currentMonth - 1]} {currentYear}
-          </h2>
+      {/* ── Content ── */}
+      <div className="mx-auto w-full md:w-[96%] max-w-7xl px-4 md:px-0 py-12 md:py-16">
+        
+        {/* Current Month Title */}
+        <div className="flex items-center justify-center gap-3 mb-10">
+           <div className="h-px w-12 bg-gray-200"></div>
+           <span className="text-sm font-medium text-gray-500 uppercase tracking-widest">
+              {MONTH_NAMES[currentMonth - 1]} {currentYear}
+           </span>
+           <div className="h-px w-12 bg-gray-200"></div>
+        </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
-            <Card className="border-l-4 border-l-green-500">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Pemasukan
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">
-                  {formatCurrency(summary.monthly.income)}
+        {/* Summary Cards */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+            {/* Pemasukan */}
+            <Card className="rounded-2xl border-gray-100 shadow-sm hover:shadow-md transition-all group">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                    <TrendingUp className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                    + Pemasukan
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Total Pemasukan</p>
+                  <p className="text-2xl font-serif font-bold text-gray-900">
+                    {formatCurrency(summary.monthly.income)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-red-500">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Pengeluaran
-                </CardTitle>
-                <TrendingDown className="h-4 w-4 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">
-                  {formatCurrency(summary.monthly.expense)}
+            {/* Pengeluaran */}
+            <Card className="rounded-2xl border-gray-100 shadow-sm hover:shadow-md transition-all group">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-10 w-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                    <TrendingDown className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                    - Pengeluaran
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Total Pengeluaran</p>
+                  <p className="text-2xl font-serif font-bold text-gray-900">
+                    {formatCurrency(summary.monthly.expense)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Saldo Bulan Ini
-                </CardTitle>
-                <Wallet className="h-4 w-4 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <div className={`text-2xl font-bold ${summary.monthly.balance >= 0 ? "text-blue-600" : "text-red-600"}`}>
-                  {formatCurrency(summary.monthly.balance)}
+            {/* Saldo Bulan Ini */}
+            <Card className="rounded-2xl border-gray-100 shadow-sm hover:shadow-md transition-all group">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Saldo Bulan Ini</p>
+                  <p className={`text-2xl font-serif font-bold ${summary.monthly.balance >= 0 ? "text-blue-600" : "text-red-600"}`}>
+                    {formatCurrency(summary.monthly.balance)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-primary">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Saldo Kas
-                </CardTitle>
-                <Wallet className="h-4 w-4 text-primary" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-primary">
-                  {formatCurrency(summary.allTime.balance)}
+            {/* Total Saldo Kas */}
+            <Card className="rounded-2xl border-gray-100 bg-slate-900 text-white shadow-xl shadow-slate-900/10 hover:shadow-2xl transition-all group">
+              <CardContent className="p-6">
+                 <div className="flex items-center justify-between mb-4">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                    <Shield className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-slate-400">Total Saldo Kas</p>
+                  <p className="text-3xl font-serif font-bold text-white">
+                    {formatCurrency(summary.allTime.balance)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
-          </div>
         </div>
 
         {/* Category Breakdown */}
         {summary.categories.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto mb-12">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  Sumber Pemasukan
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
+          <div className="grid gap-6 md:grid-cols-2 mb-12">
+            {/* Pemasukan Chart */}
+            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-6">
+                <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+                Rincian Pemasukan
+              </h3>
+              <div className="space-y-4">
                   {summary.categories
                     .filter((c) => c.type === "INCOME")
                     .sort((a, b) => b.amount - a.amount)
-                    .map((cat) => (
-                      <div key={cat.category} className="flex items-center justify-between py-1">
-                        <span className="text-sm">{CATEGORY_LABELS[cat.category] || cat.category}</span>
-                        <span className="font-medium text-green-600">
+                    .map((cat, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded-xl p-4 flex items-center justify-between hover:bg-emerald-50/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                              {idx + 1}
+                           </div>
+                           <span className="font-medium text-gray-700 text-sm">{CATEGORY_LABELS[cat.category] || cat.category}</span>
+                        </div>
+                        <span className="font-bold text-emerald-600 text-sm">
                           {formatCurrency(cat.amount)}
                         </span>
                       </div>
                     ))}
                   {summary.categories.filter((c) => c.type === "INCOME").length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-4">
+                    <p className="text-sm text-muted-foreground text-center py-8 bg-gray-50 rounded-xl">
                       Belum ada pemasukan bulan ini
                     </p>
                   )}
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4 text-red-500" />
-                  Penggunaan Dana
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
+            {/* Pengeluaran Chart */}
+            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-6">
+                <span className="w-1.5 h-6 bg-red-500 rounded-full"></span>
+                Rincian Pengeluaran
+              </h3>
+              <div className="space-y-4">
                   {summary.categories
                     .filter((c) => c.type === "EXPENSE")
                     .sort((a, b) => b.amount - a.amount)
-                    .map((cat) => (
-                      <div key={cat.category} className="flex items-center justify-between py-1">
-                        <span className="text-sm">{CATEGORY_LABELS[cat.category] || cat.category}</span>
-                        <span className="font-medium text-red-600">
+                    .map((cat, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded-xl p-4 flex items-center justify-between hover:bg-red-50/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                              {idx + 1}
+                           </div>
+                           <span className="font-medium text-gray-700 text-sm">{CATEGORY_LABELS[cat.category] || cat.category}</span>
+                        </div>
+                        <span className="font-bold text-red-600 text-sm">
                           {formatCurrency(cat.amount)}
                         </span>
                       </div>
                     ))}
                   {summary.categories.filter((c) => c.type === "EXPENSE").length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-4">
+                    <p className="text-sm text-muted-foreground text-center py-8 bg-gray-50 rounded-xl">
                       Belum ada pengeluaran bulan ini
                     </p>
                   )}
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Yearly Report */}
-        <Card className="max-w-4xl mx-auto mb-12">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Rekap Tahun {currentYear}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Bulan</TableHead>
-                    <TableHead className="text-right">Pemasukan</TableHead>
-                    <TableHead className="text-right">Pengeluaran</TableHead>
-                    <TableHead className="text-right">Saldo</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {monthlyReport.slice(0, currentMonth).map((month) => {
-                    const balance = month.income - month.expense;
-                    return (
-                      <TableRow key={month.month}>
-                        <TableCell className="font-medium">
-                          {MONTH_NAMES[month.month - 1]}
-                        </TableCell>
-                        <TableCell className="text-right text-green-600">
-                          {month.income > 0 ? formatCurrency(month.income) : "-"}
-                        </TableCell>
-                        <TableCell className="text-right text-red-600">
-                          {month.expense > 0 ? formatCurrency(month.expense) : "-"}
-                        </TableCell>
-                        <TableCell className={`text-right font-semibold ${balance >= 0 ? "text-primary" : "text-red-600"}`}>
-                          {month.income > 0 || month.expense > 0 ? formatCurrency(balance) : "-"}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  <TableRow className="border-t-2 font-bold">
-                    <TableCell>TOTAL</TableCell>
-                    <TableCell className="text-right text-green-600">
-                      {formatCurrency(yearlyIncome)}
-                    </TableCell>
-                    <TableCell className="text-right text-red-600">
-                      {formatCurrency(yearlyExpense)}
-                    </TableCell>
-                    <TableCell className={`text-right ${yearlyIncome - yearlyExpense >= 0 ? "text-primary" : "text-red-600"}`}>
-                      {formatCurrency(yearlyIncome - yearlyExpense)}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Recent Transactions */}
-        {recentTransactions.length > 0 && (
-          <Card className="max-w-4xl mx-auto">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" />
-                Transaksi Terbaru
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tanggal</TableHead>
-                      <TableHead>Keterangan</TableHead>
-                      <TableHead>Kategori</TableHead>
-                      <TableHead className="text-right">Jumlah</TableHead>
-                    </TableRow>
+        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden mb-12">
+            <div className="p-6 md:p-8 border-b border-gray-100 bg-gray-50/30">
+               <div className="flex items-center justify-between">
+                  <div>
+                     <h3 className="text-xl font-bold text-gray-900 mb-1">Transaksi Terbaru</h3>
+                     <p className="text-sm text-gray-500">20 transaksi terakhir yang tercatat sistem</p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400">
+                     <Eye className="w-5 h-5" />
+                  </div>
+               </div>
+            </div>
+            
+            <div className="overflow-x-auto">
+               <Table>
+                  <TableHeader className="bg-gray-50/50">
+                     <TableRow>
+                        <TableHead className="w-[180px] pl-6 md:pl-8">Tanggal</TableHead>
+                        <TableHead>Keterangan</TableHead>
+                        <TableHead>Kategori</TableHead>
+                        <TableHead className="text-right pr-6 md:pr-8">Jumlah</TableHead>
+                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentTransactions.slice(0, 15).map((tx) => (
-                      <TableRow key={tx.id}>
-                        <TableCell className="text-muted-foreground whitespace-nowrap">
-                          {format(new Date(tx.date), "d MMM yyyy", { locale: id })}
-                        </TableCell>
-                        <TableCell className="max-w-[200px] truncate">
-                          {tx.description}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {CATEGORY_LABELS[tx.category] || tx.category}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className={`text-right font-semibold whitespace-nowrap ${tx.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
-                          {tx.type === "INCOME" ? "+" : "-"}
-                          {formatCurrency(Number(tx.amount))}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                     {recentTransactions.length > 0 ? (
+                        recentTransactions.slice(0, 15).map((tx) => (
+                           <TableRow key={tx.id} className="hover:bg-gray-50 cursor-default">
+                              <TableCell className="pl-6 md:pl-8 font-medium text-gray-600 text-sm">
+                                 {format(new Date(tx.date), "d MMM yyyy", { locale: id })}
+                              </TableCell>
+                              <TableCell className="max-w-[200px] md:max-w-md truncate font-medium text-gray-900 text-sm">
+                                 {tx.description}
+                              </TableCell>
+                              <TableCell>
+                                 <Badge variant="outline" className="text-xs font-normal text-gray-500 border-gray-200">
+                                    {CATEGORY_LABELS[tx.category] || tx.category}
+                                 </Badge>
+                              </TableCell>
+                              <TableCell className={`text-right pr-6 md:pr-8 font-bold whitespace-nowrap text-sm ${tx.type === "INCOME" ? "text-emerald-600" : "text-red-600"}`}>
+                                 {tx.type === "INCOME" ? "+" : "-"} {formatCurrency(Number(tx.amount))}
+                              </TableCell>
+                           </TableRow>
+                        ))
+                     ) : (
+                        <TableRow>
+                           <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
+                              Belum ada data transaksi
+                           </TableCell>
+                        </TableRow>
+                     )}
                   </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+               </Table>
+            </div>
+        </div>
 
-        {/* Note */}
-        <div className="max-w-2xl mx-auto mt-12 text-center">
-          <p className="text-sm text-muted-foreground">
-            <strong>Catatan:</strong> Laporan keuangan ini diperbarui secara berkala oleh pengurus masjid.
-            Untuk pertanyaan lebih lanjut, silakan hubungi bendahara masjid.
+        {/* Footer Notes */}
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-xs text-gray-400 leading-relaxed">
+            <strong className="text-gray-600">Catatan:</strong> Laporan keuangan ini diperbarui secara real-time berdasarkan data yang diinput oleh bendahara masjid.
+            Jika terdapat kekeliruan, silakan hubungi pengurus DKM.
           </p>
         </div>
       </div>

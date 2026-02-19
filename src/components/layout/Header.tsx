@@ -48,7 +48,15 @@ const navigation = [
   },
   { name: "Ibadah", href: "/ibadah", icon: Clock },
   { name: "Agenda", href: "/agenda", icon: Calendar },
-  { name: "Infaq", href: "/infaq", icon: Heart },
+  { 
+    name: "Infaq", 
+    href: "/infaq", 
+    icon: Heart,
+    children: [
+      { name: "Infaq Online", href: "/infaq", icon: Heart },
+      { name: "Laporan Keuangan", href: "/keuangan", icon: BookOpen },
+    ]
+  },
   { name: "Galeri", href: "/galeri", icon: Images },
 ];
 
@@ -60,7 +68,7 @@ interface HeaderProps {
 export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [isProfileExpanded, setIsProfileExpanded] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isDark, setIsDark] = useState(false);
   // We can keep the scroll listener if we want subtle effects, but user asked for static.
   // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
@@ -303,19 +311,26 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                       return (
                         <div key={item.name} className="flex flex-col mt-2 mb-2 bg-slate-50/50 rounded-2xl border border-slate-100/50 overflow-hidden">
                           <button 
-                            onClick={() => setIsProfileExpanded(!isProfileExpanded)}
+                            onClick={() => {
+                              setExpandedItems(prev => {
+                                const next = new Set(prev);
+                                if (next.has(item.name)) next.delete(item.name);
+                                else next.add(item.name);
+                                return next;
+                              });
+                            }}
                             className="flex items-center justify-between w-full px-4 py-3 text-left transition-colors hover:bg-slate-100/50"
                           >
                             <span className="flex items-center gap-3 text-sm font-medium text-slate-700">
                               <item.icon className="h-5 w-5 text-slate-400" />
                               {item.name}
                             </span>
-                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", isProfileExpanded && "rotate-180")} />
+                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", expandedItems.has(item.name) && "rotate-180")} />
                           </button>
                           
                           <div className={cn(
                             "grid transition-all duration-300 ease-in-out",
-                            isProfileExpanded ? "grid-rows-[1fr] opacity-100 pb-2" : "grid-rows-[0fr] opacity-0"
+                            expandedItems.has(item.name) ? "grid-rows-[1fr] opacity-100 pb-2" : "grid-rows-[0fr] opacity-0"
                           )}>
                             <div className="overflow-hidden flex flex-col gap-1 px-2">
                               {item.children.map(child => {

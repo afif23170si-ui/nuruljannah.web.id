@@ -52,6 +52,12 @@ export async function updateSiteSettings(data: {
     phone: string;
     link?: string;
   }>;
+  qrisImageUrl?: string;
+  ewallets?: Array<{
+    name: string;
+    number: string;
+    logo?: string;
+  }>;
 }) {
   const settings = await getSiteSettings();
   
@@ -82,6 +88,8 @@ export async function updateSiteSettings(data: {
       longitude: data.longitude,
       bankAccounts: data.bankAccounts,
       contacts: data.contacts,
+      qrisImageUrl: data.qrisImageUrl,
+      ewallets: data.ewallets,
     },
   });
   

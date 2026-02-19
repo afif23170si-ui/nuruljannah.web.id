@@ -31,6 +31,16 @@ export async function getFinanceList(options?: {
   });
 }
 
+// Get Finance By ID
+export async function getFinanceById(id: string) {
+  return prisma.finance.findUnique({
+    where: { id },
+    include: {
+      creator: { select: { name: true } },
+    },
+  });
+}
+
 // Get Finance Summary
 export async function getFinanceSummary(month?: number, year?: number) {
   const now = new Date();
@@ -105,9 +115,12 @@ export async function createFinance(data: {
   type: "INCOME" | "EXPENSE";
   amount: number;
   description: string;
-  category: "KOTAK_AMAL" | "TRANSFER" | "DONASI" | "INFAQ" | "ZAKAT" | "OPERASIONAL" | "SOSIAL" | "RENOVASI" | "PENDIDIKAN" | "LAINNYA";
+  category: "KOTAK_AMAL" | "TRANSFER" | "DONASI" | "INFAQ" | "ZAKAT" | "ZAKAT_FITRAH" | "ZAKAT_MAAL" | "SEDEKAH" | "WAKAF" | "FIDYAH" | "OPERASIONAL" | "SOSIAL" | "RENOVASI" | "PENDIDIKAN" | "LAINNYA";
   date: Date;
   createdBy: string;
+  donorName?: string;
+  paymentMethod?: string;
+  isAnonymous?: boolean;
 }) {
   const result = await prisma.finance.create({
     data: {
@@ -117,6 +130,9 @@ export async function createFinance(data: {
       description: data.description,
       date: data.date,
       createdBy: data.createdBy,
+      donorName: data.donorName,
+      paymentMethod: data.paymentMethod,
+      isAnonymous: data.isAnonymous ?? false,
     },
   });
 
@@ -130,8 +146,11 @@ export async function updateFinance(
   data: Partial<{
     amount: number;
     description: string;
-    category: "KOTAK_AMAL" | "TRANSFER" | "DONASI" | "INFAQ" | "ZAKAT" | "OPERASIONAL" | "SOSIAL" | "RENOVASI" | "PENDIDIKAN" | "LAINNYA";
+    category: "KOTAK_AMAL" | "TRANSFER" | "DONASI" | "INFAQ" | "ZAKAT" | "ZAKAT_FITRAH" | "ZAKAT_MAAL" | "SEDEKAH" | "WAKAF" | "FIDYAH" | "OPERASIONAL" | "SOSIAL" | "RENOVASI" | "PENDIDIKAN" | "LAINNYA";
     date: Date;
+    donorName: string | null;
+    paymentMethod: string | null;
+    isAnonymous: boolean;
   }>
 ) {
   const result = await prisma.finance.update({
@@ -174,3 +193,59 @@ export async function getMonthlyReport(year: number) {
 
   return report;
 }
+
+// Get Recent Donations (for public Infaq page)
+export async function getRecentDonations(limit: number = 10) {
+  const donations = await prisma.finance.findMany({
+    where: {
+      type: "INCOME",
+    },
+    orderBy: { date: "desc" },
+    take: limit,
+  });
+
+  return donations.map((d) => ({
+    id: d.id,
+    amount: Number(d.amount),
+    description: d.description,
+    category: d.category,
+    date: d.date,
+    donorName: d.donorName ?? null,
+    paymentMethod: d.paymentMethod ?? null,
+    isAnonymous: d.isAnonymous ?? false,
+    displayName: d.isAnonymous || !d.donorName ? "Hamba Allah" : d.donorName,
+  }));
+}
+
+// Get Infaq Stats (for public Infaq page)
+export async function getInfaqStats() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+  const [monthlyTotal, allTransactions] = await Promise.all([
+    prisma.finance.aggregate({
+      where: {
+        type: "INCOME",
+        date: { gte: startOfMonth, lte: endOfMonth },
+      },
+      _sum: { amount: true },
+    }),
+    prisma.finance.findMany({
+      where: {
+        type: "INCOME",
+        date: { gte: startOfMonth, lte: endOfMonth },
+      },
+      select: { donorName: true },
+      distinct: ["donorName"],
+    }),
+  ]);
+
+  const uniqueDonors = allTransactions.filter((t) => t.donorName).length;
+
+  return {
+    totalBulanIni: Number(monthlyTotal._sum?.amount || 0),
+    jumlahDonatur: uniqueDonors,
+  };
+}
+

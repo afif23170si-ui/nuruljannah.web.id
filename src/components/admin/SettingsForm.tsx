@@ -36,6 +36,7 @@ import {
   Upload,
   X,
   Users,
+  Wallet,
 } from "lucide-react";
 import Image from "next/image";
 import { uploadLogo } from "@/actions/upload";
@@ -55,6 +56,12 @@ const contactSchema = z.object({
   label: z.string().min(1, "Label kontak wajib diisi"),
   phone: z.string().min(1, "Nomor telepon wajib diisi"),
   link: z.string().optional(),
+});
+
+const ewalletSchema = z.object({
+  name: z.string().min(1, "Nama e-wallet wajib diisi"),
+  number: z.string().min(1, "Nomor wajib diisi"),
+  logo: z.string().optional(),
 });
 
 const settingsSchema = z.object({
@@ -80,6 +87,8 @@ const settingsSchema = z.object({
   mission: z.string().optional(),
   bankAccounts: z.array(bankAccountSchema).optional(),
   contacts: z.array(contactSchema).optional(),
+  qrisImageUrl: z.string().optional(),
+  ewallets: z.array(ewalletSchema).optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -109,6 +118,8 @@ interface SettingsFormProps {
     mission: string | null;
     bankAccounts: unknown;
     contacts: unknown;
+    qrisImageUrl: string | null;
+    ewallets: unknown;
   };
 }
 
@@ -127,6 +138,12 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     label: string;
     phone: string;
     link?: string;
+  }>) || [];
+
+  const ewallets = (settings.ewallets as Array<{
+    name: string;
+    number: string;
+    logo: string;
   }>) || [];
 
   const form = useForm<SettingsFormData>({
@@ -154,6 +171,8 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
       mission: settings.mission || "",
       bankAccounts: bankAccounts,
       contacts: contacts,
+      qrisImageUrl: settings.qrisImageUrl || "",
+      ewallets: ewallets,
     },
   });
 
@@ -165,6 +184,11 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
   const { fields: contactFields, append: appendContact, remove: removeContact } = useFieldArray({
     control: form.control,
     name: "contacts",
+  });
+
+  const { fields: ewalletFields, append: appendEwallet, remove: removeEwallet } = useFieldArray({
+    control: form.control,
+    name: "ewallets",
   });
 
   const onSubmit = async (data: SettingsFormData) => {
@@ -840,6 +864,144 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                       <Plus className="mr-2 h-4 w-4" />
                       Tambah Rekening Lainnya
                     </Button>
+                )}
+              </div>
+            </AdminCard>
+
+            {/* QRIS Image */}
+            <AdminCard title="QRIS" description="Upload gambar QRIS untuk pembayaran digital" compact={true} className="mt-6">
+              <FormField
+                control={form.control}
+                name="qrisImageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL Gambar QRIS</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://example.com/qris.png"
+                        {...field}
+                        className="h-10 md:h-11"
+                      />
+                    </FormControl>
+                    <p className="text-xs text-gray-500 mt-1">Upload gambar QRIS ke galeri/media terlebih dahulu, lalu paste URL-nya di sini</p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.watch("qrisImageUrl") && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <p className="text-xs text-gray-500 mb-2">Preview:</p>
+                  <div className="bg-white rounded-lg p-3 w-fit mx-auto border border-gray-100">
+                    <img
+                      src={form.watch("qrisImageUrl")}
+                      alt="QRIS Preview"
+                      className="w-48 h-48 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </AdminCard>
+
+            {/* E-Wallets */}
+            <AdminCard title="E-Wallet" description="Daftar e-wallet untuk menerima donasi" compact={true} className="mt-6">
+              <div className="space-y-4 md:space-y-6">
+                {ewalletFields.length === 0 && (
+                  <div className="text-center py-10 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+                    <Wallet className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm mb-4">Belum ada e-wallet ditambahkan</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        appendEwallet({ name: "", number: "", logo: "" })
+                      }
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Tambah E-Wallet
+                    </Button>
+                  </div>
+                )}
+
+                {ewalletFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="relative flex flex-col gap-4 p-5 border border-gray-100 bg-white rounded-xl shadow-sm group hover:border-blue-100 transition-colors"
+                  >
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                        onClick={() => removeEwallet(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="font-medium text-sm text-gray-500 mb-2">E-Wallet #{index + 1}</div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`ewallets.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nama</FormLabel>
+                            <FormControl>
+                              <Input placeholder="GoPay / DANA / ShopeePay" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`ewallets.${index}.number`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nomor</FormLabel>
+                            <FormControl>
+                              <Input placeholder="0812-3456-7890" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`ewallets.${index}.logo`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Emoji/Icon</FormLabel>
+                            <FormControl>
+                              <Input placeholder="💚" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                {ewalletFields.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600 h-12"
+                    onClick={() =>
+                      appendEwallet({ name: "", number: "", logo: "" })
+                    }
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Tambah E-Wallet Lainnya
+                  </Button>
                 )}
               </div>
             </AdminCard>

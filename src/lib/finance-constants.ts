@@ -5,6 +5,11 @@ export const INCOME_CATEGORIES = [
   { value: "DONASI", label: "Donasi" },
   { value: "INFAQ", label: "Infaq" },
   { value: "ZAKAT", label: "Zakat" },
+  { value: "ZAKAT_FITRAH", label: "Zakat Fitrah" },
+  { value: "ZAKAT_MAAL", label: "Zakat Maal" },
+  { value: "SEDEKAH", label: "Sedekah" },
+  { value: "WAKAF", label: "Wakaf" },
+  { value: "FIDYAH", label: "Fidyah" },
 ];
 
 export const EXPENSE_CATEGORIES = [
@@ -24,6 +29,11 @@ export type FinanceCategory =
   | "DONASI" 
   | "INFAQ" 
   | "ZAKAT" 
+  | "ZAKAT_FITRAH"
+  | "ZAKAT_MAAL"
+  | "SEDEKAH"
+  | "WAKAF"
+  | "FIDYAH"
   | "OPERASIONAL" 
   | "SOSIAL" 
   | "RENOVASI" 
@@ -37,6 +47,11 @@ export const CATEGORY_LABELS: Record<string, string> = {
   DONASI: "Donasi",
   INFAQ: "Infaq",
   ZAKAT: "Zakat",
+  ZAKAT_FITRAH: "Zakat Fitrah",
+  ZAKAT_MAAL: "Zakat Maal",
+  SEDEKAH: "Sedekah",
+  WAKAF: "Wakaf",
+  FIDYAH: "Fidyah",
   OPERASIONAL: "Operasional",
   SOSIAL: "Sosial",
   RENOVASI: "Renovasi",

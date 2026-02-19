@@ -9,53 +9,55 @@ import {
   Smartphone,
   TrendingUp,
   Users,
-  Target,
   Copy,
   Check,
-  ArrowUpRight,
   Sparkles,
+  Wallet,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { CATEGORY_LABELS } from "@/lib/finance-constants";
 
-// ── Dummy Data ───────────────────────────────────────────────
+// ── Types ────────────────────────────────────────────────────
 
-const STATS = {
-  totalBulanIni: 12_750_000,
-  targetBulanan: 25_000_000,
-  jumlahDonatur: 48,
-};
+interface BankAccount {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}
 
-const RECENT_DONATIONS = [
-  { name: "Hamba Allah", amount: 500_000, time: "2 menit lalu", type: "QRIS" },
-  { name: "Ahmad S.", amount: 1_000_000, time: "15 menit lalu", type: "Transfer" },
-  { name: "Hamba Allah", amount: 100_000, time: "1 jam lalu", type: "QRIS" },
-  { name: "Siti R.", amount: 250_000, time: "2 jam lalu", type: "E-Wallet" },
-  { name: "Hamba Allah", amount: 2_000_000, time: "3 jam lalu", type: "Transfer" },
-  { name: "Budi P.", amount: 150_000, time: "5 jam lalu", type: "QRIS" },
-];
+interface EWallet {
+  name: string;
+  number: string;
+  logo: string;
+}
 
-const BANK_ACCOUNTS = [
-  {
-    bank: "Bank Syariah Indonesia (BSI)",
-    accountNumber: "712 345 6789",
-    accountName: "Masjid Nurul Jannah",
-    logo: "🏦",
-  },
-  {
-    bank: "Bank Muamalat",
-    accountNumber: "301 234 5678",
-    accountName: "Masjid Nurul Jannah",
-    logo: "🏛️",
-  },
-];
+interface Donation {
+  id: string;
+  amount: number;
+  description: string;
+  category: string;
+  date: Date;
+  donorName: string | null;
+  paymentMethod: string | null;
+  isAnonymous: boolean;
+  displayName: string;
+}
 
-const EWALLETS = [
-  { name: "GoPay", number: "0812-3456-7890", logo: "💚" },
-  { name: "DANA", number: "0812-3456-7890", logo: "💙" },
-  { name: "ShopeePay", number: "0812-3456-7890", logo: "🧡" },
-];
+interface InfaqStats {
+  totalBulanIni: number;
+  jumlahDonatur: number;
+}
+
+interface InfaqPageClientProps {
+  bankAccounts: BankAccount[];
+  ewallets: EWallet[];
+  qrisImageUrl: string | null;
+  recentDonations: Donation[];
+  stats: InfaqStats;
+}
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -66,6 +68,24 @@ function formatCurrency(amount: number) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+function timeAgo(date: Date) {
+  const now = new Date();
+  const diff = now.getTime() - new Date(date).getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return "Baru saja";
+  if (minutes < 60) return `${minutes} menit lalu`;
+  if (hours < 24) return `${hours} jam lalu`;
+  if (days < 30) return `${days} hari lalu`;
+  return new Date(date).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 // ── Animations ───────────────────────────────────────────────
@@ -82,303 +102,303 @@ const stagger = {
 
 // ── Component ────────────────────────────────────────────────
 
-export function InfaqPageClient() {
-  const progress = Math.min(
-    100,
-    (STATS.totalBulanIni / STATS.targetBulanan) * 100
-  );
-
+export function InfaqPageClient({
+  bankAccounts,
+  ewallets,
+  qrisImageUrl,
+  recentDonations,
+  stats,
+}: InfaqPageClientProps) {
+  const hasPaymentMethods = bankAccounts.length > 0 || ewallets.length > 0 || qrisImageUrl;
+  
   return (
     <div className="min-h-screen bg-white">
-      {/* ── Hero Banner ── */}
-      <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <Image
-          src="/bg-nj.webp"
-          alt="Infaq Masjid Nurul Jannah"
-          fill
-          className="object-cover object-center"
-          priority
-          sizes="100vw"
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/50 z-[1]" />
-        
-        {/* Content */}
-        <div className="container relative z-10 mx-auto px-4 text-center">
-          <motion.div
-            initial="hidden"
-            animate="show"
-            variants={stagger}
-          >
+      {/* ── Floating Hero Section ── */}
+      <section className="px-4 md:px-0 pt-4 md:pt-6">
+        <div className="relative h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+          <Image
+            src="/hero-masjid.webp"
+            alt="Infaq Masjid Nurul Jannah"
+            fill
+            className="object-cover object-center opacity-80"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          
+          {/* Decorative Elements */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl opacity-50" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-2xl opacity-30" />
+          </div>
+          
+          <div className="container relative z-10 mx-auto px-4 text-center pb-12">
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={stagger}
+            >
             <motion.div variants={fadeUp}>
-              <Badge variant="outline" className="mb-4 border-white/30 text-white bg-white/10 backdrop-blur-sm px-4 py-1 text-sm font-normal tracking-wide">
-                Infaq Online
-              </Badge>
+                <Badge variant="outline" className="mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+                  Infaq Online
+                </Badge>
+              </motion.div>
+
+              <motion.h1 variants={fadeUp} className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 md:mb-4 drop-shadow-sm">
+                Salurkan Infaq <br />
+                <span className="text-emerald-200">Dengan Mudah</span>
+              </motion.h1>
+
+              <motion.p variants={fadeUp} className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto">
+                Platform digital resmi Masjid Nurul Jannah untuk memudahkan jamaah dalam menyalurkan infaq, sedekah, dan wakaf secara transparan.
+              </motion.p>
             </motion.div>
-
-            <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 text-white drop-shadow-lg">
-              Salurkan Infaq Anda <span className="italic text-emerald-300">Mudah</span>
-            </motion.h1>
-
-            <motion.p variants={fadeUp} className="text-white/80 max-w-2xl mx-auto text-lg font-light leading-relaxed">
-              Berkontribusi untuk kemakmuran masjid secara digital. Aman, transparan, dan mudah.
-            </motion.p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ── Stats + Progress ── */}
-      <section className="container mx-auto px-4 sm:px-6 -mt-6 md:-mt-10 relative z-20">
+      {/* ── Stats Cards (Overlapping) ── */}
+      <section className="px-4 md:px-0 -mt-20 relative z-20 mb-16 md:mb-24">
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto"
+          className="container mx-auto max-w-5xl"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
           variants={stagger}
         >
-          {/* Total Infaq */}
-          <motion.div
-            variants={fadeUp}
-            className="bg-white rounded-2xl border border-zinc-100 shadow-lg shadow-emerald-900/5 p-5 md:p-6"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-                <TrendingUp className="w-5 h-5" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {/* Total Infaq */}
+            <motion.div
+              variants={fadeUp}
+              className="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-emerald-900/5 p-6 md:p-8 flex items-center justify-between group hover:border-emerald-100 transition-colors"
+            >
+              <div>
+                <p className="text-xs uppercase tracking-widest text-emerald-600/80 font-semibold mb-2">
+                  Total Bulan Ini
+                </p>
+                <p className="text-3xl md:text-4xl font-serif font-bold text-gray-900 tabular-nums">
+                  {formatCurrency(stats.totalBulanIni)}
+                </p>
               </div>
-              <span className="text-xs uppercase tracking-widest text-zinc-400 font-medium">
-                Bulan Ini
-              </span>
-            </div>
-            <p className="text-2xl md:text-3xl font-bold text-emerald-950 tabular-nums">
-              {formatCurrency(STATS.totalBulanIni)}
-            </p>
-          </motion.div>
+              <div className="h-14 w-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-7 h-7" />
+              </div>
+            </motion.div>
 
-          {/* Progress Target */}
-          <motion.div
-            variants={fadeUp}
-            className="bg-white rounded-2xl border border-zinc-100 shadow-lg shadow-emerald-900/5 p-5 md:p-6"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-                <Target className="w-5 h-5" />
+            {/* Jumlah Donatur */}
+            <motion.div
+              variants={fadeUp}
+              className="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-emerald-900/5 p-6 md:p-8 flex items-center justify-between group hover:border-blue-100 transition-colors"
+            >
+              <div>
+                <p className="text-xs uppercase tracking-widest text-blue-600/80 font-semibold mb-2">
+                  Donatur
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-3xl md:text-4xl font-serif font-bold text-gray-900 tabular-nums">
+                    {stats.jumlahDonatur}
+                  </p>
+                  <span className="text-sm text-gray-400">orang</span>
+                </div>
               </div>
-              <span className="text-xs uppercase tracking-widest text-zinc-400 font-medium">
-                Target
-              </span>
-            </div>
-            <p className="text-lg font-bold text-emerald-950 mb-2 tabular-nums">
-              {formatCurrency(STATS.targetBulanan)}
-            </p>
-            {/* Progress bar */}
-            <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
-                initial={{ width: 0 }}
-                whileInView={{ width: `${progress}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-            </div>
-            <p className="text-xs text-zinc-400 mt-1.5">
-              {progress.toFixed(0)}% tercapai
-            </p>
-          </motion.div>
-
-          {/* Jumlah Donatur */}
-          <motion.div
-            variants={fadeUp}
-            className="bg-white rounded-2xl border border-zinc-100 shadow-lg shadow-emerald-900/5 p-5 md:p-6"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-                <Users className="w-5 h-5" />
+              <div className="h-14 w-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Users className="w-7 h-7" />
               </div>
-              <span className="text-xs uppercase tracking-widest text-zinc-400 font-medium">
-                Donatur
-              </span>
-            </div>
-            <p className="text-2xl md:text-3xl font-bold text-emerald-950 tabular-nums">
-              {STATS.jumlahDonatur}
-            </p>
-            <p className="text-xs text-zinc-400 mt-0.5">orang bulan ini</p>
-          </motion.div>
+            </motion.div>
+          </div>
         </motion.div>
       </section>
 
       {/* ── Payment Methods ── */}
-      <section className="container mx-auto px-4 sm:px-6 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto">
-          {/* Section title */}
-          <motion.div
-            className="text-center mb-12 md:mb-16"
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            variants={fadeUp}
-          >
-            <h2 className="text-2xl md:text-4xl font-serif font-bold text-emerald-950 mb-3">
-              Pilih Metode Pembayaran
-            </h2>
-            <p className="text-zinc-500 text-sm md:text-base font-light">
-              Kami menyediakan berbagai metode untuk kemudahan Anda.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8"
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={stagger}
-          >
-            {/* QRIS Card */}
+      {hasPaymentMethods && (
+        <section className="mb-20 md:mb-32 px-4 md:px-0">
+          <div className="mx-auto w-full md:w-[96%] max-w-7xl">
             <motion.div
-              variants={fadeUp}
-              className="lg:row-span-2 bg-gradient-to-br from-emerald-950 to-emerald-900 rounded-3xl p-6 md:p-8 text-white flex flex-col items-center text-center"
-            >
-              <div className="p-3 rounded-2xl bg-white/10 backdrop-blur-sm mb-5">
-                <QrCode className="w-7 h-7 text-emerald-200" />
-              </div>
-              <h3 className="text-xl font-serif font-bold mb-2">Scan QRIS</h3>
-              <p className="text-emerald-200/70 text-sm font-light mb-6">
-                Scan QR Code di bawah menggunakan aplikasi e-banking atau
-                e-wallet Anda.
-              </p>
-
-              {/* QR Placeholder */}
-              <div className="bg-white rounded-2xl p-4 mb-5 shadow-lg">
-                <div className="w-48 h-48 bg-zinc-100 rounded-xl flex items-center justify-center">
-                  <div className="text-center">
-                    <QrCode className="w-20 h-20 text-zinc-300 mx-auto mb-2" />
-                    <span className="text-xs text-zinc-400">QR Code QRIS</span>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-emerald-300/60 text-xs">
-                Berlaku untuk semua aplikasi pembayaran
-              </p>
-            </motion.div>
-
-            {/* Bank Transfer */}
-            <motion.div
-              variants={fadeUp}
-              className="bg-white rounded-3xl border border-zinc-100 shadow-sm p-6 md:p-7"
-            >
-              <div className="flex items-center gap-3 mb-5">
-                <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <h3 className="text-lg font-serif font-bold text-zinc-900">
-                  Transfer Bank
-                </h3>
-              </div>
-
-              <div className="space-y-4">
-                {BANK_ACCOUNTS.map((bank) => (
-                  <BankCard key={bank.bank} {...bank} />
-                ))}
-              </div>
-            </motion.div>
-
-            {/* E-Wallet */}
-            <motion.div
-              variants={fadeUp}
-              className="bg-white rounded-3xl border border-zinc-100 shadow-sm p-6 md:p-7"
-            >
-              <div className="flex items-center gap-3 mb-5">
-                <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-                  <Smartphone className="w-5 h-5" />
-                </div>
-                <h3 className="text-lg font-serif font-bold text-zinc-900">
-                  E-Wallet
-                </h3>
-              </div>
-
-              <div className="space-y-3">
-                {EWALLETS.map((wallet) => (
-                  <EWalletCard key={wallet.name} {...wallet} />
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Recent Donations (Transparency) ── */}
-      <section className="bg-zinc-50 py-16 md:py-24">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto">
-            <motion.div
-              className="text-center mb-10"
+              className="text-center mb-12 md:mb-16"
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
               variants={fadeUp}
             >
-              <h2 className="text-2xl md:text-4xl font-serif font-bold text-emerald-950 mb-3">
-                Transparansi Donasi
+              <div className="inline-flex items-center justify-center p-3 bg-emerald-50 text-emerald-600 rounded-2xl mb-4">
+                <Wallet className="w-6 h-6" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                Metode Pembayaran
               </h2>
-              <p className="text-zinc-500 text-sm md:text-base font-light">
-                Daftar infaq terbaru yang diterima oleh masjid.
+              <p className="text-gray-500 max-w-xl mx-auto">
+                Pilih metode yang paling memudahkan bagi Anda untuk menyalurkan kebaikan.
               </p>
             </motion.div>
 
             <motion.div
-              className="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden"
+              className={`grid grid-cols-1 ${qrisImageUrl ? "lg:grid-cols-3" : bankAccounts.length > 0 && ewallets.length > 0 ? "lg:grid-cols-2" : ""} gap-6 md:gap-8`}
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               variants={stagger}
             >
-              {RECENT_DONATIONS.map((donation, idx) => (
+              {/* QRIS Card */}
+              {qrisImageUrl && (
                 <motion.div
-                  key={idx}
                   variants={fadeUp}
-                  className={`flex items-center justify-between px-5 md:px-6 py-4 ${
-                    idx < RECENT_DONATIONS.length - 1
-                      ? "border-b border-zinc-50"
-                      : ""
-                  }`}
+                  className="lg:row-span-2 bg-gradient-to-b from-emerald-900 to-emerald-950 rounded-3xl p-8 text-white flex flex-col items-center text-center relative overflow-hidden"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
-                      <Heart className="w-4 h-4" />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32" />
+                  
+                  <div className="relative z-10 w-full flex flex-col items-center">
+                    <div className="mb-6 p-4 bg-white rounded-2xl shadow-2xl">
+                       <img
+                        src={qrisImageUrl}
+                        alt="QRIS Masjid Nurul Jannah"
+                        className="w-48 h-48 object-contain"
+                      />
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-zinc-800">
-                        {donation.name}
-                      </p>
-                      <p className="text-xs text-zinc-400">{donation.time}</p>
+                    
+                    <h3 className="text-xl font-bold mb-2">Scan QRIS</h3>
+                    <p className="text-emerald-200/80 text-sm mb-6 max-w-xs">
+                      Mendukung GoPay, OVO, Dana, LinkAja, ShopeePay, dan Mobile Banking.
+                    </p>
+                    
+                    <div className="flex items-center gap-2 text-xs font-mono bg-white/10 px-3 py-1.5 rounded-full text-emerald-200">
+                      <QrCode className="w-3.5 h-3.5" />
+                      <span>NMID: ID123456789 (Contoh)</span>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-emerald-700 tabular-nums">
-                      {formatCurrency(donation.amount)}
-                    </p>
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider">
-                      {donation.type}
-                    </p>
                   </div>
                 </motion.div>
-              ))}
-            </motion.div>
+              )}
 
-            {/* CTA */}
-            <motion.div
-              className="text-center mt-10"
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              variants={fadeUp}
-            >
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">
-                <Sparkles className="w-4 h-4" />
-                Jazakallahu khairan atas infaq Anda
-              </div>
+              {/* Bank Accounts */}
+              {bankAccounts.length > 0 && (
+                <motion.div
+                  variants={fadeUp}
+                  className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8"
+                >
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                      <Building2 className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">Transfer Bank</h3>
+                      <p className="text-sm text-gray-400">Konfirmasi otomatis</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {bankAccounts.map((bank) => (
+                      <BankCard
+                        key={bank.accountNumber}
+                        bank={bank.bankName}
+                        accountNumber={bank.accountNumber}
+                        accountName={bank.accountName}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* E-Wallets */}
+              {ewallets.length > 0 && (
+                <motion.div
+                  variants={fadeUp}
+                  className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8"
+                >
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                      <Smartphone className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">E-Wallet</h3>
+                      <p className="text-sm text-gray-400">Transfer via nomor HP</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {ewallets.map((wallet) => (
+                      <EWalletCard key={wallet.name} {...wallet} />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Recent Donations ── */}
+      <section className="bg-gray-50/50 py-20 md:py-32 border-t border-gray-100">
+        <div className="container mx-auto px-4 sm:px-6 md:w-[96%] max-w-5xl">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center p-3 bg-white border border-gray-100 rounded-2xl mb-4 shadow-sm">
+               <History className="w-6 h-6 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              Jejak Kebaikan
+            </h2>
+            <p className="text-gray-500">
+              Transparansi donasi yang diterima masjid.
+            </p>
+          </div>
+
+          {recentDonations.length > 0 ? (
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="grid grid-cols-1 divide-y divide-gray-50">
+                {recentDonations.map((donation) => (
+                  <motion.div
+                    key={donation.id}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    className="p-5 md:p-6 flex items-center justify-between hover:bg-gray-50/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                        <Heart className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 mb-0.5">
+                          {donation.displayName}
+                        </p>
+                        <p className="text-xs text-gray-400 flex items-center gap-1.5">
+                           <span>{timeAgo(donation.date)}</span>
+                           <span>•</span>
+                           <span>{donation.paymentMethod || "Tunai"}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-emerald-600 tabular-nums">
+                        {formatCurrency(donation.amount)}
+                      </p>
+                      <Badge variant="secondary" className="mt-1 bg-gray-100 text-gray-500 hover:bg-gray-200 text-[10px] uppercase tracking-wider font-normal">
+                        {CATEGORY_LABELS[donation.category] || "Infaq"}
+                      </Badge>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-200">
+              <div className="h-16 w-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <Heart className="w-8 h-8 text-gray-300" />
+              </div>
+              <p className="text-gray-500">Belum ada donasi tercatat bulan ini.</p>
+            </div>
+          )}
+
+          {/* CTA Footer */}
+          <div className="mt-12 text-center">
+            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">
+               <Sparkles className="w-4 h-4" />
+               <span className="font-serif italic">Jazakallahu khairan kastiran</span>
+            </div>
+            <div>
+               <a href="/keuangan" className="text-sm font-medium text-gray-400 hover:text-emerald-600 transition-colors flex items-center justify-center gap-2 group">
+                  Lihat laporan keuangan lengkap
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+               </a>
+            </div>
           </div>
         </div>
       </section>
@@ -392,12 +412,10 @@ function BankCard({
   bank,
   accountNumber,
   accountName,
-  logo,
 }: {
   bank: string;
   accountNumber: string;
   accountName: string;
-  logo: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -410,7 +428,7 @@ function BankCard({
   return (
     <div className="bg-zinc-50 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg">{logo}</span>
+        <Building2 className="w-4 h-4 text-zinc-400" />
         <span className="text-xs font-medium text-zinc-500">{bank}</span>
       </div>
       <div className="flex items-center justify-between">
@@ -457,7 +475,7 @@ function EWalletCard({
   return (
     <div className="flex items-center justify-between bg-zinc-50 rounded-xl px-4 py-3">
       <div className="flex items-center gap-3">
-        <span className="text-lg">{logo}</span>
+        <span className="text-lg">{logo || "📱"}</span>
         <div>
           <p className="text-sm font-medium text-zinc-700">{name}</p>
           <p className="text-xs text-zinc-400 tabular-nums">{number}</p>
