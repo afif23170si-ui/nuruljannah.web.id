@@ -11,6 +11,7 @@ import {
   TrendingUp,
   TrendingDown,
   MoreHorizontal,
+  ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -44,6 +45,12 @@ export default async function AdminDashboard() {
               Selamat datang kembali, Admin. Berikut ringkasan hari ini.
            </p>
         </div>
+        <Link href="/" target="_blank">
+          <Button variant="outline" className="gap-2 text-sm">
+            <ExternalLink className="h-4 w-4" />
+            Lihat Website
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Grid */}

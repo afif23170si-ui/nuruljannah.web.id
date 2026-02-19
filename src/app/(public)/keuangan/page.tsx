@@ -1,20 +1,14 @@
 import { Metadata } from "next";
 import { getFinanceSummary, getMonthlyReport, getFinanceList } from "@/actions/finance";
 import { CATEGORY_LABELS } from "@/lib/finance-constants";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { TrendingUp, TrendingDown, Wallet, BarChart3, Shield, Eye } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, BarChart3, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+import { MonthPicker } from "@/components/ui/MonthPicker";
+import { RecentTransactions } from "./RecentTransactions";
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = "force-dynamic";
@@ -37,14 +31,23 @@ const MONTH_NAMES = [
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
 
-export default async function TransparansiPage() {
+export default async function TransparansiPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string; year?: string }>;
+}) {
+  const params = await searchParams;
   const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
+  const currentMonth = params.month ? parseInt(params.month) : now.getMonth() + 1;
+  const currentYear = params.year ? parseInt(params.year) : now.getFullYear();
   
   const summary = await getFinanceSummary(currentMonth, currentYear);
   const monthlyReport = await getMonthlyReport(currentYear);
-  const recentTransactions = await getFinanceList({ limit: 20 });
+  const recentTransactions = await getFinanceList({
+    limit: 20,
+    startDate: new Date(currentYear, currentMonth - 1, 1),
+    endDate: new Date(currentYear, currentMonth, 0, 23, 59, 59),
+  });
 
   // Calculate totals
   const yearlyIncome = monthlyReport.reduce((sum, m) => sum + m.income, 0);
@@ -83,13 +86,9 @@ export default async function TransparansiPage() {
       {/* ── Content ── */}
       <div className="mx-auto w-full md:w-[96%] max-w-7xl px-4 md:px-0 py-12 md:py-16">
         
-        {/* Current Month Title */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-           <div className="h-px w-12 bg-gray-200"></div>
-           <span className="text-sm font-medium text-gray-500 uppercase tracking-widest">
-              {MONTH_NAMES[currentMonth - 1]} {currentYear}
-           </span>
-           <div className="h-px w-12 bg-gray-200"></div>
+        {/* Month Picker */}
+        <div className="mb-10">
+          <MonthPicker currentMonth={currentMonth} currentYear={currentYear} basePath="/keuangan" />
         </div>
 
         {/* Summary Cards */}
@@ -164,6 +163,9 @@ export default async function TransparansiPage() {
                   <p className="text-3xl font-serif font-bold text-white">
                     {formatCurrency(summary.allTime.balance)}
                   </p>
+                  {summary.openingBalance !== 0 && (
+                    <p className="text-xs text-slate-500">Termasuk saldo awal: {formatCurrency(summary.openingBalance)}</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -237,60 +239,14 @@ export default async function TransparansiPage() {
         )}
 
         {/* Recent Transactions */}
-        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden mb-12">
-            <div className="p-6 md:p-8 border-b border-gray-100 bg-gray-50/30">
-               <div className="flex items-center justify-between">
-                  <div>
-                     <h3 className="text-xl font-bold text-gray-900 mb-1">Transaksi Terbaru</h3>
-                     <p className="text-sm text-gray-500">20 transaksi terakhir yang tercatat sistem</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400">
-                     <Eye className="w-5 h-5" />
-                  </div>
-               </div>
-            </div>
-            
-            <div className="overflow-x-auto">
-               <Table>
-                  <TableHeader className="bg-gray-50/50">
-                     <TableRow>
-                        <TableHead className="w-[180px] pl-6 md:pl-8">Tanggal</TableHead>
-                        <TableHead>Keterangan</TableHead>
-                        <TableHead>Kategori</TableHead>
-                        <TableHead className="text-right pr-6 md:pr-8">Jumlah</TableHead>
-                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                     {recentTransactions.length > 0 ? (
-                        recentTransactions.slice(0, 15).map((tx) => (
-                           <TableRow key={tx.id} className="hover:bg-gray-50 cursor-default">
-                              <TableCell className="pl-6 md:pl-8 font-medium text-gray-600 text-sm">
-                                 {format(new Date(tx.date), "d MMM yyyy", { locale: id })}
-                              </TableCell>
-                              <TableCell className="max-w-[200px] md:max-w-md truncate font-medium text-gray-900 text-sm">
-                                 {tx.description}
-                              </TableCell>
-                              <TableCell>
-                                 <Badge variant="outline" className="text-xs font-normal text-gray-500 border-gray-200">
-                                    {CATEGORY_LABELS[tx.category] || tx.category}
-                                 </Badge>
-                              </TableCell>
-                              <TableCell className={`text-right pr-6 md:pr-8 font-bold whitespace-nowrap text-sm ${tx.type === "INCOME" ? "text-emerald-600" : "text-red-600"}`}>
-                                 {tx.type === "INCOME" ? "+" : "-"} {formatCurrency(Number(tx.amount))}
-                              </TableCell>
-                           </TableRow>
-                        ))
-                     ) : (
-                        <TableRow>
-                           <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
-                              Belum ada data transaksi
-                           </TableCell>
-                        </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-            </div>
-        </div>
+        <RecentTransactions transactions={recentTransactions.map(tx => ({
+          id: tx.id,
+          date: tx.date,
+          description: tx.description,
+          category: tx.category,
+          type: tx.type,
+          amount: Number(tx.amount),
+        }))} />
 
         {/* Footer Notes */}
         <div className="max-w-2xl mx-auto text-center">

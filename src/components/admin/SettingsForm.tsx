@@ -85,6 +85,7 @@ const settingsSchema = z.object({
   history: z.string().optional(),
   vision: z.string().optional(),
   mission: z.string().optional(),
+  openingBalance: z.number().optional(),
   bankAccounts: z.array(bankAccountSchema).optional(),
   contacts: z.array(contactSchema).optional(),
   qrisImageUrl: z.string().optional(),
@@ -120,6 +121,7 @@ interface SettingsFormProps {
     contacts: unknown;
     qrisImageUrl: string | null;
     ewallets: unknown;
+    openingBalance: unknown;
   };
 }
 
@@ -169,6 +171,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
       history: settings.history || "",
       vision: settings.vision || "",
       mission: settings.mission || "",
+      openingBalance: Number(settings.openingBalance || 0),
       bankAccounts: bankAccounts,
       contacts: contacts,
       qrisImageUrl: settings.qrisImageUrl || "",
@@ -768,6 +771,30 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
 
           {/* Bank Accounts Tab */}
           <TabsContent value="bank" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {/* Opening Balance */}
+            <AdminCard title="Saldo Awal (Pra-Digital)" description="Posisi kas masjid sebelum pencatatan digital dimulai" compact={true}>
+              <FormField
+                control={form.control}
+                name="openingBalance"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Saldo Awal (Rp)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Contoh: -2410000"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : 0)}
+                      />
+                    </FormControl>
+                    <p className="text-xs text-gray-500 mt-1">Masukkan angka negatif jika saldo awal defisit. Angka ini akan ditambahkan ke Total Saldo Kas.</p>
+                  </FormItem>
+                )}
+              />
+            </AdminCard>
+
+            <div className="h-4" />
+
             <AdminCard title="Rekening Donasi" description="Rekening bank untuk menerima infaq dan sedekah" compact={true}>
               <div className="space-y-4 md:space-y-6">
                 {fields.length === 0 && (

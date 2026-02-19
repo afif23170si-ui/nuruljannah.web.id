@@ -7,6 +7,35 @@ import { MapPin, Phone, Mail, Target, Eye, History, Users, MessageCircle } from 
 import { getDkmMembers } from "@/actions/public";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+const SECTION_CONFIG: { key: string; label: string; type: "compact" | "cards" | "bidang" }[] = [
+  { key: "PEMBINA", label: "Pembina", type: "compact" },
+  { key: "PENASEHAT", label: "Penasehat", type: "compact" },
+  { key: "BPH", label: "Badan Pengurus Harian", type: "cards" },
+  { key: "IMAM", label: "Imam Masjid", type: "cards" },
+  { key: "GHARIM", label: "Gharim (Petugas Harian)", type: "compact" },
+  { key: "BIDANG_DAKWAH", label: "Bidang Dakwah", type: "bidang" },
+  { key: "BIDANG_FARDHU_KIFAYAH", label: "Bidang Fardhu Kifayah", type: "bidang" },
+  { key: "BIDANG_PENDIDIKAN", label: "Bidang Pendidikan", type: "bidang" },
+  { key: "BIDANG_PEMBANGUNAN", label: "Bidang Pembangunan", type: "bidang" },
+  { key: "BIDANG_REMAJA", label: "Bidang Remaja Masjid", type: "bidang" },
+  { key: "BIDANG_KEBERSIHAN", label: "Bidang Kebersihan & Keamanan", type: "bidang" },
+  { key: "BIDANG_SARANA", label: "Bidang Sarana & Prasarana", type: "bidang" },
+  { key: "BIDANG_PERWIRITAN", label: "Bidang Perwiritan Ibu-Ibu", type: "bidang" },
+];
+
+function MemberAvatar({ name, photo, size = "md" }: { name: string; photo: string | null; size?: "sm" | "md" | "lg" }) {
+  const sizeClass = size === "lg" ? "h-20 w-20" : size === "md" ? "h-14 w-14" : "h-9 w-9";
+  const textSize = size === "lg" ? "text-xl" : size === "md" ? "text-sm" : "text-xs";
+  return (
+    <Avatar className={`${sizeClass} ring-2 ring-white shadow-sm`}>
+      <AvatarImage src={photo || ""} alt={name} />
+      <AvatarFallback className={`bg-emerald-50 text-emerald-600 font-bold ${textSize}`}>
+        {name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
 async function DkmSection() {
   const members = await getDkmMembers();
 
@@ -14,52 +43,98 @@ async function DkmSection() {
     return <p className="text-gray-400 italic">Data pengurus belum tersedia.</p>;
   }
 
+  // Group members by section
+  const grouped = SECTION_CONFIG.map(({ key, label, type }) => ({
+    key,
+    label,
+    type,
+    members: members.filter((m: any) => m.section === key),
+  })).filter((g) => g.members.length > 0);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Period Badge */}
       {members[0]?.period && (
         <div className="text-center">
-          <Badge variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-100 px-4 py-1 text-xs">
+          <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 px-5 py-1.5 text-xs font-semibold">
             Periode {members[0].period}
           </Badge>
         </div>
       )}
 
-      {/* Leadership - First 2 members */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {members.slice(0, 2).map((member) => (
-          <div key={member.id} className="bg-white rounded-xl border border-gray-100 p-6 text-center hover:border-emerald-100 hover:shadow-sm transition-all group">
-            <Avatar className="h-24 w-24 mx-auto mb-4 ring-4 ring-gray-50 group-hover:ring-emerald-50 transition-all">
-              <AvatarImage src={member.photo || ""} alt={member.name} />
-              <AvatarFallback className="text-xl bg-emerald-50 text-emerald-600">
-                {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
-            <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
-              {member.position}
-            </span>
+      {grouped.map(({ key, label, type, members: sectionMembers }) => (
+        <div key={key}>
+          {/* Section Title */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent" />
+            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{label}</h3>
+            <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent" />
           </div>
-        ))}
-      </div>
 
-      {/* Other members */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {members.slice(2).map((member) => (
-          <div key={member.id} className="bg-white rounded-xl border border-gray-100 p-4 text-center hover:border-gray-200 transition-all">
-            <Avatar className="h-14 w-14 mx-auto mb-3">
-              <AvatarImage src={member.photo || ""} alt={member.name} />
-              <AvatarFallback className="bg-gray-50 text-gray-500 text-xs">
-                {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-1">{member.name}</h3>
-            <p className="text-xs text-gray-500">
-              {member.position}
-            </p>
-          </div>
-        ))}
-      </div>
+          {/* Compact type: simple inline list */}
+          {type === "compact" && (
+            <div className="text-center space-y-1">
+              {sectionMembers.map((m: any) => (
+                <p key={m.id} className="text-sm text-gray-700">
+                  <span className="font-medium">{m.name}</span>
+                  {m.position !== label && m.position !== "Pembina" && m.position !== "Penasehat" && (
+                    <span className="text-gray-400 ml-1.5">— {m.position}</span>
+                  )}
+                </p>
+              ))}
+            </div>
+          )}
+
+          {/* Cards type: prominent member cards (BPH, Imam) */}
+          {type === "cards" && (
+            <div className={`grid gap-3 ${sectionMembers.length <= 2 ? "md:grid-cols-2" : sectionMembers.length <= 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+              {sectionMembers.map((m: any) => (
+                <div key={m.id} className="bg-white rounded-xl border border-gray-100 p-5 text-center hover:border-emerald-100 hover:shadow-sm transition-all group">
+                  <MemberAvatar name={m.name} photo={m.photo} size={key === "BPH" ? "lg" : "md"} />
+                  <h4 className="font-bold text-gray-900 mt-3 mb-1 text-sm">{m.name}</h4>
+                  <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
+                    {m.position}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Bidang type: coordinator + members */}
+          {type === "bidang" && (() => {
+            const koordinator = sectionMembers.find((m: any) => m.position === "Koordinator");
+            const anggota = sectionMembers.filter((m: any) => m.position !== "Koordinator");
+            return (
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  {/* Koordinator */}
+                  {koordinator && (
+                    <div className="flex items-center gap-3 sm:min-w-[200px]">
+                      <MemberAvatar name={koordinator.name} photo={koordinator.photo} size="sm" />
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">{koordinator.name}</p>
+                        <p className="text-[11px] text-emerald-600 font-medium">Koordinator</p>
+                      </div>
+                    </div>
+                  )}
+                  {/* Divider */}
+                  {koordinator && anggota.length > 0 && (
+                    <div className="hidden sm:block w-px h-10 bg-gray-100 mx-2" />
+                  )}
+                  {/* Anggota */}
+                  {anggota.length > 0 && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      {anggota.map((m: any) => (
+                        <span key={m.id} className="text-sm text-gray-600">{m.name}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      ))}
     </div>
   );
 }

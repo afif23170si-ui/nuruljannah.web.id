@@ -97,8 +97,9 @@ export function Footer({
                 { name: "Beranda", href: "/" },
                 { name: "Profil Masjid", href: "/profil" },
                 { name: "Ibadah", href: "/ibadah" },
-                { name: "Agenda Masjid", href: "/agenda" },
-                { name: "Galeri Kegiatan", href: "/galeri" },
+                { name: "Agenda", href: "/agenda" },
+                { name: "Infaq", href: "/infaq" },
+                { name: "Galeri", href: "/galeri" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
@@ -115,11 +116,11 @@ export function Footer({
             <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Layanan</h4>
             <ul className="space-y-4">
               {[
-                { name: "Infaq Online", href: "/infaq" },
-                { name: "TPA / TPQ", href: "/tpa" },
                 { name: "Laporan Keuangan", href: "/keuangan" },
+                { name: "TPA / TPQ", href: "/tpa" },
+                { name: "Artikel & Berita", href: "/artikel" },
                 { name: "Struktur DKM", href: "/profil#struktur-dkm" },
-                { name: "Artikel Islami", href: "/artikel" },
+                { name: "Sejarah Masjid", href: "/profil/sejarah" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
@@ -197,6 +198,17 @@ export function Footer({
                 <div className="space-y-1">
                   <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Email</span>
                   <span className="block text-zinc-600 text-sm">{email || "masjidnuruljannahtp@gmail.com"}</span>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-4 group">
+                 <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Jam Operasional</span>
+                  <span className="block text-zinc-600 text-sm">Buka setiap hari, 24 jam</span>
+                  <span className="block text-zinc-500 text-xs">Sekretariat: Senin – Jumat, 08.00 – 16.00 WIB</span>
                 </div>
               </li>
             </ul>

@@ -5,10 +5,10 @@ import {
   ArrowUpRight,
   Clock,
   Mic,
-  Wallet,
+  Heart,
   GraduationCap,
-  FileText,
-  Users,
+  Newspaper,
+  Building2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -27,7 +27,7 @@ const services: Service[] = [
   {
     title: "Ibadah",
     description:
-      "Jadwal shalat, adzan & iqomah, shalat Jumat, dan informasi ibadah harian.",
+      "Jadwal shalat harian, adzan & iqomah, info shalat Jumat, dan petugas ibadah.",
     href: "/ibadah",
     icon: Clock,
     color: "bg-emerald-50",
@@ -37,7 +37,7 @@ const services: Service[] = [
   {
     title: "Agenda Masjid",
     description:
-      "Jadwal kajian, kegiatan sosial, agenda Ramadhan, dan seluruh kegiatan masjid.",
+      "Jadwal kajian rutin, kegiatan sosial, dan seluruh agenda masjid terkini.",
     href: "/agenda",
     icon: Mic,
     color: "bg-emerald-50",
@@ -45,11 +45,11 @@ const services: Service[] = [
     borderHover: "hover:border-emerald-300",
   },
   {
-    title: "Laporan Keuangan",
+    title: "Infaq & Keuangan",
     description:
-      "Transparansi pengelolaan dana infaq, sedekah, dan operasional masjid.",
-    href: "/keuangan",
-    icon: Wallet,
+      "Donasi infaq online dan transparansi laporan keuangan masjid secara berkala.",
+    href: "/infaq",
+    icon: Heart,
     color: "bg-emerald-50",
     iconColor: "text-emerald-600",
     borderHover: "hover:border-emerald-300",
@@ -65,21 +65,21 @@ const services: Service[] = [
     borderHover: "hover:border-emerald-300",
   },
   {
-    title: "Artikel Islami",
+    title: "Informasi & Berita",
     description:
-      "Kumpulan tulisan seputar keislaman, fiqih, dan motivasi harian.",
+      "Artikel islami, berita terkini seputar masjid, dan dokumentasi galeri kegiatan.",
     href: "/artikel",
-    icon: FileText,
+    icon: Newspaper,
     color: "bg-emerald-50",
     iconColor: "text-emerald-600",
     borderHover: "hover:border-emerald-300",
   },
   {
-    title: "Struktur DKM",
+    title: "Profil Masjid",
     description:
-      "Mengenal para pengurus dan khadimul ummah Masjid Nurul Jannah.",
-    href: "/profil#struktur-dkm",
-    icon: Users,
+      "Sejarah, visi misi, struktur kepengurusan DKM, dan informasi lengkap masjid.",
+    href: "/profil",
+    icon: Building2,
     color: "bg-emerald-50",
     iconColor: "text-emerald-600",
     borderHover: "hover:border-emerald-300",

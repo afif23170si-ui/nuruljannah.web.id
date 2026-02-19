@@ -14,6 +14,7 @@ export async function getAllDkmMembers() {
 export async function createDkmMember(data: {
   name: string;
   position: string;
+  section?: string;
   photo?: string;
   order?: number;
   period?: string;
@@ -21,7 +22,6 @@ export async function createDkmMember(data: {
   const member = await prisma.dkmMember.create({ data });
   revalidatePath("/admin/dkm");
   revalidatePath("/profil");
-  revalidateTag("dkm-members", "max");
   return member;
 }
 
@@ -31,6 +31,7 @@ export async function updateDkmMember(
   data: {
     name?: string;
     position?: string;
+    section?: string;
     photo?: string;
     order?: number;
     isActive?: boolean;
@@ -43,7 +44,6 @@ export async function updateDkmMember(
   });
   revalidatePath("/admin/dkm");
   revalidatePath("/profil");
-  revalidateTag("dkm-members", "max");
   return member;
 }
 
@@ -52,7 +52,6 @@ export async function deleteDkmMember(id: string) {
   await prisma.dkmMember.delete({ where: { id } });
   revalidatePath("/admin/dkm");
   revalidatePath("/profil");
-  revalidateTag("dkm-members", "max");
 }
 
 // Reorder DKM members
@@ -69,5 +68,4 @@ export async function reorderDkmMembers(
   );
   revalidatePath("/admin/dkm");
   revalidatePath("/profil");
-  revalidateTag("dkm-members", "max");
 }

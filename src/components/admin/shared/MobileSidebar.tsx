@@ -62,31 +62,48 @@ export function MobileSidebar({ logoUrl }: MobileSidebarProps) {
 
         <nav className="flex-1 overflow-y-auto p-4 custom-scrollbar">
            <div className="space-y-1">
-             {filteredNav.map((item) => {
-               const isActive =
-                 pathname === item.href ||
-                 (item.href !== "/admin" && pathname.startsWith(item.href));
+              {filteredNav.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/admin" && pathname.startsWith(item.href));
 
-               return (
-                 <Link
-                   key={item.name}
-                   href={item.href}
-                   onClick={() => setOpen(false)}
-                   className={cn(
-                     "flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-semibold transition-all duration-200",
-                     isActive
-                       ? "bg-blue-50 text-blue-600"
-                       : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                   )}
-                 >
-                   <item.icon className={cn(
-                     "h-5 w-5 shrink-0 transition-colors",
-                     isActive ? "text-blue-600" : "text-gray-400 group-hover:text-blue-600"
-                   )} />
-                   <span>{item.name}</span>
-                 </Link>
-               );
-             })}
+                if (item.disabled) {
+                  return (
+                    <div
+                      key={item.name}
+                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-semibold text-gray-300 cursor-not-allowed"
+                    >
+                      <item.icon className="h-5 w-5 shrink-0 text-gray-300" />
+                      <span className="flex-1">{item.name}</span>
+                      {item.badge && (
+                        <span className="text-[10px] font-bold bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-semibold transition-all duration-200",
+                      isActive
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                    )}
+                  >
+                    <item.icon className={cn(
+                      "h-5 w-5 shrink-0 transition-colors",
+                      isActive ? "text-blue-600" : "text-gray-400 group-hover:text-blue-600"
+                    )} />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
            </div>
         </nav>
 

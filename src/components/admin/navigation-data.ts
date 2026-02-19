@@ -11,15 +11,99 @@ import {
   Images,
   Megaphone,
   Moon,
+  Sparkles,
+  BookOpen,
+  HeadphonesIcon,
+  Beef,
+  Heart,
 } from "lucide-react";
 
-export const navigation = [
+export interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  roles: string[];
+  disabled?: boolean;
+  badge?: string;
+}
+
+export const navigation: NavItem[] = [
+  // --- Core ---
   {
     name: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
     roles: ["ADMIN", "BENDAHARA", "TAKMIR", "PENGELOLA_TPA"],
   },
+  // --- Ibadah & Keagamaan ---
+  {
+    name: "Ibadah",
+    href: "/admin/ibadah",
+    icon: Moon,
+    roles: ["ADMIN", "TAKMIR"],
+  },
+  {
+    name: "Ramadhan",
+    href: "/admin/ramadhan",
+    icon: Sparkles,
+    roles: ["ADMIN", "TAKMIR"],
+    disabled: true,
+    badge: "Segera",
+  },
+  // --- Kegiatan & Program ---
+  {
+    name: "Agenda Masjid",
+    href: "/admin/kajian",
+    icon: Calendar,
+    roles: ["ADMIN", "TAKMIR"],
+  },
+  {
+    name: "Program",
+    href: "/admin/program",
+    icon: BookOpen,
+    roles: ["ADMIN", "TAKMIR"],
+    disabled: true,
+    badge: "Segera",
+  },
+  {
+    name: "TPA / TPQ",
+    href: "/admin/tpa",
+    icon: GraduationCap,
+    roles: ["ADMIN", "PENGELOLA_TPA"],
+  },
+  // --- Layanan ---
+  {
+    name: "Layanan Jamaah",
+    href: "/admin/layanan",
+    icon: HeadphonesIcon,
+    roles: ["ADMIN", "TAKMIR"],
+    disabled: true,
+    badge: "Segera",
+  },
+  // --- Keuangan & Donasi ---
+  {
+    name: "Keuangan",
+    href: "/admin/keuangan",
+    icon: Wallet,
+    roles: ["ADMIN", "BENDAHARA"],
+  },
+  {
+    name: "Kampanye Donasi",
+    href: "/admin/kampanye",
+    icon: Heart,
+    roles: ["ADMIN", "BENDAHARA"],
+    disabled: true,
+    badge: "Segera",
+  },
+  {
+    name: "Qurban",
+    href: "/admin/qurban",
+    icon: Beef,
+    roles: ["ADMIN", "BENDAHARA"],
+    disabled: true,
+    badge: "Segera",
+  },
+  // --- Informasi & Media ---
   {
     name: "Artikel & Berita",
     href: "/admin/artikel",
@@ -33,41 +117,19 @@ export const navigation = [
     roles: ["ADMIN", "TAKMIR"],
   },
   {
-    name: "Agenda Masjid",
-    href: "/admin/kajian",
-    icon: Calendar,
+    name: "Galeri",
+    href: "/admin/gallery",
+    icon: Images,
     roles: ["ADMIN", "TAKMIR"],
   },
-  {
-    name: "Ibadah",
-    href: "/admin/ibadah",
-    icon: Moon,
-    roles: ["ADMIN", "TAKMIR"],
-  },
+  // --- Organisasi ---
   {
     name: "Struktur DKM",
     href: "/admin/dkm",
     icon: UsersRound,
     roles: ["ADMIN", "TAKMIR"],
   },
-  {
-    name: "Keuangan",
-    href: "/admin/keuangan",
-    icon: Wallet,
-    roles: ["ADMIN", "BENDAHARA"],
-  },
-  {
-    name: "TPA / TPQ",
-    href: "/admin/tpa",
-    icon: GraduationCap,
-    roles: ["ADMIN", "PENGELOLA_TPA"],
-  },
-  {
-    name: "Galeri",
-    href: "/admin/gallery",
-    icon: Images,
-    roles: ["ADMIN", "TAKMIR"],
-  },
+  // --- System ---
   {
     name: "Users",
     href: "/admin/users",

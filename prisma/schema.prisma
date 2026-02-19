@@ -355,6 +355,7 @@ model DkmMember {
   id        String   @id @default(cuid())
   name      String
   position  String
+  section   String   @default("BPH")
   photo     String?
   order     Int      @default(0)
   isActive  Boolean  @default(true)
@@ -527,6 +528,9 @@ model SiteSettings {
   
   // Branding
   logoUrl         String?
+  
+  // Finance
+  openingBalance  Decimal  @default(0) // Saldo awal sebelum pencatatan digital
   
   // History & Vision
   history         String?  @db.Text

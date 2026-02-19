@@ -47,7 +47,10 @@ export async function getDashboardStats() {
     expense: Number(expense),
     balance: Number(income) - Number(expense),
     recentPosts,
-    recentFinance,
+    recentFinance: recentFinance.map((f) => ({
+      ...f,
+      amount: Number(f.amount),
+    })),
   };
 }
 

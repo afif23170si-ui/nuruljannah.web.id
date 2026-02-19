@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ResponsiveDataList } from "@/components/admin/shared/ResponsiveDataList";
 import { TransactionActions } from "@/components/admin/TransactionActions";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import {
   Plus,
   TrendingUp,
@@ -39,16 +40,30 @@ const MONTH_NAMES = [
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
 
-export default async function FinanceAdminPage() {
+export default async function FinanceAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string; year?: string }>;
+}) {
+  const params = await searchParams;
   const now = new Date();
-  const summary = await getFinanceSummary(now.getMonth() + 1, now.getFullYear());
-  const recentTransactions = await getFinanceList({ limit: 10 });
+  const currentMonth = params.month ? parseInt(params.month) : now.getMonth() + 1;
+  const currentYear = params.year ? parseInt(params.year) : now.getFullYear();
+
+  const summary = await getFinanceSummary(currentMonth, currentYear);
+
+  const startDate = new Date(currentYear, currentMonth - 1, 1);
+  const endDate = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+  const recentTransactions = await getFinanceList({ limit: 20, startDate, endDate });
+
+  const isCurrentMonth = currentMonth === now.getMonth() + 1 && currentYear === now.getFullYear();
+  const periodLabel = `${MONTH_NAMES[currentMonth - 1]} ${currentYear}`;
 
   return (
     <div className="animate-fade-in">
       <AdminPageHeader 
         title="Keuangan Masjid" 
-        description={`Laporan keuangan periode ${MONTH_NAMES[summary.period.month - 1]} ${summary.period.year}`}
+        description={`Laporan keuangan periode ${periodLabel}`}
         action={
           <div className="flex gap-2">
              <Link href="/admin/keuangan/laporan">
@@ -67,11 +82,16 @@ export default async function FinanceAdminPage() {
         }
       />
 
+      {/* Month Picker */}
+      <div className="mb-6">
+        <MonthPicker currentMonth={currentMonth} currentYear={currentYear} basePath="/admin/keuangan" />
+      </div>
+
       {/* Summary Cards */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         <div className="metron-card p-6 border-l-4 border-l-green-500 hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start mb-2">
-             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Pemasukan Bulan Ini</span>
+             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">{isCurrentMonth ? "Pemasukan Bulan Ini" : "Pemasukan"}</span>
              <TrendingUp className="h-4 w-4 text-green-500" />
           </div>
           <div className="text-2xl font-bold text-gray-900 mb-1">
@@ -84,7 +104,7 @@ export default async function FinanceAdminPage() {
 
         <div className="metron-card p-6 border-l-4 border-l-red-500 hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start mb-2">
-             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Pengeluaran Bulan Ini</span>
+             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">{isCurrentMonth ? "Pengeluaran Bulan Ini" : "Pengeluaran"}</span>
              <TrendingDown className="h-4 w-4 text-red-500" />
           </div>
           <div className="text-2xl font-bold text-gray-900 mb-1">
@@ -97,7 +117,7 @@ export default async function FinanceAdminPage() {
 
         <div className="metron-card p-6 border-l-4 border-l-blue-500 hover:shadow-sm transition-shadow">
           <div className="flex justify-between items-start mb-2">
-             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Saldo Bulan Ini</span>
+             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">{isCurrentMonth ? "Saldo Bulan Ini" : "Saldo"}</span>
              <Wallet className="h-4 w-4 text-blue-500" />
           </div>
           <div className={`text-2xl font-bold mb-1 ${summary.monthly.balance >= 0 ? "text-blue-600" : "text-red-600"}`}>
@@ -108,21 +128,19 @@ export default async function FinanceAdminPage() {
           </p>
         </div>
 
-        <div className="metron-card p-6 border-l-4 border-l-indigo-600 hover:shadow-sm transition-shadow bg-gray-900 text-white border-none relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <Wallet className="h-24 w-24 -mr-8 -mt-8" />
+        <div className="metron-card p-6 border-l-4 border-l-indigo-600 hover:shadow-sm transition-shadow">
+          <div className="flex justify-between items-start mb-2">
+             <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Total Saldo Kas</span>
+             <Wallet className="h-4 w-4 text-indigo-600" />
           </div>
-          <div className="relative z-10">
-             <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-bold text-gray-300 uppercase tracking-wide">Total Saldo Kas</span>
-             </div>
-             <div className="text-2xl font-bold text-white mb-1">
-                {formatCurrency(summary.allTime.balance)}
-             </div>
-             <p className="text-xs text-gray-400 font-medium">
-                Seluruh periode
-             </p>
+          <div className="text-2xl font-bold text-indigo-600 mb-1">
+             {formatCurrency(summary.allTime.balance)}
           </div>
+          <p className="text-xs text-gray-400 font-medium">
+             {summary.openingBalance !== 0
+               ? `Termasuk saldo awal: ${formatCurrency(summary.openingBalance)}`
+               : "Seluruh periode"}
+          </p>
         </div>
       </div>
 
@@ -191,8 +209,8 @@ export default async function FinanceAdminPage() {
         </div>
       )}
 
-      {/* Recent Transactions */}
-      <AdminCard title="Transaksi Terbaru">
+      {/* Transactions for selected month */}
+      <AdminCard title={`Transaksi ${periodLabel}`}>
           <ResponsiveDataList 
             data={recentTransactions}
             keyExtractor={(tx) => tx.id}
@@ -252,7 +270,7 @@ export default async function FinanceAdminPage() {
                 <div className="bg-gray-50 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
                    <Wallet className="h-10 w-10 text-gray-300" />
                 </div>
-                <p className="text-gray-500 mb-6">Belum ada transaksi tercatat.</p>
+                <p className="text-gray-500 mb-6">Belum ada transaksi di {periodLabel}.</p>
                 <Link href="/admin/keuangan/new">
                   <Button variant="outline" className="border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600">
                     Tambah Transaksi Pertama

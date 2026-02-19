@@ -35,7 +35,7 @@ import {
 import { useState, useEffect } from "react";
 
 // Navigation Data
-import { navigation } from "@/components/admin/navigation-data";
+import { navigation, NavItem } from "@/components/admin/navigation-data";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -104,6 +104,28 @@ export function AdminSidebar({ collapsed, setCollapsed, logoUrl }: SidebarProps)
             const isActive =
               pathname === item.href ||
               (item.href !== "/admin" && pathname.startsWith(item.href));
+
+            if (item.disabled) {
+              return (
+                <div key={item.name} className="relative group/item">
+                  <div
+                    className="flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-semibold mb-1 whitespace-nowrap overflow-hidden text-gray-300 cursor-not-allowed"
+                    title={!isExpanded ? `${item.name} (${item.badge})` : undefined}
+                  >
+                    <item.icon className="h-5 w-5 shrink-0 text-gray-300" />
+                    <span className={cn(
+                      "transition-opacity duration-200 flex-1",
+                      !isExpanded ? "opacity-0 w-0" : "opacity-100"
+                    )}>{item.name}</span>
+                    {isExpanded && item.badge && (
+                      <span className="text-[10px] font-bold bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <div key={item.name} className="relative group/item">

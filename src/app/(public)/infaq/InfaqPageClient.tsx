@@ -15,6 +15,7 @@ import {
   Wallet,
   History,
 } from "lucide-react";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +58,8 @@ interface InfaqPageClientProps {
   qrisImageUrl: string | null;
   recentDonations: Donation[];
   stats: InfaqStats;
+  month: number;
+  year: number;
 }
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -108,8 +111,12 @@ export function InfaqPageClient({
   qrisImageUrl,
   recentDonations,
   stats,
+  month,
+  year,
 }: InfaqPageClientProps) {
   const hasPaymentMethods = bankAccounts.length > 0 || ewallets.length > 0 || qrisImageUrl;
+  const now = new Date();
+  const isCurrentMonth = month === now.getMonth() + 1 && year === now.getFullYear();
   
   return (
     <div className="min-h-screen bg-white">
@@ -166,6 +173,11 @@ export function InfaqPageClient({
           viewport={{ once: true, amount: 0.3 }}
           variants={stagger}
         >
+          {/* Month Picker */}
+          <motion.div variants={fadeUp} className="mb-6">
+            <MonthPicker currentMonth={month} currentYear={year} basePath="/infaq" variant="glass" />
+          </motion.div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Total Infaq */}
             <motion.div
@@ -174,7 +186,7 @@ export function InfaqPageClient({
             >
               <div>
                 <p className="text-xs uppercase tracking-widest text-emerald-600/80 font-semibold mb-2">
-                  Total Bulan Ini
+                  {isCurrentMonth ? "Total Bulan Ini" : "Total Infaq"}
                 </p>
                 <p className="text-3xl md:text-4xl font-serif font-bold text-gray-900 tabular-nums">
                   {formatCurrency(stats.totalBulanIni)}

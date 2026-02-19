@@ -13,9 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-
 import {
+  ChevronDown,
   Menu,
   Home,
   Info,
@@ -28,6 +27,10 @@ import {
   User,
   LogOut,
   LayoutDashboard,
+  Sparkles,
+  HeadphonesIcon,
+  Megaphone,
+  Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession, signOut } from "next-auth/react";
@@ -47,7 +50,10 @@ const navigation = [
     ]
   },
   { name: "Ibadah", href: "/ibadah", icon: Clock },
+  { name: "Ramadhan", href: "/ramadhan", icon: Sparkles, disabled: true },
+  { name: "Program", href: "/program", icon: BookOpen, disabled: true },
   { name: "Agenda", href: "/agenda", icon: Calendar },
+  { name: "Layanan", href: "/layanan", icon: HeadphonesIcon, disabled: true },
   { 
     name: "Infaq", 
     href: "/infaq", 
@@ -57,7 +63,15 @@ const navigation = [
       { name: "Laporan Keuangan", href: "/keuangan", icon: BookOpen },
     ]
   },
-  { name: "Galeri", href: "/galeri", icon: Images },
+  { 
+    name: "Informasi", 
+    href: "/artikel", 
+    icon: Newspaper,
+    children: [
+      { name: "Artikel & Berita", href: "/artikel", icon: Newspaper },
+      { name: "Galeri", href: "/galeri", icon: Images },
+    ]
+  },
 ];
 
 interface HeaderProps {
@@ -149,6 +163,22 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href || (item.children && item.children.some(child => pathname === child.href));
               const isHovered = hoveredItem === item.name;
+
+              // Disabled items
+              if (item.disabled) {
+                return (
+                  <div key={item.name} className="relative group">
+                    <span
+                      className="px-4 py-2 text-sm font-medium text-slate-300 rounded-full border border-transparent cursor-not-allowed inline-block"
+                    >
+                      {item.name}
+                    </span>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2.5 py-1 bg-slate-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                      Segera Hadir
+                    </div>
+                  </div>
+                );
+              }
               
               return (
                 <div 
@@ -306,6 +336,22 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
 
                 <nav className="flex flex-col gap-2">
                   {navigation.map((item) => {
+                    // Disabled items in mobile
+                    if (item.disabled) {
+                      return (
+                        <div
+                          key={item.name}
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-not-allowed"
+                        >
+                          <item.icon className="h-5 w-5 text-slate-200" />
+                          <span className="text-sm font-medium text-slate-300 flex-1">{item.name}</span>
+                          <span className="text-[10px] font-bold bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                            Segera
+                          </span>
+                        </div>
+                      );
+                    }
+
                     // Handle "Profil" sub-items as a grouped section
                     if (item.children) {
                       return (

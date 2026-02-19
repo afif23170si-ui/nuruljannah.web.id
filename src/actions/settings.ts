@@ -42,6 +42,7 @@ export async function updateSiteSettings(data: {
   mission?: string;
   latitude?: number;
   longitude?: number;
+  openingBalance?: number;
   bankAccounts?: Array<{
     bankName: string;
     accountNumber: string;
@@ -86,6 +87,7 @@ export async function updateSiteSettings(data: {
       mission: data.mission,
       latitude: data.latitude,
       longitude: data.longitude,
+      openingBalance: data.openingBalance,
       bankAccounts: data.bankAccounts,
       contacts: data.contacts,
       qrisImageUrl: data.qrisImageUrl,

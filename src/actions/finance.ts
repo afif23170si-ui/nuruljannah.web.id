@@ -50,7 +50,7 @@ export async function getFinanceSummary(month?: number, year?: number) {
   const startDate = new Date(targetYear, targetMonth - 1, 1);
   const endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59);
 
-  const [monthlyData, allTimeData, categoryData] = await Promise.all([
+  const [monthlyData, allTimeData, categoryData, siteSettings] = await Promise.all([
     // Monthly totals
     prisma.finance.groupBy({
       by: ["type"],
@@ -73,7 +73,13 @@ export async function getFinanceSummary(month?: number, year?: number) {
       },
       _sum: { amount: true },
     }),
+    // Opening balance from settings
+    prisma.siteSettings.findFirst({
+      select: { openingBalance: true },
+    }),
   ]);
+
+  const openingBalance = Number(siteSettings?.openingBalance || 0);
 
   const monthlyIncome = Number(
     monthlyData.find((d) => d.type === "INCOME")?._sum.amount || 0
@@ -99,8 +105,9 @@ export async function getFinanceSummary(month?: number, year?: number) {
     allTime: {
       income: allTimeIncome,
       expense: allTimeExpense,
-      balance: allTimeIncome - allTimeExpense,
+      balance: openingBalance + allTimeIncome - allTimeExpense,
     },
+    openingBalance,
     categories: categoryData.map((c) => ({
       category: c.category,
       type: c.type,
@@ -195,11 +202,17 @@ export async function getMonthlyReport(year: number) {
 }
 
 // Get Recent Donations (for public Infaq page)
-export async function getRecentDonations(limit: number = 10) {
+export async function getRecentDonations(limit: number = 10, month?: number, year?: number) {
+  const where: Record<string, unknown> = { type: "INCOME" };
+
+  if (month && year) {
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59);
+    where.date = { gte: startOfMonth, lte: endOfMonth };
+  }
+
   const donations = await prisma.finance.findMany({
-    where: {
-      type: "INCOME",
-    },
+    where,
     orderBy: { date: "desc" },
     take: limit,
   });
@@ -218,10 +231,13 @@ export async function getRecentDonations(limit: number = 10) {
 }
 
 // Get Infaq Stats (for public Infaq page)
-export async function getInfaqStats() {
+export async function getInfaqStats(month?: number, year?: number) {
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const targetMonth = month ?? now.getMonth() + 1;
+  const targetYear = year ?? now.getFullYear();
+
+  const startOfMonth = new Date(targetYear, targetMonth - 1, 1);
+  const endOfMonth = new Date(targetYear, targetMonth, 0, 23, 59, 59);
 
   const [monthlyTotal, allTransactions] = await Promise.all([
     prisma.finance.aggregate({
