@@ -86,7 +86,7 @@ export default async function IbadahPage() {
     <div className="min-h-screen bg-white text-gray-900 pb-20">
       {/* Hero Section - Clean & Minimal with Image */}
       <section className="px-4 md:px-0 pt-4 md:pt-6">
-        <div className="relative h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image

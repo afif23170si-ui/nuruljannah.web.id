@@ -188,10 +188,30 @@ enum AnnouncementType {
 // FINANCIAL MANAGEMENT
 // ==========================================
 
+model Fund {
+  id          String       @id @default(cuid())
+  name        String       // "Kas Umum", "Dana Anak Yatim", dll
+  type        FundType
+  isRestricted Boolean     @default(true) // Jika true, tidak boleh dipindahbukukan sembarangan
+  description String?      @db.Text
+  isActive    Boolean      @default(true)
+  
+  finances    Finance[]
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("funds")
+}
+
 model Finance {
   id            String          @id @default(cuid())
   type          FinanceType
-  category      FinanceCategory
+  category      String?         // KOTAK_AMAL, INFAQ, DONASI, ZAKAT, SEDEKAH, WAKAF, OPERASIONAL, etc.
+  
+  fundId        String
+  fund          Fund            @relation(fields: [fundId], references: [id])
+  
   amount        Decimal         @db.Decimal(15, 2)
   description   String
   date          DateTime
@@ -204,6 +224,7 @@ model Finance {
   updatedAt     DateTime        @updatedAt
 
   @@index([type, date])
+  @@index([fundId])
   @@index([category])
 }
 
@@ -212,23 +233,13 @@ enum FinanceType {
   EXPENSE
 }
 
-enum FinanceCategory {
-  // Income Categories
-  KOTAK_AMAL
-  TRANSFER
-  DONASI
-  INFAQ
-  ZAKAT
-  ZAKAT_FITRAH
-  ZAKAT_MAAL
-  SEDEKAH
-  WAKAF
-  FIDYAH
-  // Expense Categories
+enum FundType {
   OPERASIONAL
   SOSIAL
-  RENOVASI
-  PENDIDIKAN
+  ZAKAT
+  WAKAF
+  QURBAN
+  PEMBANGUNAN
   LAINNYA
 }
 

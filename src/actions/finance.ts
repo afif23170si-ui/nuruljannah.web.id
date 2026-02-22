@@ -8,13 +8,13 @@ export async function getFinanceList(options?: {
   type?: "INCOME" | "EXPENSE";
   startDate?: Date;
   endDate?: Date;
-  category?: string;
+  fundId?: string;
   limit?: number;
 }) {
   const where: Record<string, unknown> = {};
 
   if (options?.type) where.type = options.type;
-  if (options?.category) where.category = options.category;
+  if (options?.fundId) where.fundId = options.fundId;
   if (options?.startDate || options?.endDate) {
     where.date = {};
     if (options?.startDate) (where.date as Record<string, Date>).gte = options.startDate;
@@ -27,6 +27,7 @@ export async function getFinanceList(options?: {
     take: options?.limit,
     include: {
       creator: { select: { name: true } },
+      fund: { select: { id: true, name: true, type: true } },
     },
   });
 }
@@ -37,6 +38,7 @@ export async function getFinanceById(id: string) {
     where: { id },
     include: {
       creator: { select: { name: true } },
+      fund: { select: { id: true, name: true, type: true } },
     },
   });
 }
@@ -50,13 +52,18 @@ export async function getFinanceSummary(month?: number, year?: number) {
   const startDate = new Date(targetYear, targetMonth - 1, 1);
   const endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59);
 
-  const [monthlyData, allTimeData, categoryData, siteSettings] = await Promise.all([
+  const [
+    monthlyData,
+    allTimeData,
+    siteSettings,
+    allFunds,
+    fundDataAllTime,
+    fundDataMonthly,
+  ] = await Promise.all([
     // Monthly totals
     prisma.finance.groupBy({
       by: ["type"],
-      where: {
-        date: { gte: startDate, lte: endDate },
-      },
+      where: { date: { gte: startDate, lte: endDate } },
       _sum: { amount: true },
       _count: true,
     }),
@@ -65,54 +72,110 @@ export async function getFinanceSummary(month?: number, year?: number) {
       by: ["type"],
       _sum: { amount: true },
     }),
-    // Category breakdown for current month
+    // Opening balance from settings
+    prisma.siteSettings.findFirst({ select: { openingBalance: true } }),
+    // Get all master funds for mapping
+    prisma.fund.findMany(),
+    // Fund breakdown (all-time)
     prisma.finance.groupBy({
-      by: ["category", "type"],
-      where: {
-        date: { gte: startDate, lte: endDate },
-      },
+      by: ["fundId", "type"],
       _sum: { amount: true },
     }),
-    // Opening balance from settings
-    prisma.siteSettings.findFirst({
-      select: { openingBalance: true },
+    // Fund breakdown (monthly)
+    prisma.finance.groupBy({
+      by: ["fundId", "type"],
+      where: { date: { gte: startDate, lte: endDate } },
+      _sum: { amount: true },
     }),
   ]);
 
   const openingBalance = Number(siteSettings?.openingBalance || 0);
 
-  const monthlyIncome = Number(
-    monthlyData.find((d) => d.type === "INCOME")?._sum.amount || 0
-  );
-  const monthlyExpense = Number(
-    monthlyData.find((d) => d.type === "EXPENSE")?._sum.amount || 0
-  );
-  const allTimeIncome = Number(
-    allTimeData.find((d) => d.type === "INCOME")?._sum.amount || 0
-  );
-  const allTimeExpense = Number(
-    allTimeData.find((d) => d.type === "EXPENSE")?._sum.amount || 0
-  );
+  const monthlyIncome = Number(monthlyData.find(d => d.type === "INCOME")?._sum.amount || 0);
+  const monthlyExpense = Number(monthlyData.find(d => d.type === "EXPENSE")?._sum.amount || 0);
+  const allTimeIncome = Number(allTimeData.find(d => d.type === "INCOME")?._sum.amount || 0);
+  const allTimeExpense = Number(allTimeData.find(d => d.type === "EXPENSE")?._sum.amount || 0);
+
+  // Map fund balances
+  // Get all OPERASIONAL fund IDs
+  const operasionalFundIds = allFunds.filter(f => f.type === "OPERASIONAL").map(f => f.id);
+
+  const fundBalancesAllTime = fundDataAllTime.reduce((acc, curr) => {
+    if (!acc[curr.fundId]) acc[curr.fundId] = { income: 0, expense: 0, balance: 0 };
+    const amount = Number(curr._sum.amount || 0);
+    if (curr.type === "INCOME") acc[curr.fundId].income += amount;
+    else acc[curr.fundId].expense += amount;
+    
+    // add opening balance to the first operational fund (for backward compat)
+    let bal = acc[curr.fundId].income - acc[curr.fundId].expense;
+    if (curr.fundId === operasionalFundIds[0]) bal += openingBalance;
+    acc[curr.fundId].balance = bal;
+    
+    return acc;
+  }, {} as Record<string, { income: number, expense: number, balance: number }>);
+
+  const fundBalancesMonthly = fundDataMonthly.reduce((acc, curr) => {
+    if (!acc[curr.fundId]) acc[curr.fundId] = { income: 0, expense: 0, balance: 0 };
+    const amount = Number(curr._sum.amount || 0);
+    if (curr.type === "INCOME") acc[curr.fundId].income += amount;
+    else acc[curr.fundId].expense += amount;
+    acc[curr.fundId].balance = acc[curr.fundId].income - acc[curr.fundId].expense;
+    return acc;
+  }, {} as Record<string, { income: number, expense: number, balance: number }>);
+
+  // Aggregate all OPERASIONAL funds for backward compat
+  const operasionalMonthly = operasionalFundIds.reduce((acc, id) => {
+    const fund = fundBalancesMonthly[id] || { income: 0, expense: 0, balance: 0 };
+    return {
+      income: acc.income + fund.income,
+      expense: acc.expense + fund.expense,
+      balance: acc.balance + fund.balance,
+    };
+  }, { income: 0, expense: 0, balance: 0 });
+  
+  const operasionalAllTime = operasionalFundIds.reduce((acc, id, idx) => {
+    const fund = fundBalancesAllTime[id] || { income: 0, expense: 0, balance: 0 };
+    return {
+      income: acc.income + fund.income,
+      expense: acc.expense + fund.expense,
+      balance: acc.balance + fund.balance,
+    };
+  }, { income: 0, expense: 0, balance: openingBalance });
 
   return {
     monthly: {
       income: monthlyIncome,
       expense: monthlyExpense,
       balance: monthlyIncome - monthlyExpense,
-      incomeCount: monthlyData.find((d) => d.type === "INCOME")?._count || 0,
-      expenseCount: monthlyData.find((d) => d.type === "EXPENSE")?._count || 0,
+      incomeCount: monthlyData.find(d => d.type === "INCOME")?._count || 0,
+      expenseCount: monthlyData.find(d => d.type === "EXPENSE")?._count || 0,
+      
+      // Backward compat mappings
+      operasionalBalance: operasionalMonthly.balance,
+      operasionalIncome: operasionalMonthly.income,
+      operasionalExpense: operasionalMonthly.expense,
+      titipanBalance: monthlyIncome - monthlyExpense - operasionalMonthly.balance, // Approximation if multiple funds
     },
     allTime: {
       income: allTimeIncome,
       expense: allTimeExpense,
       balance: openingBalance + allTimeIncome - allTimeExpense,
     },
-    openingBalance,
-    categories: categoryData.map((c) => ({
-      category: c.category,
-      type: c.type,
-      amount: Number(c._sum.amount || 0),
+    fundBalances: {
+      operasional: operasionalAllTime.balance,
+      titipan: (allTimeIncome - allTimeExpense) - (operasionalAllTime.balance - openingBalance), // Approx
+    },
+    fundsAllTime: Object.entries(fundBalancesAllTime).map(([id, data]) => ({
+      fundId: id,
+      fundName: allFunds.find(f => f.id === id)?.name || "Unknown",
+      ...data
     })),
+    fundsMonthly: Object.entries(fundBalancesMonthly).map(([id, data]) => ({
+      fundId: id,
+      fundName: allFunds.find(f => f.id === id)?.name || "Unknown",
+      ...data
+    })),
+    openingBalance,
     period: { month: targetMonth, year: targetYear },
   };
 }
@@ -120,9 +183,10 @@ export async function getFinanceSummary(month?: number, year?: number) {
 // Create Finance Transaction
 export async function createFinance(data: {
   type: "INCOME" | "EXPENSE";
+  category?: string;
   amount: number;
   description: string;
-  category: "KOTAK_AMAL" | "TRANSFER" | "DONASI" | "INFAQ" | "ZAKAT" | "ZAKAT_FITRAH" | "ZAKAT_MAAL" | "SEDEKAH" | "WAKAF" | "FIDYAH" | "OPERASIONAL" | "SOSIAL" | "RENOVASI" | "PENDIDIKAN" | "LAINNYA";
+  fundId: string;
   date: Date;
   createdBy: string;
   donorName?: string;
@@ -132,7 +196,8 @@ export async function createFinance(data: {
   const result = await prisma.finance.create({
     data: {
       type: data.type,
-      category: data.category,
+      category: data.category || null,
+      fundId: data.fundId,
       amount: data.amount,
       description: data.description,
       date: data.date,
@@ -153,7 +218,8 @@ export async function updateFinance(
   data: Partial<{
     amount: number;
     description: string;
-    category: "KOTAK_AMAL" | "TRANSFER" | "DONASI" | "INFAQ" | "ZAKAT" | "ZAKAT_FITRAH" | "ZAKAT_MAAL" | "SEDEKAH" | "WAKAF" | "FIDYAH" | "OPERASIONAL" | "SOSIAL" | "RENOVASI" | "PENDIDIKAN" | "LAINNYA";
+    category: string | null;
+    fundId: string;
     date: Date;
     donorName: string | null;
     paymentMethod: string | null;
@@ -215,18 +281,20 @@ export async function getRecentDonations(limit: number = 10, month?: number, yea
     where,
     orderBy: { date: "desc" },
     take: limit,
+    include: { fund: true }
   });
 
   return donations.map((d) => ({
     id: d.id,
     amount: Number(d.amount),
     description: d.description,
-    category: d.category,
+    fundName: d.fund.name,
     date: d.date,
     donorName: d.donorName ?? null,
     paymentMethod: d.paymentMethod ?? null,
     isAnonymous: d.isAnonymous ?? false,
     displayName: d.isAnonymous || !d.donorName ? "Hamba Allah" : d.donorName,
+    type: d.type,
   }));
 }
 
@@ -257,6 +325,7 @@ export async function getInfaqStats(month?: number, year?: number) {
     }),
   ]);
 
+  // Count unique donors (exclude null/empty donorName)
   const uniqueDonors = allTransactions.filter((t) => t.donorName).length;
 
   return {
@@ -264,4 +333,3 @@ export async function getInfaqStats(month?: number, year?: number) {
     jumlahDonatur: uniqueDonors,
   };
 }
-

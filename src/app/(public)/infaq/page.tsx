@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { InfaqPageClient } from "./InfaqPageClient";
 import { getSiteSettings } from "@/actions/settings";
-import { getRecentDonations, getInfaqStats } from "@/actions/finance";
+import { getRecentDonations, getInfaqStats, getFinanceSummary } from "@/actions/finance";
 
 export const dynamic = "force-dynamic";
 
@@ -21,10 +21,11 @@ export default async function InfaqPage({
   const month = params.month ? parseInt(params.month) : now.getMonth() + 1;
   const year = params.year ? parseInt(params.year) : now.getFullYear();
 
-  const [settingsData, recentDonations, stats] = await Promise.all([
+  const [settingsData, recentDonations, stats, summaryData] = await Promise.all([
     getSiteSettings(),
     getRecentDonations(8, month, year),
     getInfaqStats(month, year),
+    getFinanceSummary(month, year),
   ]);
 
   const settings = settingsData as any;
@@ -33,12 +34,14 @@ export default async function InfaqPage({
     bankName: string;
     accountNumber: string;
     accountName: string;
+    imageUrl?: string;
   }>) || [];
 
   const ewallets = (settings.ewallets as Array<{
     name: string;
     number: string;
-    logo: string;
+    logo?: string;
+    imageUrl?: string;
   }>) || [];
 
   return (
@@ -48,6 +51,7 @@ export default async function InfaqPage({
       qrisImageUrl={settings.qrisImageUrl || null}
       recentDonations={recentDonations}
       stats={stats}
+      summary={summaryData}
       month={month}
       year={year}
     />

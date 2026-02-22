@@ -4,20 +4,33 @@ import prisma from "@/lib/prisma";
 
 // Dashboard Stats
 export async function getDashboardStats() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
   const [
     usersCount,
     postsCount,
     publishedPostsCount,
     financeSummary,
+    monthlyFinanceSummary,
     studentsCount,
     recentPosts,
     recentFinance,
+    upcomingEvents,
+    perFundSummary,
+    funds,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.post.count(),
     prisma.post.count({ where: { status: "PUBLISHED" } }),
     prisma.finance.groupBy({
       by: ["type"],
+      _sum: { amount: true },
+    }),
+    prisma.finance.groupBy({
+      by: ["type"],
+      where: { date: { gte: startOfMonth, lte: endOfMonth } },
       _sum: { amount: true },
     }),
     prisma.tpaStudent.count({ where: { status: "ACTIVE" } }),
@@ -29,7 +42,21 @@ export async function getDashboardStats() {
     prisma.finance.findMany({
       take: 5,
       orderBy: { date: "desc" },
-      include: { creator: { select: { name: true } } },
+      include: { creator: { select: { name: true } }, fund: { select: { name: true } } },
+    }),
+    prisma.mosqueEvent.findMany({
+      where: { isActive: true },
+      take: 3,
+      orderBy: [{ time: "asc" }],
+    }),
+    prisma.finance.groupBy({
+      by: ["fundId", "type"],
+      _sum: { amount: true },
+    }),
+    prisma.fund.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
     }),
   ]);
 
@@ -37,6 +64,26 @@ export async function getDashboardStats() {
     financeSummary.find((f) => f.type === "INCOME")?._sum.amount || 0;
   const expense =
     financeSummary.find((f) => f.type === "EXPENSE")?._sum.amount || 0;
+  
+  const monthlyIncome =
+    monthlyFinanceSummary.find((f) => f.type === "INCOME")?._sum.amount || 0;
+  const monthlyExpense =
+    monthlyFinanceSummary.find((f) => f.type === "EXPENSE")?._sum.amount || 0;
+
+  // Build per-fund balances
+  const fundBalances = funds.map((fund) => {
+    const fundIncome = perFundSummary
+      .filter((s) => s.fundId === fund.id && s.type === "INCOME")
+      .reduce((acc, s) => acc + Number(s._sum.amount || 0), 0);
+    const fundExpense = perFundSummary
+      .filter((s) => s.fundId === fund.id && s.type === "EXPENSE")
+      .reduce((acc, s) => acc + Number(s._sum.amount || 0), 0);
+    return {
+      id: fund.id,
+      name: fund.name,
+      balance: fundIncome - fundExpense,
+    };
+  });
 
   return {
     users: usersCount,
@@ -46,11 +93,16 @@ export async function getDashboardStats() {
     income: Number(income),
     expense: Number(expense),
     balance: Number(income) - Number(expense),
+    monthlyIncome: Number(monthlyIncome),
+    monthlyExpense: Number(monthlyExpense),
+    fundBalances,
     recentPosts,
     recentFinance: recentFinance.map((f) => ({
       ...f,
       amount: Number(f.amount),
+      fundName: f.fund?.name || "Operasional",
     })),
+    upcomingEvents,
   };
 }
 

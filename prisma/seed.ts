@@ -174,10 +174,10 @@ async function main() {
 
   console.log("\n🎉 Seed completed successfully!");
   console.log("\n📋 Login Credentials:");
-  console.log("   Admin: admin@nuruljannah.or.id / admin123");
-  console.log("   Bendahara: bendahara@nuruljannah.or.id / bendahara123");
-  console.log("   Takmir: takmir@nuruljannah.or.id / takmir123");
-  console.log("   TPA: tpa@nuruljannah.or.id / tpa123");
+  console.log("   Admin: admin@nuruljannah.web.id / admin123");
+  console.log("   Bendahara: bendahara@nuruljannah.web.id / bendahara123");
+  console.log("   Takmir: takmir@nuruljannah.web.id / takmir123");
+  console.log("   TPA: tpa@nuruljannah.web.id / tpa123");
 }
 
 main()

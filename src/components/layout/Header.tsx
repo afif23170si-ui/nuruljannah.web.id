@@ -55,12 +55,15 @@ const navigation = [
   { name: "Agenda", href: "/agenda", icon: Calendar },
   { name: "Layanan", href: "/layanan", icon: HeadphonesIcon, disabled: true },
   { 
-    name: "Infaq", 
+    name: "ZISWAF", 
     href: "/infaq", 
     icon: Heart,
     children: [
-      { name: "Infaq Online", href: "/infaq", icon: Heart },
-      { name: "Laporan Keuangan", href: "/keuangan", icon: BookOpen },
+      { name: "Donasi & Infaq", href: "/infaq", icon: Heart },
+      { name: "Zakat", href: "/ziswaf/zakat", icon: Heart, disabled: true },
+      { name: "Qurban", href: "/ziswaf/qurban", icon: Heart, disabled: true },
+      { name: "Program Campaign", href: "/ziswaf/campaign", icon: Megaphone, disabled: true },
+      { name: "Laporan Transparansi", href: "/keuangan", icon: BookOpen },
     ]
   },
   { 
@@ -225,14 +228,22 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                               exit={{ opacity: 0, y: -10, scale: 0.95 }}
                               transition={{ duration: 0.2 }}
                             >
-                              {item.children.map((child) => (
-                                <Link key={child.name} href={child.href}>
-                                  <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-emerald-50 hover:text-emerald-900 focus:bg-emerald-50 focus:text-emerald-900 transition-colors py-2.5 px-3">
+                              {item.children.map((child) => 
+                                child.disabled ? (
+                                  <DropdownMenuItem key={child.name} disabled className="rounded-xl py-2.5 px-3 opacity-50 cursor-not-allowed">
                                     <child.icon className="mr-2 h-4 w-4 opacity-70" />
                                     <span className="font-medium">{child.name}</span>
+                                    <span className="ml-auto text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-md font-semibold">Segera</span>
                                   </DropdownMenuItem>
-                                </Link>
-                              ))}
+                                ) : (
+                                  <Link key={child.name} href={child.href}>
+                                    <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-emerald-50 hover:text-emerald-900 focus:bg-emerald-50 focus:text-emerald-900 transition-colors py-2.5 px-3">
+                                      <child.icon className="mr-2 h-4 w-4 opacity-70" />
+                                      <span className="font-medium">{child.name}</span>
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )
+                              )}
                             </motion.div>
                           </DropdownMenuContent>
                         )}
@@ -314,38 +325,38 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="w-full rounded-b-3xl glass-nav border-b-0 max-h-[85vh] overflow-y-auto">
+            <SheetContent side="top" className="w-full rounded-b-3xl glass-nav border-b-0 max-h-[90vh] overflow-y-auto">
                <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
-              <div className="flex flex-col gap-6 pt-4 pb-6">
+              <div className="flex flex-col gap-3 pt-3 pb-4">
                 <div className="flex items-center gap-3 px-2">
-                  <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                  <div className="relative h-10 w-10 overflow-hidden rounded-full shrink-0">
                   <Image 
                     src={logoUrl || "/logo.webp"} 
                     alt={`Logo ${mosqueName}`} 
                     fill 
-                    sizes="48px"
+                    sizes="40px"
                     className="object-cover"
                     priority
                   />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold font-serif">Masjid {mosqueName}</h2>
-                    <p className="text-xs text-muted-foreground">Menu Navigasi</p>
+                    <h2 className="text-lg font-bold font-serif leading-tight">Masjid {mosqueName}</h2>
+                    <p className="text-[11px] text-muted-foreground">Menu Navigasi</p>
                   </div>
                 </div>
 
-                <nav className="flex flex-col gap-2">
+                <nav className="flex flex-col gap-0.5">
                   {navigation.map((item) => {
                     // Disabled items in mobile
                     if (item.disabled) {
                       return (
                         <div
                           key={item.name}
-                          className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-not-allowed"
+                          className="flex items-center gap-3 px-4 py-2 rounded-xl cursor-not-allowed"
                         >
-                          <item.icon className="h-5 w-5 text-slate-200" />
+                          <item.icon className="h-4.5 w-4.5 text-slate-200" />
                           <span className="text-sm font-medium text-slate-300 flex-1">{item.name}</span>
-                          <span className="text-[10px] font-bold bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                          <span className="text-[9px] font-bold bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
                             Segera
                           </span>
                         </div>
@@ -355,7 +366,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                     // Handle "Profil" sub-items as a grouped section
                     if (item.children) {
                       return (
-                        <div key={item.name} className="flex flex-col mt-2 mb-2 bg-slate-50/50 rounded-2xl border border-slate-100/50 overflow-hidden">
+                        <div key={item.name} className="flex flex-col my-0.5 bg-slate-50/50 rounded-xl border border-slate-100/50 overflow-hidden">
                           <button 
                             onClick={() => {
                               setExpandedItems(prev => {
@@ -365,10 +376,10 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                                 return next;
                               });
                             }}
-                            className="flex items-center justify-between w-full px-4 py-3 text-left transition-colors hover:bg-slate-100/50"
+                            className="flex items-center justify-between w-full px-4 py-2.5 text-left transition-colors hover:bg-slate-100/50"
                           >
                             <span className="flex items-center gap-3 text-sm font-medium text-slate-700">
-                              <item.icon className="h-5 w-5 text-slate-400" />
+                              <item.icon className="h-4.5 w-4.5 text-slate-400" />
                               {item.name}
                             </span>
                             <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", expandedItems.has(item.name) && "rotate-180")} />
@@ -376,10 +387,22 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                           
                           <div className={cn(
                             "grid transition-all duration-300 ease-in-out",
-                            expandedItems.has(item.name) ? "grid-rows-[1fr] opacity-100 pb-2" : "grid-rows-[0fr] opacity-0"
+                            expandedItems.has(item.name) ? "grid-rows-[1fr] opacity-100 pb-1.5" : "grid-rows-[0fr] opacity-0"
                           )}>
-                            <div className="overflow-hidden flex flex-col gap-1 px-2">
+                            <div className="overflow-hidden flex flex-col gap-0.5 px-2">
                               {item.children.map(child => {
+                                if (child.disabled) {
+                                  return (
+                                    <div
+                                      key={child.name}
+                                      className="flex items-center gap-3 px-3 py-2 rounded-lg ml-2 opacity-40 cursor-not-allowed"
+                                    >
+                                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                                      <span className="text-[13px] text-slate-400">{child.name}</span>
+                                      <span className="ml-auto text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md font-semibold">Segera</span>
+                                    </div>
+                                  );
+                                }
                                 const isChildActive = pathname === child.href;
                                 return (
                                   <Link
@@ -387,14 +410,14 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                                     href={child.href}
                                     onClick={() => setIsOpen(false)}
                                     className={cn(
-                                      "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all ml-2",
+                                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all ml-2",
                                       isChildActive
                                         ? "bg-white shadow-sm text-emerald-700 font-medium border border-emerald-100"
                                         : "text-slate-500 hover:bg-white/60 hover:text-slate-900"
                                     )}
                                   >
                                     <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                                    <span className="text-sm">{child.name}</span>
+                                    <span className="text-[13px]">{child.name}</span>
                                   </Link>
                                 );
                               })}
@@ -411,57 +434,58 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                         href={item.href}
                         onClick={() => setIsOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                          "flex items-center gap-3 px-4 py-2 rounded-xl transition-all",
                           isActive
                             ? "bg-emerald-50 text-emerald-700 font-medium"
                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         )}
                       >
-                        <item.icon className={cn("h-5 w-5", isActive ? "text-emerald-600" : "text-slate-400")} />
+                        <item.icon className={cn("h-4.5 w-4.5", isActive ? "text-emerald-600" : "text-slate-400")} />
                         <span className="text-sm">{item.name}</span>
                       </Link>
                     );
                   })}
                 </nav>
 
-                <div className="mt-4 px-2">
+                {/* Compact footer: user + actions */}
+                <div className="mt-2 pt-3 border-t border-slate-100 px-1">
                   {mounted && session?.user ? (
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-3 p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
-                        <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1.5 rounded-xl bg-emerald-50/80">
+                        <Avatar className="h-8 w-8 border border-white shadow-sm shrink-0">
                           <AvatarImage src={session.user.image || ""} alt={session.user.name} />
-                          <AvatarFallback className="bg-emerald-200 text-emerald-800 font-bold">
+                          <AvatarFallback className="bg-emerald-200 text-emerald-800 font-bold text-xs">
                             {session.user.name?.charAt(0).toUpperCase() || "U"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col overflow-hidden">
-                          <span className="text-sm font-semibold text-emerald-950 truncate">{session.user.name}</span>
-                          <span className="text-xs text-emerald-600 truncate">{session.user.role}</span>
+                          <span className="text-xs font-semibold text-emerald-950 truncate">{session.user.name}</span>
+                          <span className="text-[10px] text-emerald-600 truncate">{session.user.role}</span>
                         </div>
                       </div>
 
                       <Link href="/admin" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full justify-start rounded-xl h-12 text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-emerald-900">
-                          <LayoutDashboard className="mr-2 h-5 w-5" />
-                          Dashboard
+                        <Button variant="outline" size="sm" className="h-9 px-3 rounded-lg text-xs text-slate-600 border-slate-200 hover:bg-slate-50 gap-1.5">
+                          <LayoutDashboard className="h-3.5 w-3.5" />
+                          Admin
                         </Button>
                       </Link>
 
                       <Button 
-                        variant="ghost" 
-                        className="w-full justify-start rounded-xl h-12 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 w-9 p-0 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 shrink-0"
                         onClick={() => {
                           setIsOpen(false);
                           signOut();
                         }}
                       >
-                        <LogOut className="mr-2 h-5 w-5" />
-                        Keluar
+                        <LogOut className="h-4 w-4" />
                       </Button>
                     </div>
                   ) : (
                     <Link href="/login" onClick={() => setIsOpen(false)} className="w-full block">
-                      <Button className="w-full rounded-full h-12 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02]">
+                      <Button className="w-full rounded-full h-10 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all">
                         Masuk Sebagai Pengurus
                       </Button>
                     </Link>

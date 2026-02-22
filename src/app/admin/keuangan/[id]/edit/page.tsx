@@ -3,13 +3,17 @@ export const dynamic = 'force-dynamic';
 
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getFinanceById } from "@/actions/finance";
-import { FinanceForm } from "@/components/admin/FinanceForm";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
+import { FinanceForm } from "@/components/admin/FinanceForm";
+import { getFinanceById } from "@/actions/finance";
+import { getFunds } from "@/actions/ziswaf/funds";
+import { format } from "date-fns";
 
 export const metadata: Metadata = {
-  title: "Edit Transaksi",
-  description: "Edit data transaksi keuangan",
+  title: "Edit Keuangan - Admin Panel",
+  description: "Ubah pencatatan transaksi keuangan masjid",
 };
 
 export default async function EditFinancePage({
@@ -17,38 +21,55 @@ export default async function EditFinancePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const transaction = await getFinanceById(id);
+  const resolvedParams = await params;
+  const data = await getFinanceById(resolvedParams.id);
+  const funds = await getFunds({ isActive: true });
 
-  if (!transaction) {
+  if (!data) {
     notFound();
   }
 
-  const initialData = {
-    id: transaction.id,
-    type: transaction.type as "INCOME" | "EXPENSE",
-    amount: Number(transaction.amount),
-    description: transaction.description,
-    category: transaction.category,
-    date: new Date(transaction.date).toISOString().split("T")[0],
-    donorName: transaction.donorName,
-    paymentMethod: transaction.paymentMethod,
-    isAnonymous: transaction.isAnonymous,
-  };
+  // Check if current fund is active, if not add it to the list for display purposes
+  if (!funds.some((f: { id: string }) => f.id === data.fundId) && data.fund) {
+    funds.push(data.fund as any);
+  }
 
   return (
-    <div className="space-y-6">
-      <AdminPageHeader 
-        title="Edit Transaksi" 
-        description={`Mengubah data: ${transaction.description}`}
-        breadcrumbs={[
-          { label: "Dashboard", href: "/admin" },
-          { label: "Keuangan", href: "/admin/keuangan" },
-          { label: "Edit Transaksi" }
-        ]}
+    <div className="animate-fade-in pb-12">
+      <div className="mb-6">
+        <Link
+          href="/admin/keuangan"
+          className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          <span>
+            Kembali ke tabel keuangan
+          </span>
+        </Link>
+      </div>
+
+      <AdminPageHeader
+        title="Edit Transaksi"
+        description="Ubah data pemasukan atau pengeluaran"
       />
 
-      <FinanceForm initialData={initialData} />
+      <div className="mt-8 max-w-3xl">
+        <FinanceForm 
+          funds={funds}
+          initialData={{
+            id: data.id,
+            type: data.type,
+            category: data.category,
+            fundId: data.fundId,
+            amount: Number(data.amount),
+            description: data.description,
+            date: format(data.date, "yyyy-MM-dd"),
+            donorName: data.donorName,
+            paymentMethod: data.paymentMethod,
+            isAnonymous: data.isAnonymous,
+          }}
+        />
+      </div>
     </div>
   );
 }

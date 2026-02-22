@@ -25,6 +25,12 @@ export interface NavItem {
   roles: string[];
   disabled?: boolean;
   badge?: string;
+  group: string;
+}
+
+export interface NavGroup {
+  label: string | null; // null = no label (e.g. Dashboard)
+  items: NavItem[];
 }
 
 export const navigation: NavItem[] = [
@@ -34,13 +40,15 @@ export const navigation: NavItem[] = [
     href: "/admin",
     icon: LayoutDashboard,
     roles: ["ADMIN", "BENDAHARA", "TAKMIR", "PENGELOLA_TPA"],
+    group: "core",
   },
-  // --- Ibadah & Keagamaan ---
+  // --- Ibadah & Kegiatan ---
   {
     name: "Ibadah",
     href: "/admin/ibadah",
     icon: Moon,
     roles: ["ADMIN", "TAKMIR"],
+    group: "ibadah",
   },
   {
     name: "Ramadhan",
@@ -49,13 +57,14 @@ export const navigation: NavItem[] = [
     roles: ["ADMIN", "TAKMIR"],
     disabled: true,
     badge: "Segera",
+    group: "ibadah",
   },
-  // --- Kegiatan & Program ---
   {
     name: "Agenda Masjid",
     href: "/admin/kajian",
     icon: Calendar,
     roles: ["ADMIN", "TAKMIR"],
+    group: "ibadah",
   },
   {
     name: "Program",
@@ -64,14 +73,15 @@ export const navigation: NavItem[] = [
     roles: ["ADMIN", "TAKMIR"],
     disabled: true,
     badge: "Segera",
+    group: "ibadah",
   },
   {
     name: "TPA / TPQ",
     href: "/admin/tpa",
     icon: GraduationCap,
     roles: ["ADMIN", "PENGELOLA_TPA"],
+    group: "ibadah",
   },
-  // --- Layanan ---
   {
     name: "Layanan Jamaah",
     href: "/admin/layanan",
@@ -79,21 +89,29 @@ export const navigation: NavItem[] = [
     roles: ["ADMIN", "TAKMIR"],
     disabled: true,
     badge: "Segera",
+    group: "ibadah",
   },
   // --- Keuangan & Donasi ---
+  {
+    name: "Master Dana",
+    href: "/admin/funds",
+    icon: Wallet,
+    roles: ["ADMIN", "BENDAHARA"],
+    group: "keuangan",
+  },
   {
     name: "Keuangan",
     href: "/admin/keuangan",
     icon: Wallet,
     roles: ["ADMIN", "BENDAHARA"],
+    group: "keuangan",
   },
   {
-    name: "Kampanye Donasi",
-    href: "/admin/kampanye",
+    name: "Donasi Masuk",
+    href: "/admin/donasi",
     icon: Heart,
     roles: ["ADMIN", "BENDAHARA"],
-    disabled: true,
-    badge: "Segera",
+    group: "keuangan",
   },
   {
     name: "Qurban",
@@ -102,44 +120,74 @@ export const navigation: NavItem[] = [
     roles: ["ADMIN", "BENDAHARA"],
     disabled: true,
     badge: "Segera",
+    group: "keuangan",
   },
-  // --- Informasi & Media ---
+  // --- Konten & Media ---
   {
     name: "Artikel & Berita",
     href: "/admin/artikel",
     icon: FileText,
     roles: ["ADMIN", "TAKMIR"],
+    group: "konten",
   },
   {
     name: "Pengumuman",
     href: "/admin/pengumuman",
     icon: Megaphone,
     roles: ["ADMIN", "TAKMIR"],
+    group: "konten",
   },
   {
     name: "Galeri",
     href: "/admin/gallery",
     icon: Images,
     roles: ["ADMIN", "TAKMIR"],
+    group: "konten",
   },
-  // --- Organisasi ---
+  // --- Organisasi & Sistem ---
   {
     name: "Struktur DKM",
     href: "/admin/dkm",
     icon: UsersRound,
     roles: ["ADMIN", "TAKMIR"],
+    group: "sistem",
   },
-  // --- System ---
   {
     name: "Users",
     href: "/admin/users",
     icon: Users,
     roles: ["ADMIN"],
+    group: "sistem",
   },
   {
     name: "Pengaturan",
     href: "/admin/settings",
     icon: Settings,
     roles: ["ADMIN"],
+    group: "sistem",
   },
 ];
+
+// Group labels mapping
+const groupLabels: Record<string, string | null> = {
+  core: null,
+  ibadah: "Ibadah & Kegiatan",
+  keuangan: "Keuangan & Donasi",
+  konten: "Konten & Media",
+  sistem: "Organisasi & Sistem",
+};
+
+// Group order
+const groupOrder = ["core", "ibadah", "keuangan", "konten", "sistem"];
+
+// Helper to get grouped navigation filtered by role
+export function getGroupedNavigation(userRole: string): NavGroup[] {
+  const filtered = navigation.filter((item) => item.roles.includes(userRole));
+
+  return groupOrder
+    .map((groupKey) => ({
+      label: groupLabels[groupKey] ?? null,
+      items: filtered.filter((item) => item.group === groupKey),
+    }))
+    .filter((group) => group.items.length > 0);
+}

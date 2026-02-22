@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prismaWithFunds: PrismaClient | undefined;
 };
 
 function createPrismaClient() {
@@ -12,9 +12,9 @@ function createPrismaClient() {
 }
 
 // Use cached client in ALL environments (including production builds)
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+export const prisma = globalForPrisma.prismaWithFunds ?? createPrismaClient();
 
 // Cache the client globally to prevent multiple instances
-globalForPrisma.prisma = prisma;
+globalForPrisma.prismaWithFunds = prisma;
 
 export default prisma;

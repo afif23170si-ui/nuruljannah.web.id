@@ -50,6 +50,7 @@ const bankAccountSchema = z.object({
   bankName: z.string().min(1, "Nama bank wajib diisi"),
   accountNumber: z.string().min(1, "Nomor rekening wajib diisi"),
   accountName: z.string().min(1, "Nama pemilik wajib diisi"),
+  imageUrl: z.string().optional(),
 });
 
 const contactSchema = z.object({
@@ -62,6 +63,7 @@ const ewalletSchema = z.object({
   name: z.string().min(1, "Nama e-wallet wajib diisi"),
   number: z.string().min(1, "Nomor wajib diisi"),
   logo: z.string().optional(),
+  imageUrl: z.string().optional(),
 });
 
 const settingsSchema = z.object({
@@ -134,6 +136,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     bankName: string;
     accountNumber: string;
     accountName: string;
+    imageUrl?: string;
   }>) || [];
 
   const contacts = (settings.contacts as Array<{
@@ -145,7 +148,8 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
   const ewallets = (settings.ewallets as Array<{
     name: string;
     number: string;
-    logo: string;
+    logo?: string;
+    imageUrl?: string;
   }>) || [];
 
   const form = useForm<SettingsFormData>({
@@ -875,6 +879,20 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={form.control}
+                        name={`bankAccounts.${index}.imageUrl`}
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-2 lg:col-span-3">
+                            <FormLabel>URL Gambar / Logo Bank <span className="text-gray-400 font-normal">(opsional)</span></FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://example.com/logo-bank.png" {...field} value={field.value || ""} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
                 ))}
@@ -885,7 +903,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                       variant="outline"
                       className="w-full border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600 h-12"
                       onClick={() =>
-                        append({ bankName: "", accountNumber: "", accountName: "" })
+                        append({ bankName: "", accountNumber: "", accountName: "", imageUrl: "" })
                       }
                     >
                       <Plus className="mr-2 h-4 w-4" />
@@ -943,7 +961,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                       type="button"
                       variant="outline"
                       onClick={() =>
-                        appendEwallet({ name: "", number: "", logo: "" })
+                        appendEwallet({ name: "", number: "", logo: "", imageUrl: "" })
                       }
                     >
                       <Plus className="mr-2 h-4 w-4" />
@@ -1005,9 +1023,23 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                         name={`ewallets.${index}.logo`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Emoji/Icon</FormLabel>
+                            <FormLabel>Emoji/Icon <span className="text-gray-400 font-normal">(opsional)</span></FormLabel>
                             <FormControl>
                               <Input placeholder="💚" {...field} className="h-10" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`ewallets.${index}.imageUrl`}
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-3">
+                            <FormLabel>URL Gambar / Logo E-Wallet <span className="text-gray-400 font-normal">(opsional)</span></FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://example.com/logo-ewallet.png" {...field} value={field.value || ""} className="h-10" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1023,7 +1055,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     variant="outline"
                     className="w-full border-dashed border-gray-300 hover:border-blue-500 hover:text-blue-600 h-12"
                     onClick={() =>
-                      appendEwallet({ name: "", number: "", logo: "" })
+                      appendEwallet({ name: "", number: "", logo: "", imageUrl: "" })
                     }
                   >
                     <Plus className="mr-2 h-4 w-4" />

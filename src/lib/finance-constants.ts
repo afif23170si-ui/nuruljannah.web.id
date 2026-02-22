@@ -1,13 +1,12 @@
-// Finance Categories - matching Prisma enum
+// ── Finance Categories (Jenis/Sumber Transaksi) ─────────────
+
 export const INCOME_CATEGORIES = [
-  { value: "KOTAK_AMAL", label: "Kotak Amal" },
-  { value: "TRANSFER", label: "Transfer" },
-  { value: "DONASI", label: "Donasi" },
   { value: "INFAQ", label: "Infaq" },
+  { value: "DONASI", label: "Donasi" },
+  { value: "SEDEKAH", label: "Sedekah" },
   { value: "ZAKAT", label: "Zakat" },
   { value: "ZAKAT_FITRAH", label: "Zakat Fitrah" },
   { value: "ZAKAT_MAAL", label: "Zakat Maal" },
-  { value: "SEDEKAH", label: "Sedekah" },
   { value: "WAKAF", label: "Wakaf" },
   { value: "FIDYAH", label: "Fidyah" },
 ];
@@ -20,18 +19,17 @@ export const EXPENSE_CATEGORIES = [
   { value: "LAINNYA", label: "Lainnya" },
 ];
 
-// Finance Types
+// ── Finance Types ────────────────────────────────────────────
+
 export type FinanceType = "INCOME" | "EXPENSE";
 
 export type FinanceCategory = 
-  | "KOTAK_AMAL" 
-  | "TRANSFER" 
-  | "DONASI" 
   | "INFAQ" 
+  | "DONASI" 
+  | "SEDEKAH"
   | "ZAKAT" 
   | "ZAKAT_FITRAH"
   | "ZAKAT_MAAL"
-  | "SEDEKAH"
   | "WAKAF"
   | "FIDYAH"
   | "OPERASIONAL" 
@@ -40,16 +38,15 @@ export type FinanceCategory =
   | "PENDIDIKAN" 
   | "LAINNYA";
 
-// Category label lookup
+// ── Category Labels ──────────────────────────────────────────
+
 export const CATEGORY_LABELS: Record<string, string> = {
-  KOTAK_AMAL: "Kotak Amal",
-  TRANSFER: "Transfer",
-  DONASI: "Donasi",
   INFAQ: "Infaq",
+  DONASI: "Donasi",
+  SEDEKAH: "Sedekah",
   ZAKAT: "Zakat",
   ZAKAT_FITRAH: "Zakat Fitrah",
   ZAKAT_MAAL: "Zakat Maal",
-  SEDEKAH: "Sedekah",
   WAKAF: "Wakaf",
   FIDYAH: "Fidyah",
   OPERASIONAL: "Operasional",
@@ -57,4 +54,39 @@ export const CATEGORY_LABELS: Record<string, string> = {
   RENOVASI: "Renovasi",
   PENDIDIKAN: "Pendidikan",
   LAINNYA: "Lainnya",
+  // Legacy (backward compat for existing data)
+  KOTAK_AMAL: "Kotak Amal",
+  TRANSFER: "Transfer",
+};
+
+// ── Payment Methods (Media Pembayaran) ───────────────────────
+
+export const PAYMENT_METHODS = [
+  { value: "CASH", label: "Tunai" },
+  { value: "KOTAK_AMAL", label: "Kotak Amal" },
+  { value: "TRANSFER", label: "Transfer Bank" },
+  { value: "QRIS", label: "QRIS" },
+  { value: "EWALLET", label: "E-Wallet" },
+];
+
+export const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  CASH: "Tunai",
+  KOTAK_AMAL: "Kotak Amal",
+  TRANSFER: "Transfer Bank",
+  QRIS: "QRIS",
+  EWALLET: "E-Wallet",
+};
+
+// ── Fund Types ───────────────────────────────────────────────
+
+export type FundType = "OPERASIONAL" | "TITIPAN";
+
+export const FUND_TYPE_OPTIONS = [
+  { value: "OPERASIONAL", label: "Kas Umum", description: "Kas umum operasional masjid" },
+  { value: "TITIPAN", label: "Dana Anak Yatim", description: "Dana khusus santunan anak yatim" },
+];
+
+export const FUND_TYPE_LABELS: Record<string, string> = {
+  OPERASIONAL: "Kas Umum",
+  TITIPAN: "Dana Anak Yatim",
 };

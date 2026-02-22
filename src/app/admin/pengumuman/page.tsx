@@ -174,9 +174,9 @@ export default function AnnouncementAdminPage() {
                 if (!open) resetForm();
             }}
             trigger={
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Tambah Pengumuman
+                <Button className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">
+                    <Plus className="h-4 w-4 shrink-0 mr-1.5 md:mr-2" />
+                    <span className="truncate">Tambah Pengumuman</span>
                 </Button>
             }
           >
@@ -273,54 +273,56 @@ export default function AnnouncementAdminPage() {
                 return (
                   <div
                     key={announcement.id}
-                    className={`flex items-start gap-5 p-5 rounded-xl border transition-all duration-200 group ${
+                    className={`flex flex-col md:flex-row md:items-start gap-4 md:gap-5 p-4 md:p-5 rounded-xl border transition-all duration-200 group ${
                       announcement.isActive
                         ? "bg-white border-gray-100 hover:border-blue-200 hover:shadow-sm"
                         : "bg-gray-50 border-gray-100 opacity-70"
                     }`}
                   >
-                    {/* Icon */}
-                    <div className={`flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center ${style.badge}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
+                    <div className="flex items-start gap-3 md:gap-5 flex-1 min-w-0 w-full">
+                      {/* Icon */}
+                      <div className={`flex-shrink-0 h-9 w-9 md:h-10 md:w-10 rounded-lg flex items-center justify-center ${style.badge}`}>
+                        <Icon className="h-4 w-4 md:h-5 md:w-5" />
+                      </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0 pt-1">
-                      <p className="font-semibold text-gray-900 leading-relaxed mb-2">
-                        {announcement.message}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="outline" className={`text-xs font-semibold border-none ${style.badge}`}>
-                          {typeLabels[announcement.type]}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600 border-none font-medium">
-                          Prioritas: {announcement.priority}
-                        </Badge>
-                        {announcement.isActive ? (
-                          <Badge className="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-none font-semibold">
-                            Aktif
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 pt-0.5 md:pt-1">
+                        <p className="font-semibold text-gray-900 leading-relaxed mb-2 text-sm md:text-base">
+                          {announcement.message}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
+                          <Badge variant="outline" className={`text-[10px] md:text-xs font-semibold border-none px-2 py-0.5 ${style.badge}`}>
+                            {typeLabels[announcement.type]}
                           </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="text-xs bg-gray-200 text-gray-600 hover:bg-gray-300 border-none">
-                            Nonaktif
+                          <Badge variant="outline" className="text-[10px] md:text-xs bg-gray-100 text-gray-600 border-none font-medium px-2 py-0.5">
+                            Prioritas: {announcement.priority}
                           </Badge>
-                        )}
-                        {(announcement.startDate || announcement.endDate) && (
-                          <div className="text-xs text-gray-400 font-medium ml-1 flex items-center gap-1">
-                            <span>
-                              {announcement.startDate ? format(new Date(announcement.startDate), "d MMM", { locale: localeId }) : "..."}
-                            </span>
-                            <span>-</span>
-                            <span>
-                              {announcement.endDate ? format(new Date(announcement.endDate), "d MMM", { locale: localeId }) : "..."}
-                            </span>
-                          </div>
-                        )}
+                          {announcement.isActive ? (
+                            <Badge className="text-[10px] md:text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-none font-semibold px-2 py-0.5">
+                              Aktif
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-[10px] md:text-xs bg-gray-200 text-gray-600 hover:bg-gray-300 border-none px-2 py-0.5">
+                              Nonaktif
+                            </Badge>
+                          )}
+                          {(announcement.startDate || announcement.endDate) && (
+                            <div className="text-[10px] md:text-xs text-gray-400 font-medium w-full mt-1.5 md:w-auto md:mt-0 md:ml-1 flex items-center gap-1">
+                              <span>
+                                {announcement.startDate ? format(new Date(announcement.startDate), "d MMM", { locale: localeId }) : "..."}
+                              </span>
+                              <span>-</span>
+                              <span>
+                                {announcement.endDate ? format(new Date(announcement.endDate), "d MMM", { locale: localeId }) : "..."}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-1 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t border-dashed border-gray-100 md:border-none md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="icon"

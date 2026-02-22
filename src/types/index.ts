@@ -1,7 +1,7 @@
-import { Role, PostStatus, PostCategory, FinanceType, FinanceCategory, StudentStatus, AttendanceStatus } from "@prisma/client";
+import { Role, PostStatus, PostCategory, FinanceType, StudentStatus, AttendanceStatus } from "@prisma/client";
 
 // Re-export Prisma enums
-export { Role, PostStatus, PostCategory, FinanceType, FinanceCategory, StudentStatus, AttendanceStatus };
+export { Role, PostStatus, PostCategory, FinanceType, StudentStatus, AttendanceStatus };
 
 // User types
 export interface UserSession {
@@ -25,7 +25,7 @@ export interface PostFormData {
 // Finance types
 export interface FinanceFormData {
   type: FinanceType;
-  category: FinanceCategory;
+  fundId?: string;
   amount: number;
   description: string;
   date: Date;
@@ -48,7 +48,8 @@ export interface MonthlyFinanceReport {
   transactions: Array<{
     id: string;
     type: FinanceType;
-    category: FinanceCategory;
+    fundId?: string;
+    fundName?: string;
     amount: number;
     description: string;
     date: Date;

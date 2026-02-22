@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { 
   Plus, 
   Megaphone, 
   Wallet, 
-  GraduationCap 
+  GraduationCap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function QuickActions() {
   const actions = [
@@ -15,44 +15,44 @@ export function QuickActions() {
       title: "Artikel Baru",
       href: "/admin/artikel/new",
       icon: Plus,
-      color: "bg-blue-600 hover:bg-blue-700",
-      textColor: "text-white"
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
     },
     {
       title: "Pengumuman",
-      href: "/admin/pengumuman", // Assuming creation is handled there or via modal for now
+      href: "/admin/pengumuman",
       icon: Megaphone,
-      color: "bg-white hover:bg-gray-50 border-gray-200 border", // Secondary style
-      textColor: "text-gray-700"
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
     },
     {
       title: "Keuangan",
-      href: "/admin/keuangan",
+      href: "/admin/keuangan/new",
       icon: Wallet,
-      color: "bg-white hover:bg-gray-50 border-gray-200 border",
-      textColor: "text-gray-700"
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
     },
     {
       title: "Absensi TPA",
       href: "/admin/tpa/attendance",
       icon: GraduationCap,
-      color: "bg-white hover:bg-gray-50 border-gray-200 border",
-      textColor: "text-gray-700"
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+    <div className="grid grid-cols-4 gap-2 md:gap-3">
       {actions.map((action) => (
         <Link key={action.title} href={action.href} className="flex-1">
           <Button 
-            className={`w-full h-auto py-4 flex flex-col items-center justify-center gap-2 shadow-sm ${action.color} ${action.textColor}`}
-            variant="ghost" // Using ghost base to override styles easier or remove default shadcn valid styles conflicting
+            className="w-full h-auto py-2.5 md:py-4 px-1 flex flex-col items-center justify-center gap-1.5 md:gap-2.5 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 transition-all rounded-lg md:rounded-xl"
+            variant="ghost"
           >
-            <div className={`p-2 rounded-lg ${action.textColor === 'text-white' ? 'bg-white/20' : 'bg-gray-100'}`}>
-               <action.icon className="h-5 w-5" />
+            <div className={`p-1.5 md:p-2.5 rounded-md md:rounded-lg ${action.iconBg} ${action.iconColor}`}>
+               <action.icon className="h-4 w-4 md:h-5 md:w-5" />
             </div>
-            <span className="text-xs font-semibold">{action.title}</span>
+            <span className="text-[9px] sm:text-[10px] md:text-sm font-bold text-center leading-none md:leading-tight">{action.title}</span>
           </Button>
         </Link>
       ))}
