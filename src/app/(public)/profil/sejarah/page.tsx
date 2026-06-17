@@ -17,8 +17,8 @@ export default async function SejarahPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="px-4 md:px-0 pt-4 md:pt-6">
-        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+      <section className="px-4 md:px-0">
+        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
           <div className="absolute inset-0 z-0">
             <Image
               src="/hero-masjid.webp"
@@ -30,17 +30,17 @@ export default async function SejarahPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           </div>
-          <div className="relative z-10 text-center px-4">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-4">
+          <div className="container relative z-10 mx-auto px-4 text-center pb-8 md:pb-10">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-3 md:mb-4">
               <Landmark className="h-4 w-4 text-white/80" />
               <span className="text-white/90 text-xs font-medium tracking-wider uppercase">
                 {profile?.name || "Masjid Nurul Jannah"}
               </span>
             </div>
-            <h1 className="font-serif text-3xl md:text-5xl font-bold text-white leading-tight">
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
               Sejarah Masjid
             </h1>
-            <p className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto">
+            <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto">
               Perjalanan dan kisah berdirinya masjid yang penuh berkah
             </p>
           </div>

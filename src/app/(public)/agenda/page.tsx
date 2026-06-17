@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { getActiveEvents } from "@/actions/public";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -107,20 +108,35 @@ export default async function AgendaPage({
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 via-white to-amber-50/30 py-16 md:py-20">
-        <div className="absolute inset-0 pattern-overlay opacity-20" />
-        <div className="container relative mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4 gap-1.5">
-            <CalendarCheck className="h-3 w-3" />
-            Agenda Masjid
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-emerald-950">
-            Agenda Masjid
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Jadwal kajian, kegiatan sosial, agenda Ramadhan, dan seluruh
-            kegiatan Masjid Nurul Jannah
-          </p>
+      <section className="px-4 md:px-0">
+        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/hero-masjid.webp"
+              alt="Masjid Nurul Jannah"
+              fill
+              className="object-cover opacity-80"
+              priority
+              sizes="(max-width: 768px) 100vw, 1200px"
+            />
+            {/* Dark Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          </div>
+          
+          {/* Content */}
+          <div className="container relative z-10 mx-auto px-4 text-center pb-8 md:pb-10">
+            <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+              <CalendarCheck className="h-3 w-3 mr-1.5 inline-block" />
+              Agenda Masjid
+            </Badge>
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+              Agenda Masjid
+            </h1>
+            <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto">
+              Jadwal kajian, kegiatan sosial, agenda Ramadhan, dan seluruh kegiatan Masjid Nurul Jannah
+            </p>
+          </div>
         </div>
       </section>
 

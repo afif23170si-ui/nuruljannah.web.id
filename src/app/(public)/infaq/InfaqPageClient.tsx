@@ -120,8 +120,8 @@ export function InfaqPageClient({
   return (
     <div className="min-h-screen bg-white">
       {/* ── Floating Hero Section ── */}
-      <section className="px-4 md:px-0 pt-4 md:pt-6">
-        <div className="relative h-[200px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-2xl md:rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+      <section className="px-4 md:px-0">
+        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
           <Image
             src="/hero-masjid.webp"
             alt="Infaq Masjid Nurul Jannah"
@@ -138,20 +138,20 @@ export function InfaqPageClient({
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-2xl opacity-30" />
           </div>
           
-          <div className="container relative z-10 mx-auto px-4 text-center pb-6 md:pb-12">
+          <div className="container relative z-10 mx-auto px-4 text-center pb-8 md:pb-12">
             <motion.div initial="hidden" animate="show" variants={stagger}>
               <motion.div variants={fadeUp}>
-                <Badge variant="outline" className="mb-2 md:mb-4 py-1 md:py-1.5 px-2.5 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[8px] md:text-[10px]">
+                <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
                   Infaq Online
                 </Badge>
               </motion.div>
 
-              <motion.h1 variants={fadeUp} className="font-serif text-2xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+              <motion.h1 variants={fadeUp} className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
                 Infaq Masjid
               </motion.h1>
 
-              <motion.p variants={fadeUp} className="text-white/70 text-xs md:text-base mt-1 md:mt-3 max-w-lg mx-auto leading-relaxed">
-                &ldquo;Kamu tidak akan memperoleh kebajikan (yang sempurna) sebelum kamu menginfakkan sebagian harta yang kamu cintai&rdquo; (QS. Ali &lsquo;Imran:92)
+              <motion.p variants={fadeUp} className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[95%] md:max-w-lg mx-auto leading-relaxed">
+                &ldquo;Kamu tidak akan memperoleh kebajikan sebelum kamu menginfakkan sebagian harta yang kamu cintai&rdquo; (QS. Ali &lsquo;Imran:92)
               </motion.p>
             </motion.div>
           </div>

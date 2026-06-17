@@ -57,7 +57,7 @@ export function MobileSidebar({ logoUrl }: MobileSidebarProps) {
            </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto p-3 px-4 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto p-3 px-4 no-scrollbar">
           <div className="space-y-3">
             {groups.map((group, gi) => (
               <div key={group.label || "core"}>

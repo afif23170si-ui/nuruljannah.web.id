@@ -85,8 +85,8 @@ export default async function IbadahPage() {
   return (
     <div className="min-h-screen bg-white text-gray-900 pb-20">
       {/* Hero Section - Clean & Minimal with Image */}
-      <section className="px-4 md:px-0 pt-4 md:pt-6">
-        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+      <section className="px-4 md:px-0">
+        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -99,16 +99,16 @@ export default async function IbadahPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
           </div>
           
-          <div className="container relative z-10 mx-auto max-w-3xl text-center text-white pb-10 px-4">
-            <Badge variant="outline" className="mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+          <div className="container relative z-10 mx-auto max-w-3xl text-center text-white pb-8 md:pb-10 px-4">
+            <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
               Jadwal & Kegiatan
             </Badge>
             
-            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 md:mb-4 drop-shadow-sm">
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
               Ibadah
             </h1>
             
-            <p className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto">
+            <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto">
               Informasi lengkap jadwal shalat, petugas, dan kegiatan ibadah harian di Masjid Nurul Jannah.
             </p>
           </div>

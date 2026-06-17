@@ -85,7 +85,7 @@ interface HeaderProps {
 export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [expandedItems, setExpandedItems] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
   // We can keep the scroll listener if we want subtle effects, but user asked for static.
   // We'll keep it just in case we need a tiny border or shadow later, but for now we won't use it for layout morphing.
@@ -98,6 +98,16 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Reset expanded items when mobile menu closes
+  useEffect(() => {
+    if (!isOpen) {
+      const timer = setTimeout(() => {
+        setExpandedItems(null);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const handleMouseEnter = (name: string) => {
     if (leaveTimeoutRef.current) {
@@ -369,12 +379,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                         <div key={item.name} className="flex flex-col my-0.5 bg-slate-50/50 rounded-xl border border-slate-100/50 overflow-hidden">
                           <button 
                             onClick={() => {
-                              setExpandedItems(prev => {
-                                const next = new Set(prev);
-                                if (next.has(item.name)) next.delete(item.name);
-                                else next.add(item.name);
-                                return next;
-                              });
+                              setExpandedItems(prev => prev === item.name ? null : item.name);
                             }}
                             className="flex items-center justify-between w-full px-4 py-2.5 text-left transition-colors hover:bg-slate-100/50"
                           >
@@ -382,12 +387,12 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                               <item.icon className="h-4.5 w-4.5 text-slate-400" />
                               {item.name}
                             </span>
-                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", expandedItems.has(item.name) && "rotate-180")} />
+                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", expandedItems === item.name && "rotate-180")} />
                           </button>
                           
                           <div className={cn(
                             "grid transition-all duration-300 ease-in-out",
-                            expandedItems.has(item.name) ? "grid-rows-[1fr] opacity-100 pb-1.5" : "grid-rows-[0fr] opacity-0"
+                            expandedItems === item.name ? "grid-rows-[1fr] opacity-100 pb-1.5" : "grid-rows-[0fr] opacity-0"
                           )}>
                             <div className="overflow-hidden flex flex-col gap-0.5 px-2">
                               {item.children.map(child => {

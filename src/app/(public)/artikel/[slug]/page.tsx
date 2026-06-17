@@ -62,41 +62,51 @@ export default async function ArticleDetailPage({
   return (
     <div className="min-h-screen">
       {/* Hero Section with Cover */}
-      <section className="relative bg-gradient-to-br from-primary/10 to-secondary/10 py-12 md:py-16">
-        <div className="absolute inset-0 pattern-overlay opacity-30" />
-        <div className="container relative mx-auto px-4">
-          {/* Back Button */}
-          <Link href="/artikel" className="inline-flex mb-6">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Kembali ke Artikel
-            </Button>
-          </Link>
+      <section className="px-4 md:px-0">
+        <div className="relative h-[300px] md:h-[400px] flex flex-col justify-end overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black p-6 md:p-10">
+          {/* Background Image (Using Post Cover or fallback) */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={post.coverImage || "/hero-masjid.webp"}
+              alt={post.title}
+              fill
+              className="object-cover opacity-50"
+              priority
+              sizes="(max-width: 768px) 100vw, 1200px"
+            />
+            {/* Dark Overlay gradient for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30" />
+          </div>
+          
+          {/* Content Box */}
+          <div className="relative z-10 w-full mt-auto">
+            <Link href="/artikel" className="inline-block mb-3 md:mb-6">
+              <Button variant="ghost" size="sm" className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md rounded-full px-4 h-8 text-xs font-medium">
+                <ArrowLeft className="mr-2 h-3.5 w-3.5" />
+                Kembali
+              </Button>
+            </Link>
+            
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2 md:mb-4">
+              <Badge variant="outline" className="py-1 px-3 bg-white/10 border-white/20 text-white backdrop-blur-md text-[10px] sm:text-xs">
+                {CATEGORY_LABELS[post.category] || post.category}
+              </Badge>
+              {post.publishedAt && (
+                <Badge variant="outline" className="py-1 px-3 bg-black/30 border-white/10 text-white/80 backdrop-blur-md text-[10px] sm:text-xs">
+                  <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5" />
+                  {format(new Date(post.publishedAt), "d MMMM yyyy", { locale: id })}
+                </Badge>
+              )}
+            </div>
+            
+            <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-2 md:mb-4 max-w-[90%] md:max-w-4xl">
+              {post.title}
+            </h1>
 
-          {/* Category */}
-          <Badge variant="outline" className="mb-4">
-            {CATEGORY_LABELS[post.category] || post.category}
-          </Badge>
-
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 max-w-4xl">
-            {post.title}
-          </h1>
-
-          {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              {post.author.name}
-            </span>
-            {post.publishedAt && (
-              <span className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {format(new Date(post.publishedAt), "EEEE, d MMMM yyyy", {
-                  locale: id,
-                })}
-              </span>
-            )}
+            <div className="flex items-center gap-2 text-white/80 text-sm mt-2 md:mt-3">
+               <User className="h-4 w-4" />
+               {post.author.name}
+            </div>
           </div>
         </div>
       </section>

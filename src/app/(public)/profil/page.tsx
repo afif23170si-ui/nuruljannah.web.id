@@ -161,8 +161,8 @@ export default async function ProfilPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Floating Style - Mobile: px-4, Desktop: w-[96%] */}
-      <section className="px-4 md:px-0 pt-4 md:pt-6">
-        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-3xl w-full md:w-[96%] max-w-7xl mx-auto bg-black">
+      <section className="px-4 md:px-0">
+        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -178,12 +178,14 @@ export default async function ProfilPage() {
           </div>
           
           {/* Content */}
-          <div className="container relative z-10 mx-auto px-4 text-center pb-10">
-            <Badge variant="outline" className="mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+          <div className="container relative z-10 mx-auto px-4 text-center pb-8 md:pb-10">
+            <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
               Tentang Kami
             </Badge>
-            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 md:mb-4 drop-shadow-sm">{profile.name}</h1>
-            <p className="text-white/70 text-sm md:text-base mt-3 max-w-lg mx-auto">
+            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+              {profile.name}
+            </h1>
+            <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto">
               Pusat Ibadah, Dakwah, dan Pendidikan Islam
             </p>
           </div>

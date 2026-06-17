@@ -79,7 +79,7 @@ export function AdminSidebar({ collapsed, setCollapsed, logoUrl }: SidebarProps)
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 no-scrollbar">
         <div className="space-y-3">
           {groups.map((group, gi) => (
             <div key={group.label || "core"}>
