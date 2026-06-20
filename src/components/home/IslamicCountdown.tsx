@@ -70,8 +70,6 @@ function findGregorianDate(hijriMonth: number, hijriDay: number, afterDate: Date
     candidate.setDate(candidate.getDate() + i);
     const h = toHijri(candidate);
     if (h.month === hijriMonth && h.day === hijriDay) {
-      // Adjust +1 day to match sidang isbat (adj=-1)
-      candidate.setDate(candidate.getDate() + 1);
       return candidate;
     }
   }

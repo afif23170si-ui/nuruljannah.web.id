@@ -141,7 +141,8 @@ export function HeroSection() {
 
         {/* Right Content: Islamic Countdown & Prayer Times Dashboard */}
         <div className="relative z-20 w-full md:w-auto flex flex-col items-center md:items-end gap-4 md:ml-auto">
-          <div className="w-full">
+          {/* Countdown: hidden on mobile to reduce clutter */}
+          <div className="hidden md:block w-full">
             <IslamicCountdown />
           </div>
           <div className="w-full">

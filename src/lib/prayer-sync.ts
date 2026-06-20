@@ -88,7 +88,7 @@ async function fetchJadwalSholat(
 async function fetchHijriCalendar(
   dateStr: string
 ): Promise<MyQuranCalResponse> {
-  const url = `${MYQURAN_BASE}/cal/hijr/${dateStr}?adj=-1`;
+  const url = `${MYQURAN_BASE}/cal/hijr/${dateStr}?adj=0`;
   const response = await fetch(url, { cache: "no-store" });
 
   if (!response.ok) {
