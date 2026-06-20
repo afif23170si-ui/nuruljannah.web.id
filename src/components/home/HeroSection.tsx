@@ -92,7 +92,7 @@ export function HeroSection() {
       </div>
 
       {/* Content Container */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 lg:gap-20 pt-[100px] md:pt-[120px] pb-10 relative z-10 flex-1 px-4">
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10 lg:gap-20 pt-[90px] md:pt-[120px] pb-8 md:pb-10 relative z-10 flex-1 px-4">
 
         {/* Left Content */}
         <motion.div
@@ -114,25 +114,25 @@ export function HeroSection() {
             delay={150}
             animateBy="words"
             direction="top"
-            className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white mb-4 md:mb-6 leading-[1.1] relative z-10 max-w-4xl justify-center md:justify-start"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white mb-4 md:mb-6 leading-[1.1] relative z-10 max-w-4xl justify-center md:justify-start"
           />
 
-          <motion.p variants={itemVariants} className="text-[15px] sm:text-base text-white/90 leading-relaxed font-light font-sans drop-shadow-md max-w-2xl mb-8 md:mb-10 text-center md:text-left">
+          <motion.p variants={itemVariants} className="text-sm sm:text-base text-white/90 leading-relaxed font-light font-sans drop-shadow-md max-w-2xl mb-8 text-center md:text-left">
             Membentuk ukhuwah islamiyah melalui masjid yang inklusif, <br className="hidden md:block" />
             modern, dan transparan bagi seluruh lapisan masyarakat.
           </motion.p>
 
-          <div className="flex flex-row gap-3 sm:gap-4 w-full md:w-auto items-center justify-center">
-            <Link href="/infaq" className="flex-1 md:flex-none">
-              <Button className="w-full md:w-auto rounded-full pl-5 pr-1.5 gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center justify-center">
+            <Link href="/infaq" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto rounded-full pl-5 pr-1.5 gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
                 <span className="font-medium">Salurkan Infaq</span>
                 <div className="flex items-center justify-center bg-white rounded-full w-6 h-6 shrink-0 shadow-sm">
                   <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
                 </div>
               </Button>
             </Link>
-            <Link href="/profil" className="flex-1 md:flex-none">
-              <Button variant="outline" className="w-full md:w-auto rounded-full gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all">
+            <Link href="/profil" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto rounded-full gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all">
                 Profil Masjid
               </Button>
             </Link>
