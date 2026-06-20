@@ -7,6 +7,7 @@ import { MapPin, Phone, Mail, Target, Eye, History, Users, MessageCircle, Calend
 import { getDkmMembers } from "@/actions/public";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AboutSection } from "@/components/home/AboutSection";
+import { OrgChartScaler } from "@/components/profil/OrgChartScaler";
 
 const SECTION_CONFIG: { key: string; label: string; type: "compact" | "cards" | "bidang" }[] = [
   { key: "PEMBINA", label: "Pembina", type: "compact" },
@@ -70,8 +71,7 @@ async function DkmSection() {
   })).filter(b => b.members.length > 0);
 
   return (
-    <div className="flex flex-col items-center w-full mx-auto overflow-hidden">
-      <div className="w-[1024px] shrink-0 flex flex-col items-center pt-4 pb-8 origin-top [zoom:25%] min-[375px]:[zoom:30%] min-[425px]:[zoom:35%] sm:[zoom:55%] md:[zoom:70%] lg:[zoom:100%] [-webkit-text-size-adjust:none]">
+    <OrgChartScaler>
         
         {/* Periode */}
         {members[0]?.period && (
@@ -231,8 +231,7 @@ async function DkmSection() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </OrgChartScaler>
   );
 }
 
