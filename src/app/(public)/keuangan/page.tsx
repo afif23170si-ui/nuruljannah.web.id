@@ -48,30 +48,33 @@ export default async function TransparansiPage({
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      {/* ── Hero Section ── */}
-      <section className="px-4 md:px-0">
-        <div className="relative h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
-           <Image
-              src="/hero-masjid.webp"
-              alt="Laporan Keuangan Masjid Nurul Jannah"
-              fill
-              className="object-cover object-center opacity-80"
-              priority
-              sizes="100vw"
-           />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-           
-           <div className="container relative z-10 mx-auto px-4 text-center pb-8 md:pb-10">
-            <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/5 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
-              Transparansi
-            </Badge>
-            <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
-              Laporan Keuangan
-            </h1>
-            <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto leading-relaxed">
-              Laporan keuangan masjid yang akuntabel dan terbuka untuk seluruh jamaah sebagai bentuk pertanggungjawaban amanah.
-            </p>
-          </div>
+      {/* ── Hero Section - Floating Style ── */}
+      <section className="relative w-auto h-[300px] md:h-[400px] mt-[10px] mx-[10px] mb-[10px] md:mt-[20px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-center overflow-hidden rounded-[16px] md:rounded-[24px] isolate bg-black">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden rounded-[16px] md:rounded-[24px]">
+          <Image
+            src="/hero-masjid.jpg"
+            alt="Hero Background"
+            fill
+            className="object-cover object-[center_25%] opacity-80"
+            priority
+            sizes="100vw"
+          />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/50 z-[2]" />
+        </div>
+        
+        {/* Content */}
+        <div className="container relative z-10 mx-auto px-4 text-center pt-[73px]">
+          <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+            Transparansi
+          </Badge>
+          <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+            Laporan Keuangan
+          </h1>
+          <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto drop-shadow-sm">
+            Laporan keuangan masjid yang akuntabel dan terbuka untuk seluruh jamaah sebagai bentuk pertanggungjawaban amanah.
+          </p>
         </div>
       </section>
 

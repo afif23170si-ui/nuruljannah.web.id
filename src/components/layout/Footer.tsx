@@ -7,9 +7,6 @@ import {
   Phone, 
   Mail, 
   Clock, 
-  Facebook, 
-  Instagram, 
-  Youtube,
   ArrowUpRight,
   MessageCircle
 } from "lucide-react";
@@ -36,7 +33,7 @@ export function Footer({
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-white text-zinc-900 overflow-hidden pt-20 pb-10 border-t border-zinc-200">
+    <footer id="kontak" className="relative bg-white text-zinc-900 overflow-hidden pt-20 pb-10 border-t border-zinc-200">
       {/* Background Pattern - Subtle Noise/Grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
       
@@ -49,8 +46,8 @@ export function Footer({
           
           {/* Brand Column (Span 3) */}
           <div className="lg:col-span-3 space-y-6">
-             <div className="flex items-center gap-4 group">
-              <div className="relative h-12 w-12 overflow-hidden rounded-full ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform duration-500">
+             <div className="flex items-center gap-3 group">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full group-hover:scale-105 transition-transform duration-500">
                 <Image 
                   src={logoUrl || "/logo.webp"} 
                   alt={`Logo ${mosqueName}`} 
@@ -59,28 +56,32 @@ export function Footer({
                 />
               </div>
               <div>
-                <h3 className="font-serif font-bold text-2xl tracking-tight text-emerald-950">{mosqueName}</h3>
-                <p className="text-emerald-700 text-sm font-medium tracking-wide uppercase">Masjid Ikatan Umat</p>
+                <h3 className="font-serif font-bold text-xl tracking-tight text-emerald-950">{mosqueName}</h3>
+                <p className="text-emerald-700 text-xs font-medium tracking-wide uppercase">Masjid Ikatan Umat</p>
               </div>
             </div>
-            <p className="text-zinc-600 text-base leading-relaxed max-w-sm font-light">
+            <p className="text-zinc-600 text-sm leading-relaxed max-w-sm">
               Membangun peradaban umat melalui masjid yang inklusif, transparan, dan modern. Menjadi pusat dakwah yang mencerahkan dan menyejukkan hati.
             </p>
             
             {/* Social Media Buttons */}
-            <div className="flex items-center gap-2 pt-2">
+            <div className="flex items-center gap-4 pt-2">
               {[
-                { icon: Facebook, href: "#", label: "Facebook" },
-                { icon: Instagram, href: "#", label: "Instagram" },
-                { icon: Youtube, href: "#", label: "Youtube" },
+                { imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1280px-Facebook_f_logo_%282019%29.svg.png", href: "#", label: "Facebook", imgClass: "h-6 w-6" },
+                { imgSrc: "https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg", href: "#", label: "Instagram", imgClass: "h-[22px] w-[22px]" },
+                { imgSrc: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png", href: "#", label: "Youtube", imgClass: "h-[18px] w-auto" },
               ].map((social, idx) => (
                 <a 
                   key={idx}
                   href={social.href}
-                  className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 shadow-sm hover:border-emerald-500 hover:text-white hover:bg-emerald-600 text-zinc-500 transition-all duration-300 group"
+                  className="hover:-translate-y-1 transition-transform duration-300 flex items-center justify-center h-6"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                  <img 
+                    src={social.imgSrc} 
+                    alt={social.label} 
+                    className={`${social.imgClass} object-contain`}
+                  />
                 </a>
               ))}
             </div>
@@ -91,7 +92,7 @@ export function Footer({
 
           {/* Navigation (Span 2) */}
           <div className="lg:col-span-2">
-            <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Navigasi</h4>
+            <h4 className="font-serif font-bold text-xl mb-6 text-emerald-950">Navigasi</h4>
             <ul className="space-y-4">
               {[
                 { name: "Beranda", href: "/" },
@@ -102,8 +103,7 @@ export function Footer({
                 { name: "Galeri", href: "/galeri" },
               ].map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
-                    <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 group-hover:bg-emerald-500 transition-colors"></span>
+                  <Link href={link.href} className="flex items-center text-zinc-600 hover:text-emerald-700 transition-colors group text-sm">
                     {link.name}
                   </Link>
                 </li>
@@ -113,18 +113,17 @@ export function Footer({
 
           {/* Layanan (Span 2) */}
           <div className="lg:col-span-2">
-            <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Layanan</h4>
+            <h4 className="font-serif font-bold text-xl mb-6 text-emerald-950">Layanan</h4>
             <ul className="space-y-4">
               {[
                 { name: "Laporan Keuangan", href: "/keuangan" },
                 { name: "TPA / TPQ", href: "/tpa" },
                 { name: "Artikel & Berita", href: "/artikel" },
-                { name: "Struktur DKM", href: "/profil#struktur-dkm" },
+                { name: "Struktur Organisasi", href: "/profil#struktur-dkm" },
                 { name: "Sejarah Masjid", href: "/profil/sejarah" },
               ].map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="flex items-center gap-2 text-zinc-600 hover:text-emerald-700 transition-colors group text-sm font-medium">
-                    <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 group-hover:bg-emerald-500 transition-colors"></span>
+                  <Link href={link.href} className="flex items-center text-zinc-600 hover:text-emerald-700 transition-colors group text-sm">
                     {link.name}
                   </Link>
                 </li>
@@ -134,41 +133,32 @@ export function Footer({
 
           {/* Contact (Span 4) */}
           <div className="lg:col-span-4">
-             <h4 className="font-serif font-semibold text-xl mb-6 text-emerald-950">Hubungi Kami</h4>
-             <ul className="space-y-5">
-              <li className="flex items-start gap-4 group">
-                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <MapPin className="h-5 w-5" />
-                </div>
-                <div className="space-y-1">
-                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Alamat</span>
-                  <span className="block text-zinc-600 text-sm leading-relaxed">
-                    {address || "Jl. Sriwedari Ujung Gg. Tanjung II, Kel. Tanjung Palas, Kec. Dumai Timur, Kota Dumai, Riau, 28826"}
-                  </span>
-                </div>
+             <h4 className="font-serif font-bold text-xl mb-6 text-emerald-950">Hubungi Kami</h4>
+             <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="block text-zinc-600 text-sm leading-relaxed">
+                  {address || "Jl. Sriwedari Ujung Gg. Tanjung II, Kel. Tanjung Palas, Kec. Dumai Timur, Kota Dumai, Riau, 28826"}
+                </span>
               </li>
               
               {/* Dynamic Contacts (Pengurus Inti) */}
               {contacts && contacts.length > 0 ? (
-                <li className="flex items-start gap-4 group">
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-1">
-                    <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Kontak Pengurus</span>
-                    <div className="space-y-2">
+                <li className="flex items-start gap-3">
+                  <Phone className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div className="space-y-3 w-full">
                       {contacts.map((contact, idx) => (
-                        <div key={idx} className="flex items-center gap-2 text-zinc-600 text-sm">
+                        <div key={idx} className="flex items-center justify-between text-sm w-full group">
                           <div>
-                            <span className="font-medium text-zinc-700">{contact.label}:</span>{" "}
-                            <span>{contact.phone}</span>
+                            <span className="font-medium text-zinc-700 block">{contact.label}</span>
+                            <span className="text-zinc-500">{contact.phone}</span>
                           </div>
                           {contact.link && (
                             <a
                               href={contact.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors flex-shrink-0"
+                              className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors flex-shrink-0"
                               aria-label={`WhatsApp ${contact.label}`}
                             >
                               <MessageCircle className="h-3.5 w-3.5" />
@@ -176,39 +166,25 @@ export function Footer({
                           )}
                         </div>
                       ))}
-                    </div>
                   </div>
                 </li>
               ) : (phone || whatsapp) ? (
-                <li className="flex items-start gap-4 group">
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-1">
-                    <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Telepon / WhatsApp</span>
-                     <span className="block text-zinc-600 text-sm">{whatsapp || phone}</span>
-                  </div>
+                <li className="flex items-start gap-3">
+                  <Phone className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="block text-zinc-600 text-sm mt-0.5">{whatsapp || phone}</span>
                 </li>
               ) : null}
 
-              <li className="flex items-start gap-4 group">
-                 <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <div className="space-y-1">
-                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Email</span>
-                  <span className="block text-zinc-600 text-sm">{email || "masjidnuruljannahtp@gmail.com"}</span>
-                </div>
+              <li className="flex items-start gap-3">
+                <Mail className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="block text-zinc-600 text-sm mt-0.5">{email || "masjidnuruljannahtp@gmail.com"}</span>
               </li>
 
-              <li className="flex items-start gap-4 group">
-                 <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <Clock className="h-5 w-5" />
-                </div>
-                <div className="space-y-1">
-                  <span className="block text-xs text-emerald-700 uppercase tracking-wider font-bold">Jam Operasional</span>
-                  <span className="block text-zinc-600 text-sm">Buka setiap hari, 24 jam</span>
-                  <span className="block text-zinc-500 text-xs">Sekretariat: Senin – Jumat, 08.00 – 16.00 WIB</span>
+              <li className="flex items-start gap-3">
+                <Clock className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="block text-zinc-600 text-sm mt-0.5">Buka setiap hari, 24 jam</span>
+                  <span className="block text-zinc-500 text-xs mt-1">Sekretariat: Senin – Jumat, 08.00 – 16.00 WIB</span>
                 </div>
               </li>
             </ul>

@@ -20,6 +20,7 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
+      
       <FeaturesSection />
     </>
   );

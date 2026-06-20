@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struktur Organisasi Masjid Nurul Jannah</title>
+    <style>
+        :root {
+            --accent: #2B936B;
+            /* Warna Hijau Utama */
+            --text-dark: #1f2937;
+            --text-muted: #4b5563;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Header Styling */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 5px 0;
+            letter-spacing: 1px;
+        }
+
+        .header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 0 0 8px 0;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .header .sub-text {
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        /* Tree Wrapper & Central Trunk */
+        .tree-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            /* Lebar optimal untuk A4 Portrait */
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+
+        .trunk {
+            position: absolute;
+            top: 30px;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            background-color: var(--accent);
+            z-index: 1;
+        }
+
+        /* Node (Kotak) Styling - Clean Stroke No Shadow */
+        .node {
+            background: #ffffff;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            width: 320px;
+            padding: 15px 18px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+            /* Agar menimpa garis trunk */
+        }
+
+        .node.center-node {
+            margin: 0 auto 30px auto;
+            text-align: center;
+        }
+
+        /* Typography dalam Node */
+        .role {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .name {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .members {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .members div {
+            margin-bottom: 4px;
+        }
+
+        .members strong {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Tata Letak Baris Bercabang (Kiri - Kanan) */
+        .row-split {
+            display: flex;
+            width: 100%;
+            margin-bottom: 30px;
+            align-items: flex-start;
+        }
+
+        .col-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 30px;
+            position: relative;
+        }
+
+        .col-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        /* Garis Penghubung Horizontal Cabang */
+        .col-left::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25px;
+            /* Nyambung persis di area Judul Jabatan */
+            width: 30px;
+            height: 2px;
+            background-color: var(--accent);
+            z-index: 1;
+        }
+
+        .col-right::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 25px;
+            width: 30px;
+            height: 2px;
+            background-color: var(--accent);
+            z-index: 1;
+        }
+
+        /* Mode Print PDF Optimizer */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+
+            body {
+                padding: 0;
+            }
+
+            /* Wajib agar warna background dan border tercetak */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Menghindari kotak terpotong di tengah antar halaman PDF */
+            .row-split,
+            .center-node {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <!-- Judul -->
+        <div class="header">
+            <h1>STRUKTUR ORGANISASI PENGURUS</h1>
+            <h2>MASJID NURUL JANNAH</h2>
+            <p>PERIODE 2025 – 2028</p>
+            <p class="sub-text">KELURAHAN TANJUNG PALAS, KECAMATAN DUMAI TIMUR, KOTA DUMAI</p>
+        </div>
+
+        <!-- Wadah Pohon Struktur -->
+        <div class="tree-wrapper">
+
+            <!-- Garis Utama Tengah -->
+            <div class="trunk"></div>
+
+            <!-- Level 1: Pembina & Penasehat -->
+            <div class="row-split">
+                <div class="col-left">
+                    <div class="node">
+                        <span class="role">Pembina</span>
+                        <div class="members">
+                            <div>Lurah Tanjung Palas</div>
+                            <div>Ketua RT 06 Tanjung Palas</div>
+                            <div>Ketua RT 07 Tanjung Palas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node">
+                        <span class="role">Penasehat</span>
+                        <div class="members">
+                            <div>Sudirman</div>
+                            <div>Hadianto</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 2: Ketua -->
+            <div class="node center-node">
+                <span class="role">Ketua</span>
+                <span class="name">Ns. Rico, S. Kep</span>
+            </div>
+
+            <!-- Level 3: Wakil Ketua -->
+            <div class="node center-node">
+                <span class="role">Wakil Ketua</span>
+                <span class="name">Zapri Salis, SKM., MKM</span>
+            </div>
+
+            <!-- Level 4: Sekretaris & Bendahara -->
+            <div class="row-split">
+                <div class="col-left">
+                    <div class="node text-center" style="text-align: center;">
+                        <span class="role">Sekretaris</span>
+                        <span class="name">Wiwit Sulistyanto, ST</span>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node text-center" style="text-align: center;">
+                        <span class="role">Bendahara</span>
+                        <span class="name">M. Yusuf</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 5: Imam & Gharim -->
+            <div class="row-split">
+                <div class="col-left">
+                    <div class="node">
+                        <span class="role">Imam</span>
+                        <div class="members">
+                            <div>Rahmat Fernanda Aziz, S. Pd</div>
+                            <div>Abdurrahman</div>
+                            <div>H. Edi</div>
+                            <div>Nasir</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node text-center" style="text-align: center;">
+                        <span class="role">Gharim</span>
+                        <span class="name">M. Sayid</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 6: Bidang 1 & 2 -->
+            <div class="row-split">
+                <div class="col-left">
+                    <div class="node">
+                        <span class="role">1. Bidang Da'wah</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> Ust. Irwandi</div>
+                            <div><strong>Anggota:</strong> Rasman, Agus Andi, Hafiz Ghalib</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node">
+                        <span class="role">2. Bidang Fardhu Kifayah</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> H. Edi</div>
+                            <div><strong>Anggota:</strong> Muda Pane, Zulkifli, Azuar</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 7: Bidang 3 & 4 -->
+            <div class="row-split">
+                <div class="col-left">
+                    <div class="node">
+                        <span class="role">3. Bidang Pendidikan</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> Tri Purwono</div>
+                            <div><strong>Anggota:</strong> Rozali, Abdul Rahman, Leily Hadita</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node">
+                        <span class="role">4. Bidang Pembangunan</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> Iwan Nawawi</div>
+                            <div><strong>Anggota:</strong> Winarso</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 8: Bidang 5 & 6 -->
+            <div class="row-split">
+                <div class="col-left">
+                    <div class="node">
+                        <span class="role">5. Bidang Remaja/I</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> Sunarto</div>
+                            <div><strong>Anggota:</strong> Misran, Agustiono (Mul), Sumeri, Idris, Lana, Bayu</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node">
+                        <span class="role">6. Bidang Kebersihan & Keamanan</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> M. Sayid</div>
+                            <div><strong>Anggota:</strong> Abu Darda', Suporianto, Hendrik Alam, Ilham Amin, Niftah
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 9: Bidang 7 & 8 -->
+            <div class="row-split" style="margin-bottom: 0;">
+                <div class="col-left">
+                    <div class="node">
+                        <span class="role">7. Bidang Sarana & Prasarana</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> M. Nasri</div>
+                            <div><strong>Anggota:</strong> Dadang, Surya, Hamdanis</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="node">
+                        <span class="role">8. Bidang Perwiritan Ibu-Ibu</span>
+                        <div class="members">
+                            <div><strong>Koordinator:</strong> Irva Lentri</div>
+                            <div><strong>Anggota:</strong> Desy Isnaini, Leily Hadita, Sundari, Ratna Wulandari, Nurfina
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { getTpaInfo } from "@/actions/public";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,18 +30,33 @@ export default async function TpaPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 to-secondary/10 py-16 md:py-24">
-        <div className="absolute inset-0 pattern-overlay opacity-30" />
-        <div className="container relative mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4">
-            <GraduationCap className="h-3 w-3 mr-1" />
+      {/* Hero Section - Floating Style */}
+      <section className="relative w-auto h-[300px] md:h-[400px] mt-[10px] mx-[10px] mb-[10px] md:mt-[20px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-center overflow-hidden rounded-[16px] md:rounded-[24px] isolate bg-black">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden rounded-[16px] md:rounded-[24px]">
+          <Image
+            src="/hero-masjid.jpg"
+            alt="Hero Background"
+            fill
+            className="object-cover object-[center_25%] opacity-80"
+            priority
+            sizes="100vw"
+          />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/50 z-[2]" />
+        </div>
+        
+        {/* Content */}
+        <div className="container relative z-10 mx-auto px-4 text-center pt-[73px]">
+          <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+            <GraduationCap className="h-3 w-3 mr-1.5 inline-block" />
             Pendidikan Islam
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">TPA / TPQ</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Taman Pendidikan Al-Quran Masjid Nurul Jannah - Membentuk generasi
-            Qurani yang berakhlakul karimah
+          <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+            TPA / TPQ
+          </h1>
+          <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto drop-shadow-sm">
+            Taman Pendidikan Al-Quran Masjid Nurul Jannah - Membentuk generasi Qurani yang berakhlakul karimah
           </p>
         </div>
       </section>

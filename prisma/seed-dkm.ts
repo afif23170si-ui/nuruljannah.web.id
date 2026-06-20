@@ -21,10 +21,7 @@ const members = [
   { name: "M. Yusuf", position: "Bendahara", section: "BPH", order: 23 },
 
   // === IMAM MASJID ===
-  { name: "Rahmat Fernanda Aziz, S.Pd", position: "Imam Masjid", section: "IMAM", order: 30 },
-  { name: "Abdurrahman", position: "Imam Masjid", section: "IMAM", order: 31 },
-  { name: "H. Edi", position: "Imam Masjid", section: "IMAM", order: 32 },
-  { name: "Nasir", position: "Imam Masjid", section: "IMAM", order: 33 },
+  { name: "Arif Budiman", position: "Imam Masjid", section: "IMAM", order: 30 },
 
   // === GHARIM ===
   { name: "M. Sayid", position: "Gharim (Petugas Harian)", section: "GHARIM", order: 40 },
@@ -50,6 +47,9 @@ const members = [
   // === BIDANG PEMBANGUNAN ===
   { name: "Iwan Nawawi", position: "Koordinator", section: "BIDANG_PEMBANGUNAN", order: 80 },
   { name: "Winarso", position: "Anggota", section: "BIDANG_PEMBANGUNAN", order: 81 },
+  { name: "Sunarto", position: "Anggota", section: "BIDANG_PEMBANGUNAN", order: 82 },
+  { name: "Misran", position: "Anggota", section: "BIDANG_PEMBANGUNAN", order: 83 },
+  { name: "Agustiono (Mul)", position: "Anggota", section: "BIDANG_PEMBANGUNAN", order: 84 },
 
   // === BIDANG REMAJA MASJID ===
   { name: "Sumeri", position: "Koordinator", section: "BIDANG_REMAJA", order: 90 },

@@ -67,13 +67,17 @@ export function DateDisplay({ variant = "hero" }: DateDisplayProps) {
 
   // hero variant (mobile)
   return (
-    <div className="inline-flex items-center gap-2 text-white/90 text-xs font-medium tracking-wide">
-      <Calendar className="h-3.5 w-3.5 text-emerald-300 flex-shrink-0" />
+    <div className="inline-flex items-center gap-2 text-[10px] font-medium tracking-[0.12em] uppercase text-white/80">
+      {/* Live Glowing Dot */}
+      <span className="relative flex h-1.5 w-1.5 mr-1 shrink-0">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+      </span>
       <span>{gregorian}</span>
       {hijriStr && (
         <>
-          <span className="text-white/40">|</span>
-          <span className="text-emerald-200">{hijriStr}</span>
+          <span className="text-white/20">|</span>
+          <span className="text-emerald-300 font-semibold">{hijriStr}</span>
         </>
       )}
     </div>

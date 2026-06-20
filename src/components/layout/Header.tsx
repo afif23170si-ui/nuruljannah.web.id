@@ -16,6 +16,8 @@ import {
 import {
   ChevronDown,
   Menu,
+  MessageCircle,
+  ArrowUpRight,
   Home,
   Info,
   Users,
@@ -45,24 +47,18 @@ const navigation = [
     children: [
       { name: "Tentang Masjid", href: "/profil", icon: Info },
       { name: "Visi & Misi", href: "/profil", icon: BookOpen },
-      { name: "Struktur DKM", href: "/profil#struktur-dkm", icon: Users },
+      { name: "Struktur Organisasi", href: "/profil#struktur-dkm", icon: Users },
       { name: "Sejarah", href: "/profil/sejarah", icon: Calendar },
     ]
   },
   { name: "Ibadah", href: "/ibadah", icon: Clock },
-  { name: "Ramadhan", href: "/ramadhan", icon: Sparkles, disabled: true },
-  { name: "Program", href: "/program", icon: BookOpen, disabled: true },
   { name: "Agenda", href: "/agenda", icon: Calendar },
-  { name: "Layanan", href: "/layanan", icon: HeadphonesIcon, disabled: true },
   { 
     name: "ZISWAF", 
     href: "/infaq", 
     icon: Heart,
     children: [
       { name: "Donasi & Infaq", href: "/infaq", icon: Heart },
-      { name: "Zakat", href: "/ziswaf/zakat", icon: Heart, disabled: true },
-      { name: "Qurban", href: "/ziswaf/qurban", icon: Heart, disabled: true },
-      { name: "Program Campaign", href: "/ziswaf/campaign", icon: Megaphone, disabled: true },
       { name: "Laporan Transparansi", href: "/keuangan", icon: BookOpen },
     ]
   },
@@ -134,7 +130,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
     };
 
     handleScroll(); // Initial check
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -143,19 +139,32 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
     document.documentElement.classList.toggle("dark");
   };
 
+  const isHome = pathname === "/";
+  const isTransparentHeroPage = !pathname.startsWith("/login") && !pathname.startsWith("/galeri/");
+  const isTransparent = isTransparentHeroPage && !scrolled;
+
   return (
-    <header suppressHydrationWarning className="sticky top-0 left-0 right-0 z-50 transition-all duration-300">
+    <>
+    <header 
+      suppressHydrationWarning 
+      className={cn(
+        "fixed z-50 transition-all duration-300",
+        isTransparent ? "top-[10px] md:top-[20px] left-0 right-0" : "top-0 left-0 right-0"
+      )}
+    >
       <div className={cn(
         "w-full transition-all duration-500",
-        "bg-white/90 backdrop-blur-xl",
-        scrolled && "bg-white/95 shadow-sm border-b border-white/20"
+        isTransparent ? "bg-transparent" : "bg-white/95 backdrop-blur-md shadow-sm border-b border-zinc-200"
       )}>
-        <div className="mx-auto w-[96%] max-w-7xl px-6 py-4 flex items-center justify-between">
+        <div className={cn(
+          "mx-auto flex items-center justify-between w-[96%] max-w-7xl px-6 transition-all duration-500",
+          isTransparent ? "py-5 md:py-6" : "py-4"
+        )}>
           
           {/* Left: Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative h-8 w-8 overflow-hidden rounded-full ring-1 ring-emerald-900/10 shadow-sm transition-transform group-hover:scale-105">
+              <div className={cn("relative h-8 w-8 overflow-hidden rounded-full ring-1 shadow-sm transition-transform group-hover:scale-105", isTransparent ? "ring-white/30" : "ring-emerald-900/10")}>
                 <Image 
                   src={logoUrl || "/logo.webp"} 
                   alt={`Logo ${mosqueName}`} 
@@ -165,7 +174,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                   priority
                 />
               </div>
-              <span className="font-serif font-bold text-lg tracking-tight text-emerald-950">
+              <span className={cn("font-serif font-bold text-lg tracking-tight", isTransparent ? "text-white drop-shadow-md" : "text-emerald-950")}>
                 {mosqueName}
               </span>
             </Link>
@@ -177,21 +186,7 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
               const isActive = pathname === item.href || (item.children && item.children.some(child => pathname === child.href));
               const isHovered = hoveredItem === item.name;
 
-              // Disabled items
-              if (item.disabled) {
-                return (
-                  <div key={item.name} className="relative group">
-                    <span
-                      className="px-4 py-2 text-sm font-medium text-slate-300 rounded-full border border-transparent cursor-not-allowed inline-block"
-                    >
-                      {item.name}
-                    </span>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2.5 py-1 bg-slate-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                      Segera Hadir
-                    </div>
-                  </div>
-                );
-              }
+              // Removed disabled items rendering logic
               
               return (
                 <div 
@@ -212,48 +207,50 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                         className={cn(
                           "flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-full outline-none border",
                           isActive
-                            ? "text-emerald-950 bg-emerald-50 border-emerald-200"
-                            : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50 border-transparent"
+                            ? (isTransparent ? "border-white/20 text-white bg-white/15 backdrop-blur-md" : "border-transparent text-emerald-950 bg-zinc-100/80")
+                            : (isTransparent ? "border-transparent text-white/90 hover:text-white hover:bg-white/10 hover:backdrop-blur-sm" : "border-transparent text-slate-600 hover:text-emerald-900 hover:bg-slate-50")
                         )}
                       >
                         <span>{item.name}</span>
                         <ChevronDown className={cn(
                           "h-3.5 w-3.5 transition-transform duration-300",
-                          isHovered ? "rotate-180 text-emerald-900" : "text-slate-400"
+                          isHovered ? (isTransparent ? "rotate-180 text-white" : "rotate-180 text-emerald-900") : (isTransparent ? "text-white/60" : "text-slate-400")
                         )} />
                       </DropdownMenuTrigger>
                       <AnimatePresence>
                         {isHovered && (
                           <DropdownMenuContent 
+                            forceMount
                             align="start" 
                             sideOffset={8}
-                            className="w-48 p-1 border-white/20 bg-white/95 backdrop-blur-xl shadow-xl shadow-emerald-900/5 rounded-2xl"
+                            className={cn(
+                              "w-48 p-1 shadow-xl shadow-emerald-900/5 rounded-2xl border !animate-none",
+                              isTransparent 
+                                ? "bg-white/10 backdrop-blur-md border-white/20 text-white" 
+                                : "bg-white/95 backdrop-blur-xl border-white/20 text-slate-800"
+                            )}
                             onMouseEnter={() => handleMouseEnter(item.name)}
                             onMouseLeave={handleMouseLeave}
                             asChild
                           >
                             <motion.div
-                              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                              transition={{ duration: 0.2 }}
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              transition={{ duration: 0.15 }}
                             >
-                              {item.children.map((child) => 
-                                child.disabled ? (
-                                  <DropdownMenuItem key={child.name} disabled className="rounded-xl py-2.5 px-3 opacity-50 cursor-not-allowed">
-                                    <child.icon className="mr-2 h-4 w-4 opacity-70" />
-                                    <span className="font-medium">{child.name}</span>
-                                    <span className="ml-auto text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-md font-semibold">Segera</span>
-                                  </DropdownMenuItem>
-                                ) : (
+                              {item.children.map((child) => (
                                   <Link key={child.name} href={child.href}>
-                                    <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-emerald-50 hover:text-emerald-900 focus:bg-emerald-50 focus:text-emerald-900 transition-colors py-2.5 px-3">
-                                      <child.icon className="mr-2 h-4 w-4 opacity-70" />
+                                    <DropdownMenuItem className={cn(
+                                      "cursor-pointer rounded-xl transition-colors py-2.5 px-3 focus:outline-none",
+                                      isTransparent
+                                        ? "hover:bg-white/20 hover:text-white focus:bg-white/20 focus:text-white"
+                                        : "hover:bg-emerald-50 hover:text-emerald-900 focus:bg-emerald-50 focus:text-emerald-900"
+                                    )}>
                                       <span className="font-medium">{child.name}</span>
                                     </DropdownMenuItem>
                                   </Link>
-                                )
-                              )}
+                              ))}
                             </motion.div>
                           </DropdownMenuContent>
                         )}
@@ -265,8 +262,8 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                       className={cn(
                         "px-4 py-2 text-sm font-medium transition-colors rounded-full border",
                         isActive
-                          ? "text-emerald-950 bg-emerald-50 border-emerald-200"
-                          : "text-slate-600 hover:text-emerald-900 hover:bg-slate-50 border-transparent"
+                            ? (isTransparent ? "border-white/20 text-white bg-white/15 backdrop-blur-md" : "border-transparent text-emerald-950 bg-zinc-100/80")
+                            : (isTransparent ? "border-transparent text-white/90 hover:text-white hover:bg-white/10 hover:backdrop-blur-sm" : "border-transparent text-slate-600 hover:text-emerald-900 hover:bg-slate-50")
                       )}
                     >
                       <span>{item.name}</span>
@@ -320,9 +317,12 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/login" className="hidden sm:block">
-                 <Button size="sm" className="bg-emerald-900 text-white hover:bg-emerald-800 shadow-md transition-all rounded-full px-5 h-9">
-                   Masuk
+              <Link href="#kontak" className="hidden sm:block">
+                 <Button className={cn("text-white transition-all rounded-full pl-5 pr-1.5 gap-2.5", isTransparent ? "bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 backdrop-blur-md" : "bg-emerald-600 hover:bg-emerald-700")}>
+                   <span className="font-medium">Kontak</span>
+                   <div className="flex items-center justify-center bg-white rounded-full w-6 h-6 shrink-0 shadow-sm">
+                     <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
+                   </div>
                 </Button>
               </Link>
             )}
@@ -330,84 +330,58 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white bg-emerald-600 shadow-md hover:bg-emerald-700 border-none transition-transform hover:scale-105">
+              <Button variant="ghost" size="icon" className={cn("h-10 w-10 rounded-full transition-all", isTransparent ? "bg-white/10 text-white hover:bg-white/20 border border-white/20 hover:border-white/40 backdrop-blur-md" : "text-white bg-emerald-600 hover:bg-emerald-700 border-none")}>
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="w-full rounded-b-3xl glass-nav border-b-0 max-h-[90vh] overflow-y-auto">
+            <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col h-full bg-white/95 backdrop-blur-xl border-l border-white/20">
                <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
-              <div className="flex flex-col gap-3 pt-3 pb-4">
-                <div className="flex items-center gap-3 px-2">
-                  <div className="relative h-10 w-10 overflow-hidden rounded-full shrink-0">
+              
+              {/* Header inside Mobile Menu */}
+              <div className="flex items-center gap-4 p-6 pb-5 border-b border-slate-100/50">
+                <div className="relative h-9 w-9 overflow-hidden shrink-0">
                   <Image 
                     src={logoUrl || "/logo.webp"} 
                     alt={`Logo ${mosqueName}`} 
                     fill 
-                    sizes="40px"
-                    className="object-cover"
+                    sizes="36px"
+                    className="object-contain"
                     priority
                   />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold font-serif leading-tight">Masjid {mosqueName}</h2>
-                    <p className="text-[11px] text-muted-foreground">Menu Navigasi</p>
-                  </div>
                 </div>
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-bold font-serif leading-tight text-emerald-950">Masjid {mosqueName}</h2>
+                  <p className="text-xs text-emerald-700/80 font-medium mt-0.5">Menu Navigasi Utama</p>
+                </div>
+              </div>
 
-                <nav className="flex flex-col gap-0.5">
+              {/* Navigation Links */}
+              <div className="flex-1 overflow-y-auto py-2 px-4 scrollbar-hide">
+                <nav className="flex flex-col pb-6 px-2">
                   {navigation.map((item) => {
-                    // Disabled items in mobile
-                    if (item.disabled) {
-                      return (
-                        <div
-                          key={item.name}
-                          className="flex items-center gap-3 px-4 py-2 rounded-xl cursor-not-allowed"
-                        >
-                          <item.icon className="h-4.5 w-4.5 text-slate-200" />
-                          <span className="text-sm font-medium text-slate-300 flex-1">{item.name}</span>
-                          <span className="text-[9px] font-bold bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-                            Segera
-                          </span>
-                        </div>
-                      );
-                    }
-
                     // Handle "Profil" sub-items as a grouped section
                     if (item.children) {
                       return (
-                        <div key={item.name} className="flex flex-col my-0.5 bg-slate-50/50 rounded-xl border border-slate-100/50 overflow-hidden">
+                        <div key={item.name} className="flex flex-col border-b border-slate-100/60 last:border-b-0">
                           <button 
                             onClick={() => {
                               setExpandedItems(prev => prev === item.name ? null : item.name);
                             }}
-                            className="flex items-center justify-between w-full px-4 py-2.5 text-left transition-colors hover:bg-slate-100/50"
+                            className="flex items-center justify-between w-full py-3.5 text-left group"
                           >
-                            <span className="flex items-center gap-3 text-sm font-medium text-slate-700">
-                              <item.icon className="h-4.5 w-4.5 text-slate-400" />
+                            <span className="text-[15px] font-medium text-slate-800 group-hover:text-emerald-700 transition-colors">
                               {item.name}
                             </span>
-                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", expandedItems === item.name && "rotate-180")} />
+                            <ChevronDown className={cn("h-4.5 w-4.5 text-slate-400 transition-transform duration-300", expandedItems === item.name && "rotate-180")} />
                           </button>
                           
                           <div className={cn(
                             "grid transition-all duration-300 ease-in-out",
-                            expandedItems === item.name ? "grid-rows-[1fr] opacity-100 pb-1.5" : "grid-rows-[0fr] opacity-0"
+                            expandedItems === item.name ? "grid-rows-[1fr] opacity-100 pb-3" : "grid-rows-[0fr] opacity-0"
                           )}>
-                            <div className="overflow-hidden flex flex-col gap-0.5 px-2">
+                            <div className="overflow-hidden flex flex-col gap-1 pl-4">
                               {item.children.map(child => {
-                                if (child.disabled) {
-                                  return (
-                                    <div
-                                      key={child.name}
-                                      className="flex items-center gap-3 px-3 py-2 rounded-lg ml-2 opacity-40 cursor-not-allowed"
-                                    >
-                                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                                      <span className="text-[13px] text-slate-400">{child.name}</span>
-                                      <span className="ml-auto text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded-md font-semibold">Segera</span>
-                                    </div>
-                                  );
-                                }
                                 const isChildActive = pathname === child.href;
                                 return (
                                   <Link
@@ -415,14 +389,13 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                                     href={child.href}
                                     onClick={() => setIsOpen(false)}
                                     className={cn(
-                                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all ml-2",
+                                      "py-2 transition-all text-[14px] block",
                                       isChildActive
-                                        ? "bg-white shadow-sm text-emerald-700 font-medium border border-emerald-100"
-                                        : "text-slate-500 hover:bg-white/60 hover:text-slate-900"
+                                        ? "text-emerald-700 font-semibold"
+                                        : "text-slate-500 hover:text-emerald-600"
                                     )}
                                   >
-                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                                    <span className="text-[13px]">{child.name}</span>
+                                    {child.name}
                                   </Link>
                                 );
                               })}
@@ -439,47 +412,47 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                         href={item.href}
                         onClick={() => setIsOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-2 rounded-xl transition-all",
+                          "py-3.5 transition-all border-b border-slate-100/60 last:border-b-0 text-[15px] font-medium block",
                           isActive
-                            ? "bg-emerald-50 text-emerald-700 font-medium"
-                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                            ? "text-emerald-700 font-semibold"
+                            : "text-slate-800 hover:text-emerald-700"
                         )}
                       >
-                        <item.icon className={cn("h-4.5 w-4.5", isActive ? "text-emerald-600" : "text-slate-400")} />
-                        <span className="text-sm">{item.name}</span>
+                        {item.name}
                       </Link>
                     );
                   })}
                 </nav>
+              </div>
 
-                {/* Compact footer: user + actions */}
-                <div className="mt-2 pt-3 border-t border-slate-100 px-1">
-                  {mounted && session?.user ? (
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1.5 rounded-xl bg-emerald-50/80">
-                        <Avatar className="h-8 w-8 border border-white shadow-sm shrink-0">
-                          <AvatarImage src={session.user.image || ""} alt={session.user.name} />
-                          <AvatarFallback className="bg-emerald-200 text-emerald-800 font-bold text-xs">
-                            {session.user.name?.charAt(0).toUpperCase() || "U"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col overflow-hidden">
-                          <span className="text-xs font-semibold text-emerald-950 truncate">{session.user.name}</span>
-                          <span className="text-[10px] text-emerald-600 truncate">{session.user.role}</span>
-                        </div>
+              {/* Compact footer: user + actions anchored at bottom */}
+              <div className="mt-auto p-6 bg-white border-t border-slate-100">
+                {mounted && session?.user ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10 border border-slate-200 shrink-0">
+                        <AvatarImage src={session.user.image || ""} alt={session.user.name} />
+                        <AvatarFallback className="bg-emerald-100 text-emerald-800 font-bold text-sm">
+                          {session.user.name?.charAt(0).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-sm font-semibold text-slate-900 truncate">{session.user.name}</span>
+                        <span className="text-[12px] text-slate-500 truncate">{session.user.role}</span>
                       </div>
-
+                    </div>
+                    
+                    <div className="flex gap-2">
                       <Link href="/admin" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" size="sm" className="h-9 px-3 rounded-lg text-xs text-slate-600 border-slate-200 hover:bg-slate-50 gap-1.5">
-                          <LayoutDashboard className="h-3.5 w-3.5" />
-                          Admin
+                        <Button className="w-auto px-5 h-10 rounded-full text-[14px] font-medium text-white bg-slate-900 hover:bg-slate-800 transition-all gap-2">
+                          <LayoutDashboard className="h-4 w-4" />
+                          Admin Panel
                         </Button>
                       </Link>
 
                       <Button 
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 w-9 p-0 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 shrink-0"
+                        variant="outline"
+                        className="h-10 w-10 p-0 rounded-full text-red-500 border-slate-200 hover:bg-red-50 hover:text-red-600 shrink-0 transition-colors"
                         onClick={() => {
                           setIsOpen(false);
                           signOut();
@@ -488,14 +461,17 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
                         <LogOut className="h-4 w-4" />
                       </Button>
                     </div>
-                  ) : (
-                    <Link href="/login" onClick={() => setIsOpen(false)} className="w-full block">
-                      <Button className="w-full rounded-full h-10 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all">
-                        Masuk Sebagai Pengurus
-                      </Button>
-                    </Link>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <Link href="#kontak" onClick={() => setIsOpen(false)} className="inline-block">
+                    <Button className="w-auto h-11 rounded-full pl-5 pr-1.5 gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white transition-all flex justify-center items-center group">
+                      <span className="font-medium text-[14px]">Hubungi Kami</span>
+                      <div className="flex items-center justify-center bg-white rounded-full w-7 h-7 shrink-0 shadow-sm transition-transform group-hover:scale-105">
+                        <MessageCircle className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
+                      </div>
+                    </Button>
+                  </Link>
+                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -503,6 +479,9 @@ export function Header({ logoUrl, mosqueName = "Nurul Jannah" }: HeaderProps) {
         </div>
       </div>
     </header>
+    {/* Spacer for fixed header on non-transparent pages */}
+    {!isTransparentHeroPage && <div className="h-[73px] w-full" />}
+    </>
   );
 }
 

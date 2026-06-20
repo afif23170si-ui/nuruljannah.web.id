@@ -15,16 +15,15 @@ interface IslamicEvent {
   hijriDay: number;
   icon: React.ElementType;
   label: string; // Short label shown above the countdown
-  emoji: string;
 }
 
 const EVENTS: IslamicEvent[] = [
-  { name: "Tahun Baru Hijriah",  hijriMonth: 1,  hijriDay: 1,  icon: Sparkles, label: "Tahun Baru Islam", emoji: "🌙" },
-  { name: "Maulid Nabi Muhammad", hijriMonth: 3,  hijriDay: 12, icon: Star,     label: "Maulid Nabi",     emoji: "⭐" },
-  { name: "Isra Mi'raj",          hijriMonth: 7,  hijriDay: 27, icon: Moon,     label: "Isra Mi'raj",     emoji: "✨" },
-  { name: "Ramadhan",             hijriMonth: 9,  hijriDay: 1,  icon: Moon,     label: "Ramadhan",        emoji: "🌙" },
-  { name: "Idul Fitri",           hijriMonth: 10, hijriDay: 1,  icon: Sparkles, label: "Idul Fitri",      emoji: "🎉" },
-  { name: "Idul Adha",            hijriMonth: 12, hijriDay: 10, icon: Sun,      label: "Idul Adha",       emoji: "🐪" },
+  { name: "Tahun Baru Hijriah",  hijriMonth: 1,  hijriDay: 1,  icon: Sparkles, label: "Tahun Baru Islam" },
+  { name: "Maulid Nabi Muhammad", hijriMonth: 3,  hijriDay: 12, icon: Star,     label: "Maulid Nabi" },
+  { name: "Isra Mi'raj",          hijriMonth: 7,  hijriDay: 27, icon: Moon,     label: "Isra Mi'raj" },
+  { name: "Ramadhan",             hijriMonth: 9,  hijriDay: 1,  icon: Moon,     label: "Ramadhan" },
+  { name: "Idul Fitri",           hijriMonth: 10, hijriDay: 1,  icon: Sparkles, label: "Idul Fitri" },
+  { name: "Idul Adha",            hijriMonth: 12, hijriDay: 10, icon: Sun,      label: "Idul Adha" },
 ];
 
 // ============================================================
@@ -158,52 +157,48 @@ export function IslamicCountdown() {
   const isToday = countdown.days === 0 && countdown.hours === 0 && countdown.minutes === 0 && countdown.seconds === 0;
 
   return (
-    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white">
-      {/* Icon + Emoji */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-lg">{upcoming.event.emoji}</span>
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-widest text-white/60 font-medium leading-tight">
-            Menuju
-          </span>
-          <span className="text-sm font-semibold text-white leading-tight">
-            {upcoming.event.label}
-          </span>
-        </div>
+    <div className="w-full md:w-[280px] flex flex-col items-center justify-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white transition-all duration-300 overflow-hidden">
+      {/* Row 1: Label & Event Name */}
+      <div className="flex flex-row items-center justify-center text-center bg-emerald-600 w-full py-3 px-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] relative z-10 border-b border-emerald-500/50 text-white">
+        <span className="text-[11px] uppercase tracking-[0.2em] font-medium mr-1.5 text-emerald-50">
+          Menuju
+        </span>
+        <span className="text-[11px] uppercase tracking-[0.2em] font-bold">
+          {upcoming.event.label}
+        </span>
       </div>
 
-      {/* Separator */}
-      <div className="w-px h-8 bg-white/20" />
-
-      {/* Countdown Digits */}
-      {isToday ? (
-        <span className="text-sm font-bold text-emerald-300">
-          🎉 Hari Ini!
-        </span>
-      ) : (
-        <div className="flex items-center gap-2">
-          <CountdownUnit value={countdown.days} label="Hari" />
-          <span className="text-white/40 text-lg font-light">:</span>
-          <CountdownUnit value={countdown.hours} label="Jam" />
-          <span className="text-white/40 text-lg font-light">:</span>
-          <CountdownUnit value={countdown.minutes} label="Mnt" />
-          <span className="text-white/40 text-lg font-light hidden sm:block">:</span>
-          <div className="hidden sm:block">
-            <CountdownUnit value={countdown.seconds} label="Dtk" />
+      {/* Row 2: Countdown Digits */}
+      <div className="w-full p-4 pt-3 flex flex-col items-center justify-center relative z-0">
+        {isToday ? (
+          <span className="text-sm font-bold text-emerald-400 py-1">
+            Hari Ini!
+          </span>
+        ) : (
+          <div className="flex items-center justify-center gap-3 w-full py-1">
+            <CountdownUnit value={countdown.days} label="Hari" />
+            <span className="text-white/20 text-lg font-extralight mb-4.5">:</span>
+            <CountdownUnit value={countdown.hours} label="Jam" />
+            <span className="text-white/20 text-lg font-extralight mb-4.5">:</span>
+            <CountdownUnit value={countdown.minutes} label="Mnt" />
+            <span className="text-white/20 text-lg font-extralight mb-4.5 hidden sm:inline">:</span>
+            <div className="hidden sm:block">
+              <CountdownUnit value={countdown.seconds} label="Dtk" />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center min-w-[32px]">
-      <span className="text-xl sm:text-2xl font-bold tabular-nums leading-none text-white">
+    <div className="flex flex-col items-center min-w-[36px]">
+      <span className="text-2xl sm:text-3xl font-mono font-medium tabular-nums leading-none text-white/90">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-[9px] uppercase tracking-wider text-white/50 mt-0.5">
+      <span className="text-[8px] uppercase tracking-widest text-emerald-100/50 mt-1.5 font-medium">
         {label}
       </span>
     </div>

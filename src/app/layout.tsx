@@ -85,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${poppins.variable} ${elMessiri.variable} font-sans antialiased`}>
         {children}
         <Toaster position="top-right" richColors />

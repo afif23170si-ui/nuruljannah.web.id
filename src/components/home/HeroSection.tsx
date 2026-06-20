@@ -1,103 +1,152 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Star } from "lucide-react";
-import { PrayerTimesWidget } from "./PrayerTimesWidget";
-import { DateDisplay } from "./DateDisplay";
-import { IslamicCountdown } from "./IslamicCountdown";
+import { Star, ArrowUpRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import dynamic from "next/dynamic";
+import BlurText from "@/components/ui/blur-text";
+
+// Dynamic imports with matching skeletons for zero Layout Shift (CLS)
+const DateDisplay = dynamic(() => import("./DateDisplay"), {
+  ssr: false,
+  loading: () => <div className="h-4 w-32 bg-white/5 animate-pulse rounded-full" />,
+});
+
+const IslamicCountdown = dynamic(() => import("./IslamicCountdown"), {
+  ssr: false,
+  loading: () => <div className="w-full md:w-[280px] h-[58px] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl animate-pulse" />,
+});
+
+const PrayerTimesWidget = dynamic(() => import("./PrayerTimesWidget").then((mod) => mod.PrayerTimesWidget), {
+  ssr: false,
+  loading: () => <div className="w-full md:w-[280px] h-[130px] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl animate-pulse" />,
+});
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const rightContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.25,
+      delayChildren: 0.5,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 1.2, ease: "easeOut" as const } 
+  },
+};
 
 export function HeroSection() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 400]);
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0.5, 0.8]);
+
   return (
-    <section className="relative w-auto min-h-[calc(100vh-79px)] md:min-h-[calc(100vh-89px)] [.has-announcement_&]:min-h-[calc(100vh-115px)] [.has-announcement_&]:md:min-h-[calc(100vh-125px)] h-auto mt-0 mx-[10px] mb-[10px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-end overflow-hidden transition-[min-height] duration-500 ease-in-out rounded-[15px] md:rounded-[30px]">
-      
-      {/* Background Image */}
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0 bg-emerald-950">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          poster="/hero-masjid.webp"
-          // @ts-ignore
-          fetchPriority="high"
-        >
-          <source src="/hero-masjid.webm" type="video/webm" />
-          <source src="/hero-masjid.mp4" type="video/mp4" />
-          {/* Fallback image if video fails or not supported */}
+    <section ref={ref} className="relative w-auto min-h-[calc(100vh-20px)] md:min-h-[calc(100vh-40px)] mt-[10px] mx-[10px] mb-[10px] md:mt-[20px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-center overflow-hidden transition-[min-height] duration-500 ease-in-out rounded-[16px] md:rounded-[24px] isolate">
+
+      {/* Background Video/Image */}
+      <div className="absolute inset-0 z-0 bg-emerald-950 overflow-hidden rounded-[16px] md:rounded-[24px]">
+        <motion.div className="absolute inset-0 origin-top" style={{ scale, y }}>
           <Image
-            src="/hero-masjid.webp"
-            alt="Masjid Nurul Jannah"
+            src="/hero-masjid.jpg"
+            alt="Masjid Nurul Jannah Fallback"
             fill
             sizes="100vw"
             className="object-cover"
             priority
+            // @ts-ignore
+            fetchPriority="high"
           />
-        </video>
-        {/* Dark Overlay 40% */}
-        <div className="absolute inset-0 bg-black/40 md:bg-black/50 z-[1]" />
+        </motion.div>
 
 
 
-
-
-
-        {/* Date Display - Desktop (below notch, centered) */}
-        <div className="hidden md:flex absolute top-[30px] left-0 right-0 z-[4] justify-center pointer-events-none">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 pointer-events-auto">
-            <DateDisplay variant="hero" />
-          </div>
-        </div>
-        
-
+        {/* Dark Overlay 40% - 50% */}
+        <motion.div className="absolute inset-0 bg-black z-[2]" style={{ opacity: overlayOpacity }} />
       </div>
 
-      {/* Centered Content with Space Between for Widget */}
-      <div className="relative z-10 container px-4 sm:px-6 flex flex-col md:flex-row items-center md:items-end justify-between h-full pb-20 md:pb-12 pt-28 md:pt-0 w-full">
-        
-        {/* Left Content */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
+      {/* Content Container */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 lg:gap-20 pt-[100px] md:pt-[120px] pb-10 relative z-10 flex-1 px-4">
 
-          {/* Date Display - Mobile Only */}
-          <div className="md:hidden mb-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+        {/* Left Content */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto"
+        >
+
+          {/* Date Display */}
+          <div className="mb-5 md:mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 backdrop-blur-md border border-white/10">
               <DateDisplay variant="hero" />
             </div>
           </div>
 
-          {/* Islamic Event Countdown */}
-          <div className="mb-4 md:mb-6">
-            <IslamicCountdown />
-          </div>
+          <BlurText 
+            text="Cahaya Ibadah dalam <br/> Kehangatan Ukhuwah"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white mb-4 md:mb-6 leading-[1.1] relative z-10 max-w-4xl justify-center md:justify-start"
+          />
 
-          <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white mb-3 md:mb-4 leading-[1.1] relative z-10 max-w-4xl">
-            Cahaya Ibadah dalam <br />
-            Kehangatan Ukhuwah
-          </h1>
+          <motion.p variants={itemVariants} className="text-[15px] sm:text-base text-white/90 leading-relaxed font-light font-sans drop-shadow-md max-w-2xl mb-8 md:mb-10 text-center md:text-left">
+            Membentuk ukhuwah islamiyah melalui masjid yang inklusif, <br className="hidden md:block" />
+            modern, dan transparan bagi seluruh lapisan masyarakat.
+          </motion.p>
 
-          <p className="text-base md:text-lg text-white/90 leading-relaxed font-light font-sans drop-shadow-md max-w-2xl mb-6 md:mb-10 text-center md:text-left">
-            Membentuk ukhuwah islamiyah melalui masjid yang inklusif, modern, 
-            dan transparan bagi seluruh lapisan masyarakat.
-          </p>
-
-          <div className="flex flex-row gap-3 sm:gap-4 w-full md:w-auto items-center md:items-start justify-center md:justify-start mb-8 md:mb-0">
+          <div className="flex flex-row gap-3 sm:gap-4 w-full md:w-auto items-center justify-center">
+            <Link href="/infaq" className="flex-1 md:flex-none">
+              <Button className="w-full md:w-auto rounded-full pl-5 pr-1.5 gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+                <span className="font-medium">Salurkan Infaq</span>
+                <div className="flex items-center justify-center bg-white rounded-full w-6 h-6 shrink-0 shadow-sm">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
+                </div>
+              </Button>
+            </Link>
             <Link href="/profil" className="flex-1 md:flex-none">
-              <Button size="lg" className="w-full md:w-auto h-11 md:h-11 px-8 rounded-full text-base gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg transition-all hover:scale-105 border-0">
+              <Button variant="outline" className="w-full md:w-auto rounded-full gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all">
                 Profil Masjid
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Right Content: Prayer Times Widget */}
-        <div className="relative z-20 w-full md:w-auto flex flex-col items-center md:items-end mt-auto md:mt-0 md:ml-auto">
-           <PrayerTimesWidget />
+        {/* Right Content: Islamic Countdown & Prayer Times Dashboard */}
+        <div className="relative z-20 w-full md:w-auto flex flex-col items-center md:items-end gap-4 md:ml-auto">
+          <div className="w-full">
+            <IslamicCountdown />
+          </div>
+          <div className="w-full">
+            <PrayerTimesWidget />
+          </div>
         </div>
 
       </div>

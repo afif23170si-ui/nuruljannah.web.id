@@ -400,11 +400,11 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                         <RichTextEditor
                           content={field.value || ""}
                           onChange={field.onChange}
-                          placeholder="Tentang masjid..."
+                          placeholder="Tulis deskripsi singkat tentang masjid..."
                         />
                       </FormControl>
                       <FormDescription>
-                        Deskripsi tentang masjid yang akan ditampilkan di halaman Profil
+                        Teks ini ditampilkan di section "Tentang Kami" pada halaman Profil publik. Jika kosong, teks bawaan akan digunakan.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

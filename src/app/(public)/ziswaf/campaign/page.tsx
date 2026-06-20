@@ -19,26 +19,30 @@ export default async function CampaignPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="px-4 md:px-0">
-        <div className="relative h-[250px] md:h-[300px] flex flex-col justify-center items-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black p-6">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/hero-masjid.webp"
-              alt="Program Campaign"
-              fill
-              className="object-cover opacity-60"
-              priority
-              sizes="(max-width: 768px) 100vw, 1200px"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
-          </div>
-          
-          <div className="relative z-10 text-center">
-            <h1 className="text-3xl md:text-5xl font-serif font-bold tracking-tight mb-2 md:mb-4 text-white drop-shadow-sm">Program Campaign</h1>
-            <p className="text-white/80 max-w-[90%] md:max-w-2xl mx-auto text-sm md:text-base mt-2 md:mt-3">
-              Dukung program-program penggalangan dana khusus untuk operasional, pembangunan, dan kegiatan sosial.
-            </p>
-          </div>
+      {/* Hero Section - Floating Style */}
+      <section className="relative w-auto h-[300px] md:h-[400px] mt-[10px] mx-[10px] mb-[10px] md:mt-[20px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-center overflow-hidden rounded-[16px] md:rounded-[24px] isolate bg-black">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden rounded-[16px] md:rounded-[24px]">
+          <Image
+            src="/hero-masjid.jpg"
+            alt="Hero Background"
+            fill
+            className="object-cover object-[center_25%] opacity-80"
+            priority
+            sizes="100vw"
+          />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/50 z-[2]" />
+        </div>
+        
+        {/* Content */}
+        <div className="container relative z-10 mx-auto px-4 text-center pt-[73px]">
+          <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+            Program Campaign
+          </h1>
+          <p className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[90%] md:max-w-lg mx-auto drop-shadow-sm">
+            Dukung program-program penggalangan dana khusus untuk operasional, pembangunan, dan kegiatan sosial.
+          </p>
         </div>
       </section>
       

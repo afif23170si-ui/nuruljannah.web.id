@@ -146,7 +146,7 @@ export const navigation: NavItem[] = [
   },
   // --- Organisasi & Sistem ---
   {
-    name: "Struktur DKM",
+    name: "Struktur Organisasi",
     href: "/admin/dkm",
     icon: UsersRound,
     roles: ["ADMIN", "TAKMIR"],

@@ -119,42 +119,45 @@ export function InfaqPageClient({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ── Floating Hero Section ── */}
-      <section className="px-4 md:px-0">
-        <div className="relative h-[250px] md:h-[350px] flex items-center justify-center overflow-hidden rounded-[15px] md:rounded-2xl w-[96%] max-w-7xl mx-auto bg-black">
+      {/* ── Hero Section - Floating Style ── */}
+      <section className="relative w-auto h-[300px] md:h-[400px] mt-[10px] mx-[10px] mb-[10px] md:mt-[20px] md:mx-[20px] md:mb-[20px] flex flex-col items-center justify-center overflow-hidden rounded-[16px] md:rounded-[24px] isolate bg-black">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden rounded-[16px] md:rounded-[24px]">
           <Image
-            src="/hero-masjid.webp"
-            alt="Infaq Masjid Nurul Jannah"
+            src="/hero-masjid.jpg"
+            alt="Hero Background"
             fill
-            className="object-cover object-center opacity-80"
+            className="object-cover object-[center_25%] opacity-80"
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/50 z-[2]" />
           
           {/* Decorative Elements */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl opacity-50" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-2xl opacity-30" />
           </div>
-          
-          <div className="container relative z-10 mx-auto px-4 text-center pb-8 md:pb-12">
-            <motion.div initial="hidden" animate="show" variants={stagger}>
-              <motion.div variants={fadeUp}>
-                <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
-                  Infaq Online
-                </Badge>
-              </motion.div>
-
-              <motion.h1 variants={fadeUp} className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
-                Infaq Masjid
-              </motion.h1>
-
-              <motion.p variants={fadeUp} className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[95%] md:max-w-lg mx-auto leading-relaxed">
-                &ldquo;Kamu tidak akan memperoleh kebajikan sebelum kamu menginfakkan sebagian harta yang kamu cintai&rdquo; (QS. Ali &lsquo;Imran:92)
-              </motion.p>
+        </div>
+        
+        {/* Content */}
+        <div className="container relative z-10 mx-auto px-4 text-center pt-[73px]">
+          <motion.div initial="hidden" animate="show" variants={stagger}>
+            <motion.div variants={fadeUp}>
+              <Badge variant="outline" className="mb-3 md:mb-4 py-1.5 px-3 md:px-4 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-emerald-50 font-normal uppercase tracking-widest text-[9px] md:text-[10px]">
+                Infaq Online
+              </Badge>
             </motion.div>
-          </div>
+
+            <motion.h1 variants={fadeUp} className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-4 drop-shadow-sm">
+              Infaq Masjid
+            </motion.h1>
+
+            <motion.p variants={fadeUp} className="text-white/70 text-sm md:text-base mt-2 md:mt-3 max-w-[95%] md:max-w-lg mx-auto drop-shadow-sm leading-relaxed">
+              &ldquo;Kamu tidak akan memperoleh kebajikan sebelum kamu menginfakkan sebagian harta yang kamu cintai&rdquo; (QS. Ali &lsquo;Imran:92)
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 

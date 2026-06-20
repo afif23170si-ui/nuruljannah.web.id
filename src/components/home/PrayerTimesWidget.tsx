@@ -184,47 +184,37 @@ export function PrayerTimesWidget() {
       {/* Modern Compact Card - Transparent Glass Style */}
       <div 
         className={cn(
-            "relative bg-white/20 backdrop-blur-md rounded-2xl md:p-5 p-4 shadow-2xl border border-white/10 w-full flex flex-col transition-all duration-500 ease-in-out overflow-hidden",
+            "relative bg-white/10 backdrop-blur-md rounded-xl md:p-5 p-4 border border-white/20 w-full flex flex-col transition-all duration-500 ease-in-out overflow-hidden",
             isExpanded ? "gap-5" : "gap-2 md:gap-5"
         )}
       >
         
         {/* Header: Next Prayer Highlight */}
         <div className="flex flex-col items-center justify-center pt-2 relative z-10">
-            <div className="flex items-center gap-1.5 text-emerald-300/90 mb-2">
-               <Clock className="w-3 h-3" />
-               <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
-                 Menuju {nextPrayer?.name}
-               </span>
-            </div>
+            <span className="text-[9px] font-medium tracking-[0.15em] uppercase text-emerald-300/80 mb-1.5">
+               Menuju {nextPrayer?.name}
+            </span>
             
             <div className="relative">
-              <span className="text-5xl font-mono font-medium tracking-tighter text-white tabular-nums leading-none drop-shadow-lg">
+              <span className="text-4xl sm:text-5xl font-mono font-medium tracking-tight text-white/95 tabular-nums leading-none">
                 {countdown}
               </span>
             </div>
             
             {/* Location & Real-time (Subtle) */}
-            <div className="flex items-center gap-2 mt-3 text-[10px] text-emerald-100/60 font-medium">
+            <div className="flex items-center gap-2 mt-2.5 text-[9px] text-emerald-100/50 font-medium">
                <span className="flex items-center gap-1">
-                 <MapPin className="w-2.5 h-2.5" />
+                 <MapPin className="w-2.5 h-2.5 text-emerald-400/70" />
                  {location}
                </span>
-               <span className="w-0.5 h-0.5 rounded-full bg-emerald-100/40" />
+               <span className="w-0.5 h-0.5 rounded-full bg-emerald-100/30" />
                <span className="font-mono">{currentTime}</span>
             </div>
-
-            {/* Hijri Date */}
-            {hijriDate && (
-              <div className="mt-1.5 text-[9px] text-emerald-200/50 font-medium tracking-wide">
-                {hijriDate}
-              </div>
-            )}
         </div>
 
         {/* Separator - Visible only when expanded on mobile, or always on desktop */}
         <div className={cn(
-            "h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-opacity duration-300",
+            "h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-opacity duration-300",
             isExpanded ? "opacity-100" : "opacity-0 md:opacity-100 hidden md:block"
         )} />
 
@@ -236,7 +226,7 @@ export function PrayerTimesWidget() {
             )}
         >
           {isLoading ? (
-            <div className="flex items-center justify-center py-4 text-emerald-100/50 gap-2">
+            <div className="flex items-center justify-center py-4 text-emerald-100/40 gap-2">
               <Loader2 className="h-3 w-3 animate-spin" />
               <span className="text-xs">Memuat...</span>
             </div>
@@ -249,19 +239,19 @@ export function PrayerTimesWidget() {
                   className={cn(
                     "flex items-center justify-between py-1.5 px-3 rounded-lg transition-all duration-300",
                     isNext
-                      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/50"
+                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10 ring-1 ring-emerald-500/30"
                       : "text-emerald-100/60 hover:text-white hover:bg-white/5"
                   )}
                 >
                   <span
                     className={cn(
-                      "text-[10px] font-bold uppercase tracking-wider",
-                      isNext ? "text-white" : "text-emerald-100/40"
+                      "text-[9px] font-medium uppercase tracking-widest",
+                      isNext ? "text-white font-bold" : "text-emerald-100/40"
                     )}
                   >
                     {prayer.name}
                   </span>
-                  <span className={cn("text-xs font-mono font-medium", isNext ? "text-white" : "opacity-80")}>
+                  <span className={cn("text-xs font-mono font-medium", isNext ? "text-white" : "text-emerald-100/80")}>
                     {prayer.time}
                   </span>
                 </div>
