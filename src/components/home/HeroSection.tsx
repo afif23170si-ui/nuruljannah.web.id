@@ -122,18 +122,13 @@ export function HeroSection() {
             modern, dan transparan bagi seluruh lapisan masyarakat.
           </motion.p>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center justify-center">
-            <Link href="/infaq" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto rounded-full pl-5 pr-1.5 gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center justify-center md:justify-start">
+            <Link href="/infaq">
+              <Button className="rounded-full pl-5 pr-1.5 gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
                 <span className="font-medium">Salurkan Infaq</span>
                 <div className="flex items-center justify-center bg-white rounded-full w-6 h-6 shrink-0 shadow-sm">
                   <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
                 </div>
-              </Button>
-            </Link>
-            <Link href="/profil" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto rounded-full gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all">
-                Profil Masjid
               </Button>
             </Link>
           </div>
