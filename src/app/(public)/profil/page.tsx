@@ -71,7 +71,7 @@ async function DkmSection() {
 
   return (
     <div className="flex flex-col items-center w-full mx-auto overflow-hidden">
-      <div className="w-[1024px] flex flex-col items-center pt-4 pb-8 origin-top [zoom:25%] min-[375px]:[zoom:30%] min-[425px]:[zoom:35%] sm:[zoom:55%] md:[zoom:70%] lg:[zoom:100%]">
+      <div className="w-[1024px] shrink-0 flex flex-col items-center pt-4 pb-8 origin-top [zoom:25%] min-[375px]:[zoom:30%] min-[425px]:[zoom:35%] sm:[zoom:55%] md:[zoom:70%] lg:[zoom:100%] [-webkit-text-size-adjust:none]">
         
         {/* Periode */}
         {members[0]?.period && (
